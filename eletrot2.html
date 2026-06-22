@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eletrotécnica II — CA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>MathJax={tex:{displayMath:[['\\[','\\]']],inlineMath:[['\\(','\\)']],tags:'none'},chtml:{scale:1.1}}</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+<style>
+:root{
+  --bg:#ECEEF4; --card:#FFFFFF; --surf2:#F3F5FA; --border:#CDD3E0;
+  --text:#1A2640; --sub:#556070; --fmath:#1A2640;
+  --navy:#1B2E50; --teal:#007575; --teal-lt:#DCF0EF;
+  --red:#C8102E; --red-lt:#FDEAEA;
+  --green:#15803D; --green-lt:#DCFCE7;
+  --shadow:0 1px 4px rgba(0,0,0,.10),0 0 0 1px rgba(0,0,0,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;padding-bottom:48px;max-width:1100px;margin:0 auto;}
+
+/* HEADER */
+.hdr{background:var(--navy);padding:18px 24px 16px;margin-bottom:18px;border-bottom:4px solid var(--red);position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;top:0;right:0;width:130px;height:100%;background:var(--teal);opacity:.13;clip-path:polygon(40% 0,100% 0,100% 100%,0 100%);}
+.hdr-tag{display:inline-block;background:var(--teal);color:#fff;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;padding:3px 10px;border-radius:20px;margin-bottom:8px;}
+.hdr h1{font-size:1.55rem;font-weight:900;letter-spacing:-.5px;color:#fff;line-height:1;}
+.hdr p{font-size:.86rem;color:rgba(255,255,255,.65);margin-top:4px;font-weight:500;}
+
+.wrap{padding:0 20px;}
+
+/* INPUTS BAR */
+.inputs-bar{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;box-shadow:var(--shadow);margin-bottom:12px;}
+.inputs-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px;}
+@media(max-width:640px){.inputs-grid{grid-template-columns:repeat(2,1fr);}}
+.inp-group label{display:block;font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--sub);margin-bottom:4px;}
+.inp-group input{width:100%;background:var(--surf2);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-weight:700;color:var(--text);font-family:inherit;outline:none;transition:border-color .15s;}
+.inp-group input:focus{border-color:var(--teal);background:#fff;}
+
+/* KPI CHIPS */
+.chips{display:flex;gap:8px;flex-wrap:wrap;}
+.chip{flex:1;min-width:80px;background:var(--surf2);border:1.5px solid var(--border);border-radius:12px;padding:8px 10px;text-align:center;}
+.chip.teal{background:var(--teal-lt);border-color:var(--teal);}
+.chip.red{background:var(--red-lt);border-color:var(--red);}
+.chip.green{background:var(--green-lt);border-color:var(--green);}
+.chip-val{display:block;font-size:1.2rem;font-weight:900;color:var(--text);letter-spacing:-.3px;}
+.chip.teal .chip-val{color:var(--teal);}
+.chip.red  .chip-val{color:var(--red);}
+.chip.green .chip-val{color:var(--green);}
+.chip-lbl{display:block;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--sub);margin-top:2px;}
+
+/* INSIGHT */
+.insight{background:var(--navy);color:rgba(255,255,255,.9);border-radius:12px;padding:12px 16px;margin-bottom:12px;font-size:.88rem;font-weight:600;line-height:1.5;display:flex;align-items:flex-start;gap:10px;}
+.insight-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+
+/* TABS */
+.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:10px 20px;font-size:.9rem;font-weight:700;border:1.5px solid var(--border);background:var(--card);border-radius:28px;cursor:pointer;color:var(--sub);white-space:nowrap;font-family:inherit;transition:all .18s;}
+.tab.active{background:var(--teal);color:#fff;border-color:var(--teal);box-shadow:0 4px 14px rgba(0,117,117,.22);}
+.tab:hover:not(.active){border-color:var(--teal);color:var(--teal);}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* CANVAS CARDS */
+.canvas-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow);margin-bottom:12px;}
+.canvas-title{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--sub);margin-bottom:14px;}
+canvas.diagram{width:100%;height:280px;display:block;}
+
+/* FORMULA GRID */
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px;}
+@media(max-width:640px){.fgrid{grid-template-columns:1fr;}}
+.fcard{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:0 12px 12px 0;padding:14px 16px;box-shadow:var(--shadow);}
+.fcard.b2{border-left-color:var(--red);}
+.fcard.b3{border-left-color:var(--navy);}
+.fcard-title{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);margin-bottom:8px;}
+.fmath{color:var(--fmath);overflow-x:auto;line-height:1.5;}
+.fvars{font-size:.75rem;color:var(--sub);line-height:1.7;margin-top:6px;}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-tag">Sparking</div>
+  <h1>Eletrotécnica II</h1>
+  <p>Circuito RLC série — análise em frequência fixa</p>
+</div>
+
+<div class="wrap">
+
+  <!-- ENTRADAS -->
+  <div class="inputs-bar">
+    <div class="inputs-grid">
+      <div class="inp-group"><label>R (Ω)</label><input id="inp_R" type="number" value="100" oninput="atualizar()"></div>
+      <div class="inp-group"><label>L (mH)</label><input id="inp_L" type="number" value="100" oninput="atualizar()"></div>
+      <div class="inp-group"><label>C (µF)</label><input id="inp_C" type="number" value="10" step="0.1" oninput="atualizar()"></div>
+      <div class="inp-group"><label>f (Hz)</label><input id="inp_f" type="number" value="500" oninput="atualizar()"></div>
+      <div class="inp-group"><label>V eficaz (V)</label><input id="inp_V" type="number" value="220" oninput="atualizar()"></div>
+    </div>
+    <div class="chips">
+      <div class="chip teal"><span class="chip-val" id="kpi_Z">—</span><span class="chip-lbl">Z (Ω)</span></div>
+      <div class="chip" id="chip_phi"><span class="chip-val" id="kpi_phi">—</span><span class="chip-lbl">φ (graus)</span></div>
+      <div class="chip teal"><span class="chip-val" id="kpi_I">—</span><span class="chip-lbl">I (A)</span></div>
+      <div class="chip"><span class="chip-val" id="kpi_XL">—</span><span class="chip-lbl">X_L (Ω)</span></div>
+      <div class="chip"><span class="chip-val" id="kpi_XC">—</span><span class="chip-lbl">X_C (Ω)</span></div>
+      <div class="chip" id="chip_tipo"><span class="chip-val" id="kpi_tipo">—</span><span class="chip-lbl">Circuito</span></div>
+    </div>
+  </div>
+
+  <!-- INSIGHT -->
+  <div class="insight">
+    <span class="insight-icon">⚡</span>
+    <span id="insight-txt">Preencha os dados para ver a análise do circuito.</span>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('imp',this)">Triângulo Z</button>
+    <button class="tab" onclick="setTab('fas',this)">Fasores de Tensão</button>
+    <button class="tab" onclick="setTab('pot',this)">Triângulo de Potências</button>
+    <button class="tab" onclick="setTab('form',this)">Fórmulas</button>
+  </div>
+
+  <!-- TRIÂNGULO DE IMPEDÂNCIA -->
+  <div id="panel-imp" class="panel active">
+    <div class="canvas-card">
+      <div class="canvas-title">Triângulo de Impedância — R, X e Z em escala real</div>
+      <canvas class="diagram" id="c-imp"></canvas>
+    </div>
+  </div>
+
+  <!-- FASORES DE TENSÃO -->
+  <div id="panel-fas" class="panel">
+    <div class="canvas-card">
+      <div class="canvas-title">Diagrama Fasorial — tensões no circuito (I como referência)</div>
+      <canvas class="diagram" id="c-fas"></canvas>
+    </div>
+  </div>
+
+  <!-- TRIÂNGULO DE POTÊNCIAS -->
+  <div id="panel-pot" class="panel">
+    <div class="canvas-card">
+      <div class="canvas-title">Triângulo de Potências — P, Q e S</div>
+      <canvas class="diagram" id="c-pot"></canvas>
+    </div>
+  </div>
+
+  <!-- FÓRMULAS -->
+  <div id="panel-form" class="panel">
+    <div class="fgrid">
+      <div class="fcard"><div class="fcard-title">Reatâncias</div><div class="fmath">\[X_L = 2\pi f L\]</div><div class="fmath">\[X_C = \frac{1}{2\pi f C}\]</div></div>
+      <div class="fcard"><div class="fcard-title">Impedância</div><div class="fmath">\[Z = \sqrt{R^2 + (X_L - X_C)^2}\]</div><div class="fmath">\[\varphi = \arctan\!\frac{X_L - X_C}{R}\]</div></div>
+      <div class="fcard"><div class="fcard-title">Corrente e Tensões</div><div class="fmath">\[I = \frac{V}{Z}\]</div><div class="fvars">\(V_R = RI\)&ensp;·&ensp;\(V_L = X_L I\)&ensp;·&ensp;\(V_C = X_C I\)</div></div>
+      <div class="fcard b2"><div class="fcard-title">Potências</div><div class="fmath">\[P = RI^2\quad Q = XI^2\quad S = ZI^2\]</div><div class="fvars">\(FP = \cos\varphi = P/S\)</div></div>
+      <div class="fcard b2"><div class="fcard-title">Ressonância</div><div class="fmath">\[f_0 = \frac{1}{2\pi\sqrt{LC}}\]</div><div class="fvars">Em \(f_0\): \(Z_{min}=R\), \(I_{max}=V/R\), \(\varphi=0\)</div></div>
+      <div class="fcard b3"><div class="fcard-title">Fator de Qualidade</div><div class="fmath">\[Q = \frac{1}{R}\sqrt{\frac{L}{C}} = \frac{f_0}{BW}\]</div><div class="fvars">\(BW = R/(2\pi L)\) Hz</div></div>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+var estado = {};
+
+function gv(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function sv(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+function fmt(v, d) { d = d === undefined ? 2 : d; return Math.abs(v) >= 1000 ? v.toFixed(0) : Math.abs(v) >= 100 ? v.toFixed(1) : v.toFixed(d); }
+
+function atualizar() {
+  var R  = gv('inp_R');
+  var Lh = gv('inp_L') / 1000;
+  var Cf = gv('inp_C') / 1e6;
+  var f  = gv('inp_f');
+  var V  = gv('inp_V');
+
+  if (!R || !Lh || !Cf || !f || !V) return;
+
+  var w   = 2 * Math.PI * f;
+  var XL  = w * Lh;
+  var XC  = 1 / (w * Cf);
+  var X   = XL - XC;
+  var Z   = Math.sqrt(R*R + X*X);
+  var phi = Math.atan2(X, R) * 180 / Math.PI;
+  var I   = V / Z;
+  var VR  = R  * I;
+  var VLv = XL * I;
+  var VCv = XC * I;
+  var P   = R  * I * I;
+  var Q   = X  * I * I;
+  var S   = Z  * I * I;
+  var FP  = R  / Z;
+  var f0  = 1  / (2 * Math.PI * Math.sqrt(Lh * Cf));
+
+  var isRes = Math.abs(X) < 0.01 * Z;
+  var tipo  = isRes ? 'Ressonância' : (X > 0 ? 'Indutivo' : 'Capacitivo');
+
+  estado = {R:R, XL:XL, XC:XC, X:X, Z:Z, phi:phi, I:I, VR:VR, VLv:VLv, VCv:VCv, P:P, Q:Q, S:S, FP:FP, f0:f0, V:V, isRes:isRes, tipo:tipo};
+
+  // KPIs
+  sv('kpi_Z',    fmt(Z));
+  sv('kpi_phi',  (phi >= 0 ? '+' : '') + fmt(phi, 1) + '°');
+  sv('kpi_I',    fmt(I, 3));
+  sv('kpi_XL',   fmt(XL));
+  sv('kpi_XC',   fmt(XC));
+  sv('kpi_tipo', tipo);
+
+  var cphi = document.getElementById('chip_phi');
+  cphi.className = 'chip ' + (isRes ? 'green' : (X > 0 ? 'red' : ''));
+
+  var ctipo = document.getElementById('chip_tipo');
+  ctipo.className = 'chip ' + (isRes ? 'green' : (X > 0 ? '' : 'red'));
+
+  // Insight
+  var msg = '';
+  if (isRes) {
+    msg = 'Ressonância: X_L = X_C = ' + fmt(XL) + ' Ω — impedância mínima (Z = R = ' + fmt(R) + ' Ω), corrente máxima (' + fmt(I,3) + ' A), fator de potência = 1.';
+  } else if (X > 0) {
+    msg = 'Circuito indutivo — X_L (' + fmt(XL) + ' Ω) supera X_C (' + fmt(XC) + ' Ω). A corrente atrasa a tensão em ' + fmt(Math.abs(phi),1) + '°. Para atingir ressonância: f₀ = ' + fmt(f0,1) + ' Hz.';
+  } else {
+    msg = 'Circuito capacitivo — X_C (' + fmt(XC) + ' Ω) supera X_L (' + fmt(XL) + ' Ω). A corrente adianta a tensão em ' + fmt(Math.abs(phi),1) + '°. Para atingir ressonância: f₀ = ' + fmt(f0,1) + ' Hz.';
+  }
+  document.getElementById('insight-txt').textContent = msg;
+
+  // Desenhar painel ativo
+  desenharAtivo();
+}
+
+function desenharAtivo() {
+  var ativo = document.querySelector('.panel.active');
+  if (!ativo) return;
+  var id = ativo.id;
+  if (id === 'panel-imp') desenharZ();
+  else if (id === 'panel-fas') desenharFasores();
+  else if (id === 'panel-pot') desenharPotencias();
+}
+
+/* ─── UTILITÁRIOS CANVAS ─── */
+function prepCanvas(id) {
+  var canvas = document.getElementById(id);
+  if (!canvas) return null;
+  var dpr = window.devicePixelRatio || 1;
+  var W = canvas.offsetWidth;
+  var H = canvas.offsetHeight;
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+  return { ctx: ctx, W: W, H: H };
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color, lw) {
+  lw = lw || 2.5;
+  var dx = x2 - x1, dy = y2 - y1;
+  if (Math.sqrt(dx*dx + dy*dy) < 4) return;
+  var a = Math.atan2(dy, dx);
+  var hl = 9;
+  ctx.save();
+  ctx.strokeStyle = color; ctx.fillStyle = color;
+  ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - hl*Math.cos(a-0.4), y2 - hl*Math.sin(a-0.4));
+  ctx.lineTo(x2 - hl*Math.cos(a+0.4), y2 - hl*Math.sin(a+0.4));
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+function drawLabel(ctx, text, x, y, color, size, align) {
+  ctx.save();
+  ctx.fillStyle = color || '#1A2640';
+  ctx.font = 'bold ' + (size||12) + 'px Inter, sans-serif';
+  ctx.textAlign = align || 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+function drawDashed(ctx, x1, y1, x2, y2, color, lw) {
+  ctx.save();
+  ctx.strokeStyle = color; ctx.lineWidth = lw || 1.5;
+  ctx.setLineDash([6, 4]);
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function rightAngleMark(ctx, cx, cy, sz, dirX, dirY) {
+  ctx.save();
+  ctx.strokeStyle = '#9CA3AF'; ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(cx + dirX*sz, cy);
+  ctx.lineTo(cx + dirX*sz, cy + dirY*sz);
+  ctx.lineTo(cx, cy + dirY*sz);
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* ─── TRIÂNGULO DE IMPEDÂNCIA ─── */
+function desenharZ() {
+  var s = estado;
+  if (!s.Z) return;
+  var c = prepCanvas('c-imp');
+  if (!c) return;
+  var ctx = c.ctx, W = c.W, H = c.H;
+
+  var ml = 90, mr = 160, mt = 36, mb = 44;
+  var dW = W - ml - mr;
+
+  // scY garante que o lado vertical cabe entre origem e borda oposta
+  // indu: origem embaixo, triângulo sobe → precisa de (H-mb-15 - mt-30) de espaço
+  // cap:  origem em cima,  triângulo desce → precisa do mesmo intervalo
+  var avail = H - mb - mt - 45;
+  var scY = Math.abs(s.X) > 0.001 ? avail / Math.abs(s.X) : 999;
+  var scX = dW / Math.max(s.R * 1.3, 1);
+  var sc  = Math.min(scX, scY, 5);
+
+  // origem fixa em função do sentido do triângulo
+  var ox = ml;
+  var oy = s.X >= 0 ? H - mb - 15 : mt + 15;
+
+  var ax = ox + s.R * sc;
+  var ay = oy;
+  var bx = ax;
+  var by = oy - s.X * sc; // X>0 → sobe; X<0 → desce
+
+  // Hipotenusa Z (tracejada)
+  drawDashed(ctx, ox, oy, bx, by, '#1A2640', 2);
+
+  // R (horizontal, teal)
+  drawArrow(ctx, ox, oy, ax, ay, '#007575', 3);
+
+  // X (vertical)
+  if (Math.abs(s.X) > 0.5) {
+    var xColor = s.X > 0 ? '#C8102E' : '#1B2E50';
+    drawArrow(ctx, ax, ay, bx, by, xColor, 3);
+  }
+
+  // Marca de ângulo reto
+  if (Math.abs(s.X) > 0.5) {
+    rightAngleMark(ctx, ax, ay, 9, -1, s.X > 0 ? -1 : 1);
+  }
+
+  // Arco de φ (mínimo 18px para ser visível)
+  if (Math.abs(s.X) > 0.5) {
+    var arcR = Math.max(18, Math.min(32, s.R * sc * 0.3));
+    var endA = -Math.atan2(s.X * sc, s.R * sc);
+    ctx.save();
+    ctx.strokeStyle = '#556070'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    if (s.X > 0) ctx.arc(ox, oy, arcR, 0, endA, true);
+    else          ctx.arc(ox, oy, arcR, 0, endA, false);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // Rótulo R — abaixo do segmento, afastado da origem
+  var rLblY = s.X >= 0 ? oy + 20 : oy - 18;
+  drawLabel(ctx, 'R = ' + fmt(s.R) + ' Ω', (ox + ax) / 2, rLblY, '#007575', 12, 'center');
+
+  // Rótulo X — à direita do segmento vertical
+  if (Math.abs(s.X) > 0.5) {
+    var xLabel = (s.X > 0 ? 'X_L−X_C = ' : 'X_C−X_L = ') + fmt(Math.abs(s.X)) + ' Ω';
+    drawLabel(ctx, xLabel, ax + 10, (ay + by) / 2, s.X > 0 ? '#C8102E' : '#1B2E50', 12, 'left');
+  }
+
+  // Rótulo Z — à esquerda da hipotenusa
+  drawLabel(ctx, 'Z = ' + fmt(s.Z) + ' Ω', (ox + bx) / 2 - 10, (oy + by) / 2, '#1A2640', 12, 'right');
+
+  // Rótulo φ — junto ao arco, sem sobrepor R
+  if (Math.abs(s.X) > 0.5) {
+    var arcR2 = Math.max(18, Math.min(32, s.R * sc * 0.3));
+    var phiLblX = ox + arcR2 + 10;
+    var phiLblY = s.X > 0 ? oy - 22 : oy + 22;
+    drawLabel(ctx, 'φ = ' + (s.phi >= 0 ? '+' : '') + fmt(s.phi, 1) + '°', phiLblX, phiLblY, '#556070', 11, 'left');
+  }
+
+  ctx.fillStyle = '#1A2640';
+  ctx.beginPath(); ctx.arc(ox, oy, 4, 0, 2 * Math.PI); ctx.fill();
+}
+
+/* ─── DIAGRAMA FASORIAL ─── */
+function desenharFasores() {
+  var s = estado;
+  if (!s.Z) return;
+  var c = prepCanvas('c-fas');
+  if (!c) return;
+  var ctx = c.ctx, W = c.W, H = c.H;
+
+  var ml = 90, mr = 160, mt = 36, mb = 44;
+  var dW = W - ml - mr;
+
+  var Vnet = Math.abs(s.VLv - s.VCv);
+  var avail = H - mb - mt - 45;
+  var scY = Vnet > 0.5 ? avail / Vnet : 999;
+  var scX = dW / Math.max(s.VR * 1.3, 1);
+  var sc  = Math.min(scX, scY, 5);
+
+  var ox = ml;
+  var oy = s.X >= 0 ? H - mb - 15 : mt + 15;
+
+  var ax = ox + s.VR  * sc; // tip de V_R
+  var ay = oy;
+  var bx = ax;
+  var by = ay - s.VLv * sc; // tip de V_L (subindo de A)
+  var cx = bx;
+  var cy = by + s.VCv * sc; // tip de V_C (descendo de B) = ponta de V_total
+
+  // Eixo de referência I (tracejado horizontal)
+  drawDashed(ctx, ox, oy, ax + 28, oy, '#9CA3AF', 1.2);
+  drawLabel(ctx, 'I (ref.)', ax + 32, oy, '#9CA3AF', 10, 'left');
+
+  // V_total (tracejado do O ao ponto final)
+  drawDashed(ctx, ox, oy, cx, cy, '#1A2640', 2);
+
+  // V_R
+  drawArrow(ctx, ox, oy, ax, ay, '#007575', 3);
+  drawLabel(ctx, 'V_R = '+fmt(s.VR)+' V', (ox+ax)/2, oy+18, '#007575', 11, 'center');
+
+  // V_L
+  if (s.VLv > 0.5) {
+    drawArrow(ctx, ax, ay, bx, by, '#C8102E', 3);
+    drawLabel(ctx, 'V_L = '+fmt(s.VLv)+' V', ax+8, (ay+by)/2, '#C8102E', 11, 'left');
+  }
+
+  // V_C
+  if (s.VCv > 0.5) {
+    drawArrow(ctx, bx, by, cx, cy, '#1B2E50', 3);
+    drawLabel(ctx, 'V_C = '+fmt(s.VCv)+' V', cx+8, (by+cy)/2, '#1B2E50', 11, 'left');
+  }
+
+  // V rótulo (hipotenusa)
+  drawLabel(ctx, 'V = '+fmt(s.V)+' V', (ox+cx)/2 - 10, (oy+cy)/2 - 8, '#1A2640', 11, 'right');
+
+  // Arco de φ
+  if (Math.abs(cy - oy) > 4) {
+    var arcR = Math.min(28, s.VR * sc * 0.32);
+    var endA = Math.atan2(cy - oy, cx - ox);
+    ctx.save();
+    ctx.strokeStyle = '#556070'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.arc(ox, oy, arcR, 0, endA, endA < 0);
+    ctx.stroke();
+    ctx.restore();
+    drawLabel(ctx, 'φ='+(s.phi>=0?'+':'')+fmt(s.phi,1)+'°',
+      ox + arcR + 6, s.X > 0 ? oy - 12 : oy + 14, '#556070', 10, 'left');
+  }
+
+  // Marca ângulo reto
+  if (Math.abs(s.VLv - s.VCv) > 0.5) {
+    rightAngleMark(ctx, ax, ay, 8, -1, s.X > 0 ? -1 : 1);
+  }
+
+  // Ponto origem
+  ctx.fillStyle = '#1A2640';
+  ctx.beginPath(); ctx.arc(ox, oy, 4, 0, 2*Math.PI); ctx.fill();
+}
+
+/* ─── TRIÂNGULO DE POTÊNCIAS ─── */
+function desenharPotencias() {
+  var s = estado;
+  if (!s.Z) return;
+  var c = prepCanvas('c-pot');
+  if (!c) return;
+  var ctx = c.ctx, W = c.W, H = c.H;
+
+  var ml = 90, mr = 160, mt = 36, mb = 44;
+  var dW = W - ml - mr;
+
+  var avail = H - mb - mt - 45;
+  var scY = Math.abs(s.Q) > 0.5 ? avail / Math.abs(s.Q) : 999;
+  var scX = dW / Math.max(s.P * 1.3, 1);
+  var sc  = Math.min(scX, scY, 5);
+
+  var ox = ml;
+  var oy = s.Q >= 0 ? H - mb - 15 : mt + 15;
+
+  var ax = ox + s.P * sc;
+  var ay = oy;
+  var bx = ax;
+  var by = oy - s.Q * sc;
+
+  // S (tracejada)
+  drawDashed(ctx, ox, oy, bx, by, '#1A2640', 2);
+
+  // P (teal)
+  drawArrow(ctx, ox, oy, ax, ay, '#007575', 3);
+  drawLabel(ctx, 'P = '+fmt(s.P)+' W', (ox+ax)/2, oy+22, '#007575', 12, 'center');
+
+  // Q
+  if (Math.abs(s.Q) > 0.001) {
+    var qColor = s.Q > 0 ? '#C8102E' : '#1B2E50';
+    drawArrow(ctx, ax, ay, bx, by, qColor, 3);
+    drawLabel(ctx, 'Q = '+(s.Q>=0?'+':'')+fmt(s.Q)+' VAr', ax+8, (ay+by)/2, qColor, 12, 'left');
+  }
+
+  // Ângulo reto
+  if (Math.abs(s.Q) > 0.001) {
+    rightAngleMark(ctx, ax, ay, 9, -1, s.Q > 0 ? -1 : 1);
+  }
+
+  // Arco φ
+  if (Math.abs(s.Q) > 0.001) {
+    var arcR = Math.min(28, s.P * sc * 0.32);
+    var endA = -Math.atan2(s.Q * sc, s.P * sc);
+    ctx.save();
+    ctx.strokeStyle = '#556070'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    if (s.Q > 0) ctx.arc(ox, oy, arcR, 0, endA, true);
+    else          ctx.arc(ox, oy, arcR, 0, endA, false);
+    ctx.stroke();
+    ctx.restore();
+    drawLabel(ctx, 'φ='+(s.phi>=0?'+':'')+fmt(s.phi,1)+'°',
+      ox+arcR+6, s.Q>0 ? oy-14 : oy+14, '#556070', 11, 'left');
+  }
+
+  // S rótulo
+  drawLabel(ctx, 'S = '+fmt(s.S)+' VA', (ox+bx)/2-10, (oy+by)/2-8, '#1A2640', 12, 'right');
+
+  // FP
+  drawLabel(ctx, 'FP = '+s.FP.toFixed(4), (ox+ax)/2, oy+36, '#556070', 11, 'center');
+
+  ctx.fillStyle = '#1A2640';
+  ctx.beginPath(); ctx.arc(ox, oy, 4, 0, 2*Math.PI); ctx.fill();
+}
+
+function setTab(id, el) {
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('panel-' + id).classList.add('active');
+  el.classList.add('active');
+  if (id === 'form' && window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([document.getElementById('panel-form')]);
+  }
+  setTimeout(desenharAtivo, 40);
+}
+
+// Inicializar
+atualizar();
+window.addEventListener('resize', function(){
+  clearTimeout(window._rzTimer);
+  window._rzTimer = setTimeout(desenharAtivo, 80);
+});
+</script>
+</body>
+</html>
