@@ -1,0 +1,134 @@
+---
+layout: page
+title: "Sparking"
+---
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:#1B2E50; --teal:#007575; --red:#C8102E;
+      --bg:#ECEEF4; --card:#fff; --text:#1A2640; --sub:#556070; --border:#CDD3E0;
+    }
+    html { background: var(--bg); }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); max-width:860px; margin:0 auto; }
+
+    .hdr { background: var(--navy); padding: 20px 24px 18px; border-bottom: 4px solid var(--red); position:relative; overflow:hidden; }
+    .hdr::before { content:''; position:absolute; top:0; right:0; width:130px; height:100%; background:var(--teal); opacity:.13; clip-path:polygon(40% 0,100% 0,100% 100%,0 100%); }
+    .hdr-tag { display:inline-block; background:var(--teal); color:#fff; font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:20px; margin-bottom:8px; }
+    .hdr h1 { font-size:22px; font-weight:900; color:#fff; letter-spacing:-.3px; }
+    .hdr p  { font-size:13px; color:rgba(255,255,255,.6); margin-top:4px; }
+
+    .wrap { max-width:860px; margin:0 auto; padding:16px 16px 40px; }
+
+    .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:10px; }
+
+    .card { background:var(--card); border-radius:12px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,.08); display:flex; flex-direction:column; gap:10px; text-decoration:none; color:inherit; transition:transform .15s, box-shadow .15s; }
+    .card:hover { transform:translateY(-2px); box-shadow:0 4px 14px rgba(0,0,0,.12); }
+    .card.hidden { display:none; }
+
+    .c-ico { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .c-ico svg { width:22px; height:22px; }
+
+    .c-tag { align-self:flex-start; font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:2px 8px; border-radius:6px; }
+    .tag-ai   { background:#dbeafe; color:#1e3a8a; }
+    .tag-calc { background:#d1fae5; color:#064e3b; }
+    .tag-guide{ background:#fef3c7; color:#78350f; }
+
+    .card h2 { font-size:14px; font-weight:800; line-height:1.25; }
+    .card p  { font-size:12px; color:var(--sub); line-height:1.45; flex:1; }
+    .c-btn { align-self:flex-start; font-size:12px; font-weight:700; color:var(--navy); background:var(--bg); border:1.5px solid var(--border); padding:6px 14px; border-radius:7px; }
+
+    .filters { display:flex; gap:7px; margin-bottom:14px; overflow-x:auto; scrollbar-width:none; }
+    .filters::-webkit-scrollbar { display:none; }
+    .filters button { white-space:nowrap; border:none; background:var(--bg); color:var(--sub); padding:6px 14px; border-radius:16px; font-size:12.5px; font-weight:500; cursor:pointer; border:1.5px solid var(--border); transition:background .12s, color .12s; }
+    .filters button.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+  </style>
+
+
+<div class="hdr">
+  <div class="hdr-tag">Sparking</div>
+  <h1>Ferramentas para a sua aula</h1>
+  <p>Escolha uma ferramenta e veja o que ela pode fazer por você</p>
+</div>
+
+<div class="wrap">
+  <div class="filters">
+    <button class="active" onclick="filtrar('todos',this)">Todos</button>
+    <button onclick="filtrar('ia',this)">Assistentes de IA</button>
+    <button onclick="filtrar('calc',this)">Cálculo</button>
+    <button onclick="filtrar('guide',this)">Guias</button>
+  </div>
+
+  <div class="grid" id="grid">
+
+    <a href="pages/claude.html" class="card" data-cat="ia">
+      <div class="c-ico" style="background:linear-gradient(135deg,#0d3d6b,#1565c0);">
+        <svg viewBox="0 0 22 22" fill="none"><rect x="2" y="4" width="18" height="11" rx="3" stroke="white" stroke-width="1.8" fill="white" fill-opacity=".12"/><circle cx="7" cy="9.5" r="1.5" fill="white"/><circle cx="11" cy="9.5" r="1.5" fill="white"/><circle cx="15" cy="9.5" r="1.5" fill="white"/><path d="M4 15 L4 19 L9 15" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="c-tag tag-ai">Assistente de IA</span>
+      <h2>Claude</h2>
+      <p>Responde, cria exercícios, corrige provas e redige textos por conversa.</p>
+      <span class="c-btn">Ver mais</span>
+    </a>
+
+    <a href="pages/notebooklm.html" class="card" data-cat="ia">
+      <div class="c-ico" style="background:linear-gradient(135deg,#3b1066,#6d28d9);">
+        <svg viewBox="0 0 22 22" fill="none"><rect x="4" y="2" width="11" height="15" rx="2" stroke="white" stroke-width="1.8" fill="white" fill-opacity=".12"/><line x1="4" y1="6" x2="15" y2="6" stroke="white" stroke-width="1.2" stroke-opacity=".5"/><rect x="6.5" y="8.5" width="7" height="1.5" rx=".75" fill="white" fill-opacity=".8"/><rect x="6.5" y="11" width="5" height="1.5" rx=".75" fill="white" fill-opacity=".8"/><circle cx="17" cy="17" r="4" fill="white" fill-opacity=".15" stroke="white" stroke-width="1.8"/><path d="M15.2 17 L16.5 18.3 L18.8 15.8" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="c-tag tag-ai">Assistente de IA</span>
+      <h2>NotebookLM</h2>
+      <p>Sobe suas apostilas e consulta por pergunta. Indica a fonte de cada resposta.</p>
+      <span class="c-btn">Ver mais</span>
+    </a>
+
+    <a href="pages/circuitlab.html" class="card" data-cat="guide">
+      <div class="c-ico" style="background:linear-gradient(135deg,#1a3a1a,#2d6a2d);">
+        <svg viewBox="0 0 22 22" fill="none"><rect x="2" y="8" width="4" height="6" rx="1" stroke="white" stroke-width="1.6" fill="white" fill-opacity=".12"/><rect x="16" y="8" width="4" height="6" rx="1" stroke="white" stroke-width="1.6" fill="white" fill-opacity=".12"/><line x1="6" y1="11" x2="9" y2="11" stroke="white" stroke-width="1.6"/><line x1="13" y1="11" x2="16" y2="11" stroke="white" stroke-width="1.6"/><line x1="9" y1="7" x2="9" y2="15" stroke="white" stroke-width="1.6"/><line x1="13" y1="7" x2="13" y2="15" stroke="white" stroke-width="1.6"/><line x1="9" y1="11" x2="13" y2="11" stroke="white" stroke-width="1.6"/></svg>
+      </div>
+      <span class="c-tag tag-guide">Guia</span>
+      <h2>Desenhador de Circuitos</h2>
+      <p>Monte esquemas prontos para exercícios e provas, sem instalar nada.</p>
+      <span class="c-btn">Ver mais</span>
+    </a>
+
+    <a href="pages/gerador-exercicio.html" class="card" data-cat="calc">
+      <div class="c-ico" style="background:linear-gradient(135deg,#1B2E50,#007575);">
+        <svg viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="12" rx="2" stroke="white" stroke-width="1.8" fill="white" fill-opacity=".1"/><line x1="7" y1="8" x2="15" y2="8" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="11" x2="12" y2="11" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M6 17 L11 17 L13 19 L15 17 L16 17" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+      </div>
+      <span class="c-tag tag-calc">Gerador</span>
+      <h2>Gerador de Exercício</h2>
+      <p>Foto do circuito → enunciado e perguntas prontas para prova.</p>
+      <span class="c-btn">Abrir</span>
+    </a>
+
+    <a href="graficos.html" class="card" data-cat="calc">
+      <div class="c-ico" style="background:linear-gradient(135deg,#004040,#007575);">
+        <svg viewBox="0 0 22 22" fill="none"><line x1="2" y1="19" x2="20" y2="19" stroke="white" stroke-width="1.5" stroke-opacity=".4"/><line x1="2" y1="19" x2="2" y2="3" stroke="white" stroke-width="1.5" stroke-opacity=".4"/><circle cx="6" cy="15" r="2" fill="white" fill-opacity=".8"/><circle cx="10" cy="10" r="2" fill="white" fill-opacity=".8"/><circle cx="15" cy="6" r="2" fill="white" fill-opacity=".8"/><circle cx="17" cy="13" r="2" fill="white" fill-opacity=".5"/></svg>
+      </div>
+      <span class="c-tag tag-calc">Experimento</span>
+      <h2>Gráfico de Experimento</h2>
+      <p>Registre medições ao vivo. Escolha a fórmula, fixe condições e plote os pontos.</p>
+      <span class="c-btn">Abrir</span>
+    </a>
+
+    <a href="pages/ferramentas.html" class="card" data-cat="calc">
+      <div class="c-ico" style="background:linear-gradient(135deg,#004040,#007575);">
+        <svg viewBox="0 0 22 22" fill="none"><line x1="2" y1="19" x2="20" y2="19" stroke="white" stroke-width="1.5" stroke-opacity=".4"/><line x1="2" y1="19" x2="2" y2="3" stroke="white" stroke-width="1.5" stroke-opacity=".4"/><path d="M2 16 L6 16 L6 7" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".6"/><path d="M6 7 Q10 7 12 12 Q14 17 17 18 Q19 19 20 19" stroke="white" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </div>
+      <span class="c-tag tag-calc">Ferramentas de Cálculo</span>
+      <h2>Ferramentas de Cálculo</h2>
+      <p>15 ferramentas interativas por disciplina. Gráficos ao vivo com aba de experimento.</p>
+      <span class="c-btn">Ver mais</span>
+    </a>
+
+  </div>
+</div>
+
+<script>
+  function filtrar(cat, btn) {
+    document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.card').forEach(c => {
+      c.classList.toggle('hidden', cat !== 'todos' && c.dataset.cat !== cat);
+    });
+  }
+</script>

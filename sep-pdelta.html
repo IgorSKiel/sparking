@@ -1,0 +1,224 @@
+---
+layout: tool
+title: "SEP — Estabilidade e Curto"
+tool_id: sep
+render_with_liquid: false
+---
+<div class="hdr">
+  <div class="hdr-tag">Sparking · SEP</div>
+  <h1>Sistemas Elétricos de Potência</h1>
+  <p>P-δ (estabilidade) e corrente de curto por distância</p>
+</div>
+<div class="wrap">
+
+<div class="tabs">
+  <button class="tab active" onclick="setTab('pdelta',this)">P-δ (Estabilidade)</button>
+  <button class="tab" onclick="setTab('icc',this)">I<sub>cc</sub> × Distância</button>
+  <button class="tab" onclick="setTab('form',this)">Fórmulas</button>
+</div>
+
+<!-- P-DELTA -->
+<div id="panel-pdelta" class="panel active">
+  <div class="insight"><span class="insight-icon">⚡</span><span id="ins-pdelta">Aumente δ além de 90° e o sistema perde estabilidade. P<sub>max</sub> = V<sub>S</sub>·V<sub>R</sub>/X.</span></div>
+  <div class="main-grid">
+    <div class="card">
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="setSubPanel('pdelta','teo',this)">Teórico</button>
+        <button class="sub-tab" onclick="setSubPanel('pdelta','exp',this)">Experimento</button>
+      </div>
+      <div id="sp-pdelta-teo" class="sub-panel active">
+        <div class="card-lbl">Sistema</div>
+        <div class="field"><label>V<sub>S</sub> — tensão da fonte (pu)</label><input id="pd_VS" type="number" value="1.0" step="0.05" oninput="calcPdelta()"></div>
+        <div class="field"><label>V<sub>R</sub> — tensão da carga (pu)</label><input id="pd_VR" type="number" value="1.0" step="0.05" oninput="calcPdelta()"></div>
+        <div class="field"><label>X — reatância total (pu)</label><input id="pd_X" type="number" value="0.5" step="0.05" oninput="calcPdelta()"></div>
+        <div class="field"><label>δ operação (°)</label><input id="pd_delta" type="number" value="30" step="5" oninput="calcPdelta()"></div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-val" id="pd_Pmax">—</div><div class="kpi-lbl">P<sub>max</sub> (pu)</div></div>
+          <div class="kpi"><div class="kpi-val" id="pd_P">—</div><div class="kpi-lbl">P em δ op. (pu)</div></div>
+          <div class="kpi"><div class="kpi-val" id="pd_margin">—</div><div class="kpi-lbl">Margem de estab. (°)</div></div>
+        </div>
+      </div>
+      <div id="sp-pdelta-exp" class="sub-panel">
+        <div class="exp-col-hint">δ (°) · P medido (pu)</div>
+        <div class="exp-tbl-wrap">
+          <table class="exp-tbl">
+            <thead><tr><th>δ (°)</th><th>P (pu)</th><th></th></tr></thead>
+            <tbody id="exp-tbody-pdelta"></tbody>
+          </table>
+        </div>
+        <div class="exp-foot">
+          <button class="btn-add" onclick="addExpRow('pdelta')">+ Linha</button>
+          <button class="btn-clr" onclick="clearExp('pdelta')">Limpar</button>
+        </div>
+      </div>
+    </div>
+    <div class="card chart-card">
+      <div class="chart-title">Potência Ativa × Ângulo de Carga δ</div>
+      <div class="chart-wrap"><canvas id="chart-pdelta"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ICC × DIST -->
+<div id="panel-icc" class="panel">
+  <div class="insight"><span class="insight-icon">⚡</span><span id="ins-icc">Falta perto da subestação: corrente maior, tempo de atuação mais crítico.</span></div>
+  <div class="main-grid">
+    <div class="card">
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="setSubPanel('icc','teo',this)">Teórico</button>
+        <button class="sub-tab" onclick="setSubPanel('icc','exp',this)">Experimento</button>
+      </div>
+      <div id="sp-icc-teo" class="sub-panel active">
+        <div class="card-lbl">Sistema</div>
+        <div class="field"><label>V<sub>F</sub> — tensão linha-linha (kV)</label><input id="icc_VF" type="number" value="13.8" step="0.1" oninput="calcIcc()"></div>
+        <div class="field"><label>R fonte (mΩ)</label><input id="icc_Rs" type="number" value="50" step="5" oninput="calcIcc()"></div>
+        <div class="field"><label>X fonte (mΩ)</label><input id="icc_Xs" type="number" value="200" step="10" oninput="calcIcc()"></div>
+        <div class="field"><label>r linha (Ω/km)</label><input id="icc_r" type="number" value="0.30" step="0.01" oninput="calcIcc()"></div>
+        <div class="field"><label>x linha (Ω/km)</label><input id="icc_x" type="number" value="0.30" step="0.01" oninput="calcIcc()"></div>
+        <div class="field"><label>Dist. máx. (km)</label><input id="icc_dmax" type="number" value="30" step="1" oninput="calcIcc()"></div>
+        <div class="kpi-row">
+          <div class="kpi red"><div class="kpi-val" id="icc_I3_0">—</div><div class="kpi-lbl">I<sub>cc</sub>3φ em 0 km (kA)</div></div>
+          <div class="kpi"><div class="kpi-val" id="icc_I3_end">—</div><div class="kpi-lbl">I<sub>cc</sub>3φ fim da linha (kA)</div></div>
+        </div>
+      </div>
+      <div id="sp-icc-exp" class="sub-panel">
+        <div class="exp-col-hint">Distância (km) · I<sub>cc</sub> medido (kA)</div>
+        <div class="exp-tbl-wrap">
+          <table class="exp-tbl">
+            <thead><tr><th>d (km)</th><th>I (kA)</th><th></th></tr></thead>
+            <tbody id="exp-tbody-icc"></tbody>
+          </table>
+        </div>
+        <div class="exp-foot">
+          <button class="btn-add" onclick="addExpRow('icc')">+ Linha</button>
+          <button class="btn-clr" onclick="clearExp('icc')">Limpar</button>
+        </div>
+      </div>
+    </div>
+    <div class="card chart-card">
+      <div class="chart-title">Corrente de Curto × Distância</div>
+      <div class="chart-wrap"><canvas id="chart-icc"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-form" class="panel"></div><!-- /panel-form -->
+
+</div>
+<script>
+var expState={pdelta:[],icc:[]};
+var charts={};
+var _deb;
+
+function gv(id){return parseFloat(document.getElementById(id)?.value);}
+function sv(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+function fmN(v){if(Math.abs(v)>=100)return v.toFixed(1);if(Math.abs(v)>=1)return v.toFixed(3);return v.toPrecision(3);}
+function rRct(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
+function makeCrosshair(xLabel,yLabel){return{id:'crosshair',afterInit:function(c){c._chX=null;c.canvas.addEventListener('mousemove',function(e){var r=c.canvas.getBoundingClientRect();c._chX=e.clientX-r.left;c.draw();});c.canvas.addEventListener('mouseleave',function(){c._chX=null;c.draw();});},afterDraw:function(c){var mx=c._chX;if(mx==null)return;var ctx=c.ctx,ca=c.chartArea;if(mx<ca.left||mx>ca.right)return;var xv=c.scales.x.getValueForPixel(mx);ctx.save();ctx.beginPath();ctx.moveTo(mx,ca.top);ctx.lineTo(mx,ca.bottom);ctx.strokeStyle='rgba(27,46,80,.35)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);var vals=[];c.data.datasets.forEach(function(ds){if(ds.type==='scatter')return;var pts=ds.data,lo=null,hi=null;for(var j=0;j<pts.length-1;j++){if(pts[j].x<=xv&&pts[j+1].x>=xv){lo=pts[j];hi=pts[j+1];break;}}if(!lo)return;var t=hi.x===lo.x?0:(xv-lo.x)/(hi.x-lo.x);var yv=lo.y+t*(hi.y-lo.y);var yp=c.scales.y.getPixelForValue(yv);ctx.beginPath();ctx.arc(mx,yp,4,0,2*Math.PI);ctx.fillStyle=ds.borderColor;ctx.fill();vals.push({label:ds.label,y:yv,color:ds.borderColor});});if(!vals.length){ctx.restore();return;}var pad=9,lh=18;ctx.font='600 12px Inter,sans-serif';var lines=[xLabel+': '+fmN(xv)].concat(vals.map(function(v){return v.label+': '+fmN(v.y)+' '+yLabel;}));var mw=Math.max.apply(null,lines.map(function(l){return ctx.measureText(l).width;}));var bw=mw+pad*2,bh=lines.length*lh+pad*2-2,bx=mx+14;if(bx+bw>ca.right-4)bx=mx-bw-14;ctx.fillStyle='rgba(255,255,255,.96)';ctx.strokeStyle='#CDD3E0';ctx.lineWidth=1;rRct(ctx,bx,ca.top+8,bw,bh,7);ctx.fill();ctx.stroke();lines.forEach(function(line,i){ctx.fillStyle=i===0?'#556070':vals[i-1].color;ctx.font=i===0?'12px Inter,sans-serif':'700 12px Inter,sans-serif';ctx.fillText(line,bx+pad,ca.top+8+pad+i*lh+12);});ctx.restore();}};}
+
+function isExpActive(pid){
+  return !!document.getElementById('sp-'+pid+'-exp')?.classList.contains('active');
+}
+
+function calcPdelta(){
+  var VS=gv('pd_VS'),VR=gv('pd_VR'),X=gv('pd_X'),d_op=gv('pd_delta');
+  if(!VS||!VR||!X)return;
+  var Pmax=VS*VR/X;
+  var P_op=Pmax*Math.sin(d_op*Math.PI/180);
+  var margin=90-d_op;
+  sv('pd_Pmax',Pmax.toFixed(3));sv('pd_P',P_op.toFixed(3));sv('pd_margin',margin.toFixed(1));
+  document.getElementById('ins-pdelta').textContent='Pmax = '+Pmax.toFixed(3)+' pu em δ = 90°. Ponto de operação: δ = '+d_op+'°, P = '+P_op.toFixed(3)+' pu. Margem de estabilidade: '+margin.toFixed(1)+'°.';
+
+  var datasets=[];
+  if(!isExpActive('pdelta')){
+    var N=180;var ptsP=[];
+    for(var i=0;i<=N;i++){
+      var d=i;
+      ptsP.push({x:d,y:+(Pmax*Math.sin(d*Math.PI/180)).toFixed(4)});
+    }
+    datasets=[
+      {label:'P (pu)',data:ptsP,borderColor:'#007575',backgroundColor:'#00757515',borderWidth:2.5,pointRadius:0,tension:0,fill:true},
+      {type:'scatter',label:'Operação',data:[{x:d_op,y:+P_op.toFixed(4)}],borderColor:'#C8102E',backgroundColor:'#C8102E',pointRadius:9}
+    ];
+    showStats('pdelta',null);
+  } else {
+    var ep=getExpPts('pdelta');
+    if(ep){datasets.push({type:'scatter',label:'Medido',data:ep,borderColor:'#F0A500',backgroundColor:'#F0A50099',pointRadius:3,pointHoverRadius:5,showLine:true,borderWidth:2});const _rg_1=regDataset(ep,ep.reduce((a,p)=>Math.min(a,p.x),Infinity),ep.reduce((a,p)=>Math.max(a,p.x),-Infinity));if(_rg_1)datasets.push(_rg_1);showStats('pdelta',ep);}
+    else{showStats('pdelta',null);}
+  }
+
+  var ctx=document.getElementById('chart-pdelta').getContext('2d');
+  if(charts.pdelta)charts.pdelta.destroy();
+  charts.pdelta=new Chart(ctx,{type:'line',plugins:[makeCrosshair('δ (°)','pu')],data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:true,position:'top',labels:{font:{size:13,family:'Inter',weight:'600'},color:'#556070',usePointStyle:true,pointStyleWidth:10}},tooltip:{enabled:false}},scales:{x:{type:'linear',min:0,max:180,ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'δ (°)',color:'#556070',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}},y:{type:'linear',min:+(-Pmax*0.1).toFixed(2),max:+(Pmax*1.15).toFixed(2),ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'P (pu)',color:'#556070',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}}}}});
+}
+
+function calcIcc(){
+  var VF_kV=gv('icc_VF'),Rs_mO=gv('icc_Rs'),Xs_mO=gv('icc_Xs'),r=gv('icc_r'),x=gv('icc_x'),dmax=gv('icc_dmax');
+  if(!VF_kV||!r||!dmax)return;
+  var VLN=VF_kV*1000/Math.sqrt(3);
+  var Rs=Rs_mO/1000,Xs=Xs_mO/1000;
+  var N=200;var pts3=[];
+  for(var i=0;i<=N;i++){
+    var d=i*dmax/N;
+    var Ztot=Math.sqrt((Rs+r*d)*(Rs+r*d)+(Xs+x*d)*(Xs+x*d));
+    var I3=VLN/Ztot/1000;
+    pts3.push({x:+d.toFixed(2),y:+I3.toFixed(4)});
+  }
+  var I3_0=pts3[0].y;var I3_end=pts3[pts3.length-1].y;
+  sv('icc_I3_0',I3_0.toFixed(2));sv('icc_I3_end',I3_end.toFixed(2));
+  document.getElementById('ins-icc').textContent='Icc3φ na subestação (d=0): '+I3_0.toFixed(2)+' kA. No fim da linha ('+dmax+' km): '+I3_end.toFixed(2)+' kA. Falta próxima é sempre mais severa.';
+
+  var datasets=[];
+  if(!isExpActive('icc')){
+    datasets=[{label:'Icc3φ (kA)',data:pts3,borderColor:'#C8102E',backgroundColor:'#C8102E12',borderWidth:2.5,pointRadius:0,tension:0.1,fill:true}];
+    showStats('pdelta',null);
+  } else {
+    var ep=getExpPts('icc');
+    if(ep){datasets.push({type:'scatter',label:'Medido',data:ep,borderColor:'#F0A500',backgroundColor:'#F0A50099',pointRadius:3,pointHoverRadius:5,showLine:true,borderWidth:2});const _rg_1=regDataset(ep,ep.reduce((a,p)=>Math.min(a,p.x),Infinity),ep.reduce((a,p)=>Math.max(a,p.x),-Infinity));if(_rg_1)datasets.push(_rg_1);showStats('pdelta',ep);}
+    else{showStats('pdelta',null);}
+  }
+
+  var ctx=document.getElementById('chart-icc').getContext('2d');
+  if(charts.icc)charts.icc.destroy();
+  charts.icc=new Chart(ctx,{type:'line',plugins:[makeCrosshair('d (km)','kA')],data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:true,position:'top',labels:{font:{size:13,family:'Inter',weight:'600'},color:'#556070',usePointStyle:true,pointStyleWidth:10}},tooltip:{enabled:false}},scales:{x:{type:'linear',min:0,max:dmax,ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'Distância (km)',color:'#556070',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}},y:{type:'linear',min:0,ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'Icc (kA)',color:'#556070',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}}}}});
+}
+
+function addExpRow(pid){expState[pid].push({id:Date.now()+Math.random(),x:NaN,y:NaN});renderExpTable(pid);}
+function delExpRow(pid,id){expState[pid]=expState[pid].filter(function(r){return r.id!==id;});renderExpTable(pid);pid==='pdelta'?calcPdelta():calcIcc();}
+function clearExp(pid){expState[pid]=[];renderExpTable(pid);pid==='pdelta'?calcPdelta():calcIcc();}
+function renderExpTable(pid){
+  var tbody=document.getElementById('exp-tbody-'+pid);tbody.innerHTML='';
+  expState[pid].forEach(function(row){
+    var tr=document.createElement('tr');
+    ['x','y'].forEach(function(k){
+      var td=document.createElement('td'),inp=document.createElement('input');
+      inp.type='number';inp.step='any';if(!isNaN(row[k]))inp.value=row[k];
+      inp.oninput=function(e){row[k]=parseFloat(e.target.value);pid==='pdelta'?calcPdelta():calcIcc();};
+      td.appendChild(inp);tr.appendChild(td);
+    });
+    var tdD=document.createElement('td'),btn=document.createElement('button');
+    btn.className='exp-del';btn.textContent='✕';btn.onclick=function(){delExpRow(pid,row.id);};
+    tdD.appendChild(btn);tr.appendChild(tdD);tbody.appendChild(tr);
+  });
+}
+function getExpPts(pid){
+  var pts=expState[pid].map(function(r){return{x:r.x,y:r.y};}).filter(function(p){return!isNaN(p.x)&&!isNaN(p.y)&&isFinite(p.x)&&isFinite(p.y);});
+  return pts.length?pts:null;
+}
+function setSubPanel(pid,spid,btn){
+  var panel=document.getElementById('panel-'+pid);
+  panel.querySelectorAll('.sub-panel').forEach(function(p){p.classList.remove('active');});
+  panel.querySelectorAll('.sub-tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('sp-'+pid+'-'+spid).classList.add('active');btn.classList.add('active');
+  if(spid==='exp'&&expState[pid].length===0)addExpRow(pid);
+  pid==='pdelta'?calcPdelta():calcIcc();
+}
+function setTab(id,el){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');
+  setTimeout(function(){if(id!=='form'){id==='pdelta'?calcPdelta():calcIcc();}},40);
+}
+calcPdelta();calcIcc();
+
+</script>

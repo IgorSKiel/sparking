@@ -1,337 +1,58 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Eletrotécnica I — DC</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script>MathJax={tex:{displayMath:[['\\[','\\]']],inlineMath:[['\\(','\\)']],tags:'none'},chtml:{scale:1.15}}</script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<style>
-:root{
-  --bg:#F0F2F5;
-  --card:#FFFFFF;
-  --surf2:#F7F8FA;
-  --border:#E4E6EA;
-  --text:#1C1E21;
-  --sub:#65676B;
-  --ac:#1877F2;
-  --ac-light:#E7F0FE;
-  --ac2:#00A884;
-  --ac3:#F0A500;
-  --shadow:0 1px 4px rgba(0,0,0,.10),0 0 0 1px rgba(0,0,0,.04);
-  --shadow-md:0 2px 12px rgba(0,0,0,.12);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Inter',system-ui,sans-serif;
-  padding:16px 16px 32px;
-  max-width:860px;
-  margin:0 auto;
-  font-size:15px;
-}
-
-/* HEADER */
-.hdr{
-  background:var(--ac);
-  border-radius:16px;
-  padding:18px 20px 16px;
-  margin-bottom:14px;
-  color:#fff;
-}
-.hdr h1{font-size:1.5rem;font-weight:800;letter-spacing:-.3px;line-height:1.2;}
-.hdr p{font-size:.88rem;opacity:.85;margin-top:4px;font-weight:500;}
-
-/* TABS */
-.tabs{
-  display:flex;
-  gap:8px;
-  margin-bottom:14px;
-  overflow-x:auto;
-  scrollbar-width:none;
-  padding-bottom:2px;
-}
-.tabs::-webkit-scrollbar{display:none;}
-.tab{
-  padding:10px 20px;
-  font-size:.92rem;
-  font-weight:700;
-  border:2px solid var(--border);
-  background:var(--card);
-  border-radius:24px;
-  cursor:pointer;
-  color:var(--sub);
-  white-space:nowrap;
-  font-family:inherit;
-  transition:all .15s;
-}
-.tab.active{
-  background:var(--ac);
-  color:#fff;
-  border-color:var(--ac);
-  box-shadow:0 2px 8px rgba(24,119,242,.30);
-}
-.tab:hover:not(.active){
-  border-color:var(--ac);
-  color:var(--ac);
-  background:var(--ac-light);
-}
-.panel{display:none;}
-.panel.active{display:block;}
-
-/* GRID */
-.main-grid{
-  display:grid;
-  grid-template-columns:200px 1fr;
-  gap:12px;
-  margin-bottom:12px;
-}
-@media(max-width:600px){.main-grid{grid-template-columns:1fr;}}
-
-/* CARD */
-.card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:18px;
-  box-shadow:var(--shadow);
-}
-.card-lbl{
-  font-size:.8rem;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  color:var(--ac);
-  margin-bottom:14px;
-}
-
-/* FIELDS */
-.field{margin-bottom:12px;}
-.field label{
-  display:block;
-  font-size:.82rem;
-  font-weight:700;
-  color:var(--text);
-  margin-bottom:5px;
-}
-.field .hint{
-  font-size:.75rem;
-  color:var(--sub);
-  margin-bottom:4px;
-  font-weight:500;
-}
-.field input,.field select{
-  width:100%;
-  background:#fff;
-  border:2px solid var(--border);
-  border-radius:10px;
-  padding:10px 12px;
-  font-size:1rem;
-  font-weight:600;
-  color:var(--text);
-  font-family:inherit;
-  outline:none;
-  transition:border-color .15s;
-}
-.field input:focus,.field select:focus{border-color:var(--ac);}
-
-/* KPIs */
-.kpi-row{
-  border-top:1px solid var(--border);
-  margin-top:14px;
-  padding-top:14px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.kpi{
-  background:var(--ac-light);
-  border-radius:10px;
-  padding:10px 12px;
-  text-align:center;
-}
-.kpi-val{
-  font-size:1.5rem;
-  font-weight:800;
-  color:var(--ac);
-  line-height:1.1;
-  letter-spacing:-.3px;
-}
-.kpi-lbl{
-  font-size:.72rem;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  color:var(--sub);
-  margin-top:3px;
-}
-
-/* CHART */
-.chart-card{display:flex;flex-direction:column;}
-.chart-title{
-  font-size:.85rem;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.07em;
-  color:var(--sub);
-  margin-bottom:12px;
-}
-.chart-wrap{position:relative;height:240px;}
-
-/* FÓRMULAS */
-.formula-section{margin-bottom:12px;}
-.formula-section-lbl{
-  font-size:.8rem;
-  font-weight:800;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  color:var(--sub);
-  margin-bottom:10px;
-}
-.formula-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-@media(min-width:800px){.formula-grid{grid-template-columns:repeat(3,1fr);}}
-@media(max-width:460px){.formula-grid{grid-template-columns:1fr;}}
-.fblock{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-left:4px solid var(--ac);
-  border-radius:0 12px 12px 0;
-  padding:14px 16px;
-  box-shadow:var(--shadow);
-}
-.fblock.b2{border-left-color:var(--ac2);}
-.fblock.b3{border-left-color:var(--ac3);}
-.fblock-title{
-  font-size:.8rem;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.05em;
-  color:var(--text);
-  margin-bottom:10px;
-}
-.fmath{color:var(--text);overflow-x:auto;line-height:1.4;}
-.fvars{font-size:.76rem;color:var(--sub);line-height:1.8;margin-top:6px;font-weight:500;}
-
-/* EXPERIMENTAL */
-.exp-bar{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  overflow:hidden;
-  box-shadow:var(--shadow);
-}
-.exp-toggle{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 18px;
-  cursor:pointer;
-  font-size:.88rem;
-  font-weight:700;
-  color:var(--text);
-  user-select:none;
-}
-.exp-toggle:hover{background:var(--surf2);}
-.exp-body{display:none;padding:14px 18px;border-top:1px solid var(--border);}
-.exp-body.open{display:block;}
-.exp-body p{font-size:.82rem;color:var(--sub);margin-bottom:8px;font-weight:500;}
-.exp-body textarea{
-  width:100%;
-  background:var(--surf2);
-  border:2px solid var(--border);
-  border-radius:8px;
-  padding:10px;
-  font-size:.85rem;
-  font-family:'Courier New',monospace;
-  height:80px;
-  outline:none;
-  resize:vertical;
-  color:var(--text);
-}
-.exp-body textarea:focus{border-color:var(--ac);}
-.btn-row{display:flex;gap:8px;margin-top:10px;}
-.btn-p{
-  background:var(--ac);
-  color:#fff;
-  border:none;
-  border-radius:8px;
-  padding:10px 20px;
-  font-size:.9rem;
-  font-weight:700;
-  font-family:inherit;
-  cursor:pointer;
-}
-.btn-p:hover{background:#1565C0;}
-.btn-c{
-  background:transparent;
-  color:var(--sub);
-  border:2px solid var(--border);
-  border-radius:8px;
-  padding:10px 16px;
-  font-size:.9rem;
-  font-family:inherit;
-  cursor:pointer;
-  font-weight:600;
-}
-.btn-c:hover{border-color:var(--ac);color:var(--ac);}
-</style>
-</head>
-<body>
+---
+layout: tool
+title: "Eletrotécnica I — DC"
+tool_id: eletrot1
+mathjax: true
+render_with_liquid: false
+---
 
 <div class="hdr">
+  <div class="hdr-tag">Sparking</div>
   <h1>Eletrotécnica I</h1>
-  <p>Circuitos DC — curvas interativas</p>
+  <p>Calcule e visualize corrente, tensão e potência em circuitos de corrente contínua</p>
 </div>
 
 <div class="tabs">
-  <button class="tab active" onclick="setPanel('ohm',this)">⚡ Lei de Ohm</button>
-  <button class="tab" onclick="setPanel('pot',this)">🔥 Potência</button>
-  <button class="tab" onclick="setPanel('div',this)">÷ Divisor V.</button>
-  <button class="tab" onclick="setPanel('mp',this)">↑ P. Máxima</button>
+  <button class="tab active" onclick="setPanel('ohm',this)">Lei de Ohm</button>
+  <button class="tab" onclick="setPanel('pot',this)">Potência</button>
+  <button class="tab" onclick="setPanel('div',this)">Divisor de Tensão</button>
+  <button class="tab" onclick="setPanel('mp',this)">Potência Máxima</button>
+  <button class="tab" onclick="setPanel('form',this)">Fórmulas</button>
 </div>
 
 <!-- OHM -->
 <div id="panel-ohm" class="panel active">
   <div class="main-grid">
     <div class="card">
-      <div class="card-lbl">Ajuste</div>
-      <div class="field"><label>Resistência (Ω)</label><input id="ohm_R" type="number" value="100" min="0.1" oninput="calc('ohm')"></div>
-      <div class="field"><label>Tensão máxima (V)</label><div class="hint">limite do eixo X</div><input id="ohm_Vmax" type="number" value="24" oninput="calc('ohm')"></div>
-      <div class="kpi-row">
-        <div class="kpi"><div class="kpi-val" id="ohm_sl">—</div><div class="kpi-lbl">1/R (A/V)</div></div>
-        <div class="kpi"><div class="kpi-val" id="ohm_imax">—</div><div class="kpi-lbl">I em V_max</div></div>
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="setSubPanel('ohm','teo',this)">Teórico</button>
+        <button class="sub-tab" onclick="setSubPanel('ohm','exp',this)">Experimento</button>
+      </div>
+      <div id="sp-ohm-teo" class="sub-panel active">
+        <div class="card-lbl">Ajuste</div>
+        <div class="field"><label>Resistência (Ω)</label><input id="ohm_R" type="number" value="100" min="0.1" oninput="calc('ohm')"></div>
+        <div class="field"><label>Tensão máxima (V)</label><div class="hint">limite do eixo X</div><input id="ohm_Vmax" type="number" value="24" oninput="calc('ohm')"></div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-val" id="ohm_sl">—</div><div class="kpi-lbl">Inclinação 1/R (A/V)</div></div>
+          <div class="kpi"><div class="kpi-val" id="ohm_imax">—</div><div class="kpi-lbl">I em V<sub>max</sub></div></div>
+        </div>
+      </div>
+      <div id="sp-ohm-exp" class="sub-panel">
+        <div class="exp-tbl-wrap">
+          <table class="exp-tbl">
+            <thead><tr><th>V (V)</th><th>I (A)</th><th></th></tr></thead>
+            <tbody id="exp-tbody-ohm"></tbody>
+          </table>
+        </div>
+        <div class="exp-foot">
+          <button class="btn-add" onclick="addExpRow('ohm')">+ Linha</button>
+          <button class="btn-clr" onclick="clearExp('ohm')">Limpar</button>
+        </div>
       </div>
     </div>
     <div class="card chart-card">
       <div class="chart-title">Corrente × Tensão</div>
       <div class="chart-wrap"><canvas id="chart-ohm"></canvas></div>
-    </div>
-  </div>
-  <div class="formula-section">
-    <div class="formula-section-lbl">Fórmulas</div>
-    <div class="formula-grid">
-      <div class="fblock">
-        <div class="fblock-title">Lei de Ohm</div>
-        <div class="fmath">\[ I = \frac{V}{R} \]</div>
-        <div class="fvars">\(V\) tensão (V) · \(R\) resistência (Ω) · \(I\) corrente (A)</div>
-      </div>
-      <div class="fblock b2">
-        <div class="fblock-title">Por que é uma reta</div>
-        <div class="fmath">\[ \frac{dI}{dV} = \frac{1}{R} = \text{cte} \]</div>
-        <div class="fvars">Desvio da reta indica comportamento não-ôhmico.</div>
-      </div>
-    </div>
-  </div>
-  <div class="exp-bar">
-    <div class="exp-toggle" onclick="toggleExp('ohm')">Dados Experimentais <span id="ohm-ea">▶</span></div>
-    <div class="exp-body" id="eb-ohm">
-      <p>Formato por linha: tensão (V), corrente (A)</p>
-      <textarea id="ohm_exp" placeholder="0, 0&#10;5, 0.048&#10;10, 0.099&#10;24, 0.241"></textarea>
-      <div class="btn-row"><button class="btn-p" onclick="plotarExp('ohm')">Plotar pontos</button><button class="btn-c" onclick="limparExp('ohm')">Limpar</button></div>
     </div>
   </div>
 </div>
@@ -340,40 +61,42 @@ body{
 <div id="panel-pot" class="panel">
   <div class="main-grid">
     <div class="card">
-      <div class="card-lbl">Ajuste</div>
-      <div class="field"><label>Resistência (Ω)</label><input id="pot_R" type="number" value="100" oninput="calc('pot')"></div>
-      <div class="field"><label>Corrente máxima (A)</label><input id="pot_Imax" type="number" value="1" step="0.1" oninput="calc('pot')"></div>
-      <div class="field"><label>Eixo X</label><select id="pot_modo" onchange="calc('pot')"><option value="pi">P × I</option><option value="pv">P × V</option></select></div>
-      <div class="kpi-row">
-        <div class="kpi"><div class="kpi-val" id="pot_pmax">—</div><div class="kpi-lbl">P em I_max (W)</div></div>
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="setSubPanel('pot','teo',this)">Teórico</button>
+        <button class="sub-tab" onclick="setSubPanel('pot','exp',this)">Experimento</button>
+      </div>
+      <div id="sp-pot-teo" class="sub-panel active">
+        <div class="card-lbl">Ajuste</div>
+        <div class="field"><label>Resistência (Ω)</label><input id="pot_R" type="number" value="100" oninput="calc('pot')"></div>
+        <div class="field"><label>Corrente máxima (A)</label><input id="pot_Imax" type="number" value="1" step="0.1" oninput="calc('pot')"></div>
+        <div class="field"><label>Eixo X</label><select id="pot_modo" onchange="calc('pot')"><option value="pi">P × I</option><option value="pv">P × V</option></select></div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-val" id="pot_pmax">—</div><div class="kpi-lbl">Potência no pico</div></div>
+        </div>
+      </div>
+      <div id="sp-pot-exp" class="sub-panel">
+        <div class="exp-xsel">
+          <label>Eixo X</label>
+          <select id="pot_xcol" onchange="calc('pot')">
+            <option value="I">I (A)</option>
+            <option value="V">V (V)</option>
+          </select>
+        </div>
+        <div class="exp-tbl-wrap">
+          <table class="exp-tbl">
+            <thead><tr><th id="pot_xh">I (A)</th><th>P (W)</th><th></th></tr></thead>
+            <tbody id="exp-tbody-pot"></tbody>
+          </table>
+        </div>
+        <div class="exp-foot">
+          <button class="btn-add" onclick="addExpRow('pot')">+ Linha</button>
+          <button class="btn-clr" onclick="clearExp('pot')">Limpar</button>
+        </div>
       </div>
     </div>
     <div class="card chart-card">
       <div class="chart-title">Potência Dissipada</div>
       <div class="chart-wrap"><canvas id="chart-pot"></canvas></div>
-    </div>
-  </div>
-  <div class="formula-section">
-    <div class="formula-section-lbl">Fórmulas</div>
-    <div class="formula-grid">
-      <div class="fblock">
-        <div class="fblock-title">P × Corrente</div>
-        <div class="fmath">\[ P = R \cdot I^2 \]</div>
-        <div class="fvars">Duplicar \(I\) quadruplica \(P\).</div>
-      </div>
-      <div class="fblock b2">
-        <div class="fblock-title">P × Tensão</div>
-        <div class="fmath">\[ P = \frac{V^2}{R} \]</div>
-        <div class="fvars">\(P = VI = I^2R = V^2/R\)</div>
-      </div>
-    </div>
-  </div>
-  <div class="exp-bar">
-    <div class="exp-toggle" onclick="toggleExp('pot')">Dados Experimentais <span id="pot-ea">▶</span></div>
-    <div class="exp-body" id="eb-pot">
-      <p>Formato: corrente (A), potência (W) — ou tensão (V), potência (W)</p>
-      <textarea id="pot_exp" placeholder="0, 0&#10;0.5, 24.8&#10;1, 99.5"></textarea>
-      <div class="btn-row"><button class="btn-p" onclick="plotarExp('pot')">Plotar pontos</button><button class="btn-c" onclick="limparExp('pot')">Limpar</button></div>
     </div>
   </div>
 </div>
@@ -382,40 +105,36 @@ body{
 <div id="panel-div" class="panel">
   <div class="main-grid">
     <div class="card">
-      <div class="card-lbl">Ajuste</div>
-      <div class="field"><label>Tensão da fonte (V)</label><input id="div_Vs" type="number" value="12" oninput="calc('div')"></div>
-      <div class="field"><label>R1 fixo (Ω)</label><input id="div_R1" type="number" value="1000" oninput="calc('div')"></div>
-      <div class="field"><label>R2 máximo (Ω)</label><div class="hint">limite de varredura</div><input id="div_R2max" type="number" value="5000" oninput="calc('div')"></div>
-      <div class="kpi-row">
-        <div class="kpi"><div class="kpi-val" id="div_half">—</div><div class="kpi-lbl">V em R2=R1</div></div>
-        <div class="kpi"><div class="kpi-val" id="div_sat">—</div><div class="kpi-lbl">Saturação</div></div>
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="setSubPanel('div','teo',this)">Teórico</button>
+        <button class="sub-tab" onclick="setSubPanel('div','exp',this)">Experimento</button>
+      </div>
+      <div id="sp-div-teo" class="sub-panel active">
+        <div class="card-lbl">Ajuste</div>
+        <div class="field"><label>Tensão da fonte (V)</label><input id="div_Vs" type="number" value="12" oninput="calc('div')"></div>
+        <div class="field"><label>R1 fixo (Ω)</label><input id="div_R1" type="number" value="1000" oninput="calc('div')"></div>
+        <div class="field"><label>R2 máximo (Ω)</label><div class="hint">limite de varredura</div><input id="div_R2max" type="number" value="5000" oninput="calc('div')"></div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-val" id="div_half">—</div><div class="kpi-lbl">V em R2 = R1</div></div>
+          <div class="kpi"><div class="kpi-val" id="div_sat">—</div><div class="kpi-lbl">Saturação</div></div>
+        </div>
+      </div>
+      <div id="sp-div-exp" class="sub-panel">
+        <div class="exp-tbl-wrap">
+          <table class="exp-tbl">
+            <thead><tr><th>R₂ (Ω)</th><th>Vout (V)</th><th></th></tr></thead>
+            <tbody id="exp-tbody-div"></tbody>
+          </table>
+        </div>
+        <div class="exp-foot">
+          <button class="btn-add" onclick="addExpRow('div')">+ Linha</button>
+          <button class="btn-clr" onclick="clearExp('div')">Limpar</button>
+        </div>
       </div>
     </div>
     <div class="card chart-card">
-      <div class="chart-title">V_out × R2</div>
+      <div class="chart-title">Vout × R2</div>
       <div class="chart-wrap"><canvas id="chart-div"></canvas></div>
-    </div>
-  </div>
-  <div class="formula-section">
-    <div class="formula-section-lbl">Fórmulas</div>
-    <div class="formula-grid">
-      <div class="fblock">
-        <div class="fblock-title">Divisor de Tensão</div>
-        <div class="fmath">\[ V_{out} = V_s \cdot \frac{R_2}{R_1 + R_2} \]</div>
-      </div>
-      <div class="fblock b2">
-        <div class="fblock-title">Casos limite</div>
-        <div class="fmath">\[ R_2 = R_1 \Rightarrow V_{out} = \tfrac{V_s}{2} \]</div>
-        <div class="fmath">\[ R_2 \to \infty \Rightarrow V_{out} \to V_s \]</div>
-      </div>
-    </div>
-  </div>
-  <div class="exp-bar">
-    <div class="exp-toggle" onclick="toggleExp('div')">Dados Experimentais <span id="div-ea">▶</span></div>
-    <div class="exp-body" id="eb-div">
-      <p>Formato: R2 (Ω), V_out medido (V)</p>
-      <textarea id="div_exp" placeholder="0, 0&#10;1000, 4.0&#10;5000, 9.8"></textarea>
-      <div class="btn-row"><button class="btn-p" onclick="plotarExp('div')">Plotar pontos</button><button class="btn-c" onclick="limparExp('div')">Limpar</button></div>
     </div>
   </div>
 </div>
@@ -424,79 +143,172 @@ body{
 <div id="panel-mp" class="panel">
   <div class="main-grid">
     <div class="card">
-      <div class="card-lbl">Ajuste</div>
-      <div class="field"><label>V de Thévenin (V)</label><div class="hint">tensão em aberto</div><input id="mp_Vth" type="number" value="12" oninput="calc('mp')"></div>
-      <div class="field"><label>R de Thévenin (Ω)</label><input id="mp_Rth" type="number" value="100" oninput="calc('mp')"></div>
-      <div class="field"><label>R_L máximo (Ω)</label><input id="mp_RLmax" type="number" value="500" oninput="calc('mp')"></div>
-      <div class="kpi-row">
-        <div class="kpi"><div class="kpi-val" id="mp_pmax">—</div><div class="kpi-lbl">P_max em R_L = R_th (W)</div></div>
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="setSubPanel('mp','teo',this)">Teórico</button>
+        <button class="sub-tab" onclick="setSubPanel('mp','exp',this)">Experimento</button>
+      </div>
+      <div id="sp-mp-teo" class="sub-panel active">
+        <div class="card-lbl">Ajuste</div>
+        <div class="field"><label>V de Thévenin (V)</label><div class="hint">tensão em aberto</div><input id="mp_Vth" type="number" value="12" oninput="calc('mp')"></div>
+        <div class="field"><label>R de Thévenin (Ω)</label><input id="mp_Rth" type="number" value="100" oninput="calc('mp')"></div>
+        <div class="field"><label>R<sub>L</sub> máximo (Ω)</label><input id="mp_RLmax" type="number" value="500" oninput="calc('mp')"></div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-val" id="mp_pmax">—</div><div class="kpi-lbl">Potência máxima transferida</div></div>
+        </div>
+      </div>
+      <div id="sp-mp-exp" class="sub-panel">
+        <div class="exp-tbl-wrap">
+          <table class="exp-tbl">
+            <thead><tr><th>R<sub>L</sub> (Ω)</th><th>P<sub>L</sub> (W)</th><th></th></tr></thead>
+            <tbody id="exp-tbody-mp"></tbody>
+          </table>
+        </div>
+        <div class="exp-foot">
+          <button class="btn-add" onclick="addExpRow('mp')">+ Linha</button>
+          <button class="btn-clr" onclick="clearExp('mp')">Limpar</button>
+        </div>
       </div>
     </div>
     <div class="card chart-card">
-      <div class="chart-title">Potência na Carga × R_L</div>
+      <div class="chart-title">Potência na carga por resistência</div>
       <div class="chart-wrap"><canvas id="chart-mp"></canvas></div>
-    </div>
-  </div>
-  <div class="formula-section">
-    <div class="formula-section-lbl">Fórmulas</div>
-    <div class="formula-grid">
-      <div class="fblock">
-        <div class="fblock-title">Potência na carga</div>
-        <div class="fmath">\[ P_L = \frac{V_{th}^2 \cdot R_L}{(R_{th} + R_L)^2} \]</div>
-        <div class="fvars">Pico em \(R_L = R_{th}\).</div>
-      </div>
-      <div class="fblock b2">
-        <div class="fblock-title">Máximo de transferência</div>
-        <div class="fmath">\[ P_{max} = \frac{V_{th}^2}{4\,R_{th}} \]</div>
-        <div class="fvars">Eficiência no pico: \(\eta = 50\%\).</div>
-      </div>
-    </div>
-  </div>
-  <div class="exp-bar">
-    <div class="exp-toggle" onclick="toggleExp('mp')">Dados Experimentais <span id="mp-ea">▶</span></div>
-    <div class="exp-body" id="eb-mp">
-      <p>Formato: R_L (Ω), potência medida (W)</p>
-      <textarea id="mp_exp" placeholder="50, 0.38&#10;100, 0.36&#10;200, 0.27"></textarea>
-      <div class="btn-row"><button class="btn-p" onclick="plotarExp('mp')">Plotar pontos</button><button class="btn-c" onclick="limparExp('mp')">Limpar</button></div>
     </div>
   </div>
 </div>
 
+<!-- FÓRMULAS -->
+<div id="panel-form" class="panel"></div>
+
 <script>
-const charts={},expData={};let deb=null;
-const AC='#1877F2',AC2='#00A884',CEXP='#F0A500';
-const txtC=()=>'#65676B';
-const gridC=()=>'rgba(0,0,0,.06)';
+/* ── inicialização das abas de experimento ── */
+expState.ohm=[];expState.pot=[];expState.div=[];expState.mp=[];
 
-function get(id){return parseFloat(document.getElementById(id)?.value)||0;}
-function setV(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
+/* pot: x col selector updates header */
+function getPotXCol(){return document.getElementById('pot_xcol')?.value||'I';}
+document.addEventListener('change',e=>{if(e.target.id==='pot_xcol'){const h=document.getElementById('pot_xh');if(h)h.textContent=e.target.value==='I'?'I (A)':'V (V)';}});
 
-function makeChart(id,datasets,xL,yL,xType='linear'){
-  const ctx=document.getElementById('chart-'+id).getContext('2d');
-  if(charts[id])charts[id].destroy();
-  charts[id]=new Chart(ctx,{type:'line',data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:250},
-    plugins:{legend:{display:true,position:'top',labels:{font:{size:13,family:'Inter',weight:'600'},color:'#1C1E21',usePointStyle:true,pointStyleWidth:10}},
-      tooltip:{backgroundColor:'#fff',borderColor:'#E4E6EA',borderWidth:1,titleColor:'#1C1E21',bodyColor:'#65676B',titleFont:{size:13,weight:'700'},bodyFont:{size:13},padding:11,callbacks:{label:i=>` ${i.dataset.label}: ${i.parsed.y.toPrecision(4)}`}}},
-    scales:{x:{type:xType,grid:{color:gridC()},ticks:{color:txtC(),font:{size:11}},title:{display:true,text:xL,color:txtC(),font:{size:11}}},
-      y:{grid:{color:gridC()},ticks:{color:txtC(),font:{size:11}},title:{display:true,text:yL,color:txtC(),font:{size:11}}}}}});
+/* ── isExpActive helper ── */
+function isExpActive(pid){
+  return !!document.getElementById('sp-'+pid+'-exp')?.classList.contains('active');
 }
 
-const ln=(data,label,cor)=>({label,data,borderColor:cor||AC,backgroundColor:(cor||AC)+'18',borderWidth:2.5,pointRadius:0,tension:0.1,fill:true});
-const sc=(data,label)=>({type:'scatter',label,data,borderColor:CEXP,backgroundColor:CEXP+'CC',pointRadius:6,pointHoverRadius:8});
+/* ── calcs ── */
+function calcOhm(){
+  const R=get('ohm_R'),Vm=get('ohm_Vmax');
+  const exp=isExpActive('ohm');
+  const ds=[];
+  if(!exp){
+    const pts=Array.from({length:101},(_,i)=>{const V=i*Vm/100;return{x:+V.toFixed(4),y:+(V/R).toFixed(6)};});
+    ds.push(ln(pts,'I = V/R',AC));
+    showStats('ohm',null);
+  } else {
+    const ep=getExpPts('ohm');
+    if(ep){
+      ds.push(sc(ep,'Medido'));
+      const reg=regDataset(ep,ep.reduce((a,p)=>Math.min(a,p.x),Infinity),ep.reduce((a,p)=>Math.max(a,p.x),-Infinity));
+      if(reg)ds.push(reg);
+    }
+    showStats('ohm',ep||null);
+  }
+  makeChart('ohm',ds,'Tensão (V)','Corrente (A)');
+  setV('ohm_sl',(1/R).toFixed(4));setV('ohm_imax',(Vm/R).toFixed(3)+' A');
+}
 
-function calcOhm(){const R=get('ohm_R'),Vm=get('ohm_Vmax');const pts=Array.from({length:101},(_,i)=>{const V=i*Vm/100;return{x:+V.toFixed(3),y:+(V/R).toFixed(5)};});const ds=[ln(pts,'I = V/R')];if(expData.ohm)ds.push(sc(expData.ohm,'Medido'));makeChart('ohm',ds,'Tensão (V)','Corrente (A)');setV('ohm_sl',(1/R).toFixed(4));setV('ohm_imax',(Vm/R).toFixed(3)+' A');}
-function calcPot(){const R=get('pot_R'),Im=get('pot_Imax'),modo=document.getElementById('pot_modo').value;let pts,xL,yL;if(modo==='pi'){pts=Array.from({length:101},(_,i)=>{const I=i*Im/100;return{x:+I.toFixed(4),y:+(R*I*I).toFixed(4)};});xL='Corrente (A)';yL='Potência (W)';}else{const Vm=Im*R;pts=Array.from({length:101},(_,i)=>{const V=i*Vm/100;return{x:+V.toFixed(3),y:+(V*V/R).toFixed(4)};});xL='Tensão (V)';yL='Potência (W)';}const ds=[ln(pts,modo==='pi'?'P = R·I²':'P = V²/R',AC2)];if(expData.pot)ds.push(sc(expData.pot,'Medido'));makeChart('pot',ds,xL,yL);setV('pot_pmax',(R*Im*Im).toFixed(2)+' W');}
-function calcDiv(){const Vs=get('div_Vs'),R1=get('div_R1'),R2m=get('div_R2max');const pts=Array.from({length:201},(_,i)=>{const R2=i*R2m/200;return{x:+R2.toFixed(1),y:R2===0?0:+(Vs*R2/(R1+R2)).toFixed(4)};});const ds=[ln(pts,'V_out','#F0A500')];if(expData.div)ds.push(sc(expData.div,'Medido'));makeChart('div',ds,'R2 (Ω)','V_out (V)');setV('div_half',(Vs/2).toFixed(2)+' V');setV('div_sat',Vs.toFixed(1)+' V');}
-function calcMp(){const Vth=get('mp_Vth'),Rth=get('mp_Rth'),RLm=get('mp_RLmax');const pts=Array.from({length:201},(_,i)=>{const RL=i*RLm/200;return{x:+RL.toFixed(2),y:RL===0?0:+(Vth*Vth*RL/Math.pow(Rth+RL,2)).toFixed(5)};});const ds=[ln(pts,'P_L','#E53935')];if(expData.mp)ds.push(sc(expData.mp,'Medido'));makeChart('mp',ds,'R_L (Ω)','P_L (W)');setV('mp_pmax',(Vth*Vth/(4*Rth)).toFixed(3)+' W');}
+function calcPot(){
+  const R=get('pot_R'),Im=get('pot_Imax'),modo=document.getElementById('pot_modo')?.value||'pi';
+  const xcol=getPotXCol();
+  const exp=isExpActive('pot');
+  const ds=[];
+  let xL='Corrente (A)';
+  if(!exp){
+    if(modo==='pi'){const pts=Array.from({length:101},(_,i)=>{const I=i*Im/100;return{x:+I.toFixed(4),y:+(R*I*I).toFixed(4)};});ds.push(ln(pts,'P = R·I²',AC2));xL='Corrente (A)';}
+    else{const Vm=Im*R;const pts=Array.from({length:101},(_,i)=>{const V=i*Vm/100;return{x:+V.toFixed(4),y:+(V*V/R).toFixed(4)};});ds.push(ln(pts,'P = V²/R',AC2));xL='Tensão (V)';}
+    showStats('pot',null);
+  } else {
+    xL=xcol==='I'?'Corrente (A)':'Tensão (V)';
+    const ep=getExpPts('pot');
+    let mapped=[];
+    if(ep){
+      mapped=ep.map(p=>{
+        if(xcol==='I'&&modo==='pi')return{x:p.x,y:p.y};
+        if(xcol==='V'&&modo==='pv')return{x:p.x,y:p.y};
+        return null;
+      }).filter(Boolean);
+      if(mapped.length){
+        ds.push(sc(mapped,'Medido'));
+        const reg=regDataset(mapped,mapped.reduce((a,p)=>Math.min(a,p.x),Infinity),mapped.reduce((a,p)=>Math.max(a,p.x),-Infinity));
+        if(reg)ds.push(reg);
+      }
+    }
+    showStats('pot',mapped.length?mapped:null);
+  }
+  makeChart('pot',ds,xL,'Potência (W)');
+  setV('pot_pmax',(R*Im*Im).toFixed(2)+' W');
+}
+
+function calcDiv(){
+  const Vs=get('div_Vs'),R1=get('div_R1'),R2m=get('div_R2max');
+  const exp=isExpActive('div');
+  const ds=[];
+  if(!exp){
+    const pts=Array.from({length:201},(_,i)=>{const R2=i*R2m/200;return{x:+R2.toFixed(1),y:R2===0?0:+(Vs*R2/(R1+R2)).toFixed(4)};});
+    ds.push(ln(pts,'Vout','#F0A500'));
+    showStats('div',null);
+  } else {
+    const ep=getExpPts('div');
+    if(ep){
+      ds.push(sc(ep,'Medido'));
+      const reg=regDataset(ep,ep.reduce((a,p)=>Math.min(a,p.x),Infinity),ep.reduce((a,p)=>Math.max(a,p.x),-Infinity));
+      if(reg)ds.push(reg);
+    }
+    showStats('div',ep||null);
+  }
+  makeChart('div',ds,'R2 (Ω)','Vout (V)');
+  setV('div_half',(Vs/2).toFixed(2)+' V');setV('div_sat',Vs.toFixed(1)+' V');
+}
+
+function calcMp(){
+  const Vth=get('mp_Vth'),Rth=get('mp_Rth'),RLm=get('mp_RLmax');
+  const exp=isExpActive('mp');
+  const ds=[];
+  if(!exp){
+    const pts=Array.from({length:201},(_,i)=>{const RL=i*RLm/200;return{x:+RL.toFixed(2),y:RL===0?0:+(Vth*Vth*RL/Math.pow(Rth+RL,2)).toFixed(6)};});
+    ds.push(ln(pts,'PL',AC2));
+    showStats('mp',null);
+  } else {
+    const ep=getExpPts('mp');
+    if(ep){
+      ds.push(sc(ep,'Medido'));
+      const reg=regDataset(ep,ep.reduce((a,p)=>Math.min(a,p.x),Infinity),ep.reduce((a,p)=>Math.max(a,p.x),-Infinity));
+      if(reg)ds.push(reg);
+    }
+    showStats('mp',ep||null);
+  }
+  makeChart('mp',ds,'RL (Ω)','PL (W)');
+  setV('mp_pmax',(Vth*Vth/(4*Rth)).toFixed(3)+' W');
+}
 
 const CALC={ohm:calcOhm,pot:calcPot,div:calcDiv,mp:calcMp};
-function calc(id){clearTimeout(deb);deb=setTimeout(()=>CALC[id]?.(),250);}
-function parseExp(txt){return txt.trim().split('\n').map(l=>{const[x,y]=l.split(',').map(v=>parseFloat(v.trim()));return isNaN(x)||isNaN(y)?null:{x,y};}).filter(Boolean);}
-function plotarExp(id){expData[id]=parseExp(document.getElementById(id+'_exp').value);CALC[id]?.();}
-function limparExp(id){delete expData[id];document.getElementById(id+'_exp').value='';CALC[id]?.();}
-function setPanel(id,el){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');setTimeout(()=>{CALC[id]?.();MathJax?.typesetPromise?.([document.getElementById('panel-'+id)]);},50);}
-function toggleExp(id){const el=document.getElementById('eb-'+id);const arr=document.getElementById(id+'-ea');arr.textContent=el.classList.toggle('open')?'▼':'▶';}
+function calc(id){clearTimeout(deb);deb=setTimeout(()=>CALC[id]?.(),200);}
+
+/* ── navegação ── */
+function setPanel(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+  setTimeout(()=>{CALC[id]?.();MathJax?.typesetPromise?.([document.getElementById('panel-'+id)]);},50);
+}
+
+function setSubPanel(pid,spid,btn){
+  const panel=document.getElementById('panel-'+pid);
+  panel.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
+  panel.querySelectorAll('.sub-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sp-'+pid+'-'+spid).classList.add('active');
+  btn.classList.add('active');
+  if(spid==='exp'&&expState[pid].length===0)addExpRow(pid);
+  CALC[pid]?.();
+}
+
 calcOhm();
 </script>
-</body>
-</html>

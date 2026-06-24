@@ -1,0 +1,190 @@
+---
+layout: page
+title: "NotebookLM — IA para Apostilas"
+---
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:#1B2E50; --teal:#007575; --red:#C8102E;
+      --bg:#ECEEF4; --card:#fff; --text:#1A2640; --sub:#556070; --border:#CDD3E0;
+      --green:#15803D; --purple:#6d28d9;
+    }
+        html { background: var(--bg); }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); max-width:860px; margin:0 auto; font-size:15px; }
+
+    .topbar { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:#fff; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; }
+    .back { text-decoration:none; color:var(--navy); font-size:13px; font-weight:700; }
+    .back::before { content:"← "; }
+    .badge { background:var(--teal); color:#fff; font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:4px; }
+
+    .hdr { background:var(--navy); padding:18px 24px 16px; margin-bottom:14px; border-bottom:4px solid var(--red); position:relative; overflow:hidden; }
+    .hdr::before { content:''; position:absolute; top:0; right:0; width:130px; height:100%; background:var(--teal); opacity:.13; clip-path:polygon(40% 0,100% 0,100% 100%,0 100%); }
+    .hdr-tag { display:inline-block; background:var(--teal); color:#fff; font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.09em; padding:3px 10px; border-radius:20px; margin-bottom:8px; }
+    .hdr h1 { font-size:1.55rem; font-weight:900; letter-spacing:-.5px; color:#fff; line-height:1; }
+    .hdr p { font-size:.86rem; color:rgba(255,255,255,.65); margin-top:4px; font-weight:500; }
+
+    main { padding:0 16px 100px; display:flex; flex-direction:column; gap:8px; }
+
+    .acc { background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 1px 5px rgba(0,0,0,.07); }
+    .acc-hdr { display:flex; align-items:center; gap:9px; padding:10px 12px; cursor:pointer; user-select:none; transition:background .12s; }
+    .acc-hdr:hover { background:#f8f9fc; }
+    .acc-ico { width:32px; height:32px; border-radius:7px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .acc-title { font-size:15px; font-weight:700; color:var(--text); flex:1; }
+    .acc-toggle { width:22px; height:22px; border-radius:50%; background:var(--bg); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--sub); font-size:15px; transition:transform .2s; }
+    .acc.open .acc-toggle { transform:rotate(45deg); }
+    .acc-body { display:none; padding:0 14px 14px; border-top:1px solid var(--border); }
+    .acc.open .acc-body { display:block; }
+
+    .desc { font-size:15px; font-weight:400; color:var(--text); line-height:1.65; margin-top:10px; }
+    .itens { list-style:none; display:flex; flex-direction:column; gap:5px; margin-top:8px; padding:0; }
+    .itens li { font-size:15px; font-weight:500; color:var(--text); padding-left:14px; position:relative; line-height:1.5; }
+    .itens li::before { content:"·"; position:absolute; left:0; color:var(--purple); font-size:18px; line-height:.9; font-weight:900; }
+    .pros-cons { display:grid; grid-template-columns:1fr 1fr; gap:6px 12px; margin-top:12px; }
+    .pc-col { display:flex; flex-direction:column; gap:6px; }
+    .pro, .con { font-size:15px; font-weight:500; color:var(--text); line-height:1.5; }
+    .pro::before { content:"✓ "; color:#15803D; font-weight:800; }
+    .con::before { content:"✗ "; color:var(--red); font-weight:800; }
+
+    .steps { display:flex; flex-direction:column; gap:7px; padding-top:12px; }
+    .step { display:flex; gap:10px; align-items:center; }
+    .snum { background:var(--purple); color:#fff; font-size:10px; font-weight:800; min-width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .step span { font-size:15px; color:var(--text); line-height:1.6; }
+    .step strong { color:var(--navy); font-weight:700; }
+
+    .caps { display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:12px; }
+    .cap { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px; display:flex; flex-direction:row; align-items:flex-start; gap:10px; }
+    .cap-ico { width:30px; height:30px; border-radius:7px; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .cap-text { display:flex; flex-direction:column; gap:2px; }
+    .cap-label { font-size:13px; font-weight:800; color:var(--text); line-height:1.2; }
+    .cap-desc { font-size:13px; font-weight:400; color:var(--sub); line-height:1.5; }
+
+    .exs { display:flex; flex-direction:column; gap:7px; padding-top:12px; }
+    .ex { background:var(--bg); border-radius:8px; padding:10px 12px; border-left:3px solid var(--purple); }
+    .ex-title { font-size:13px; font-weight:700; color:var(--navy); }
+    .ex-sub { font-size:13px; color:var(--sub); margin-top:2px; }
+
+    .cta-bar { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--border); padding:12px 16px; }
+    .btn-cta { display:block; background:var(--purple); color:#fff; text-decoration:none; font-size:14px; font-weight:700; padding:13px; border-radius:10px; text-align:center; max-width:640px; margin:0 auto; }
+  </style>
+
+
+<nav class="topbar">
+  <a href="../index.html" class="back">Voltar</a>
+  <span class="badge">Sparking</span>
+</nav>
+
+<div class="hdr">
+  <div class="hdr-tag">Assistente de IA</div>
+  <h1>NotebookLM</h1>
+  <p>Você sobe seus documentos — ele vira especialista no seu material</p>
+</div>
+
+<main>
+
+  <div class="acc">
+    <div class="acc-hdr" onclick="toggle(this)">
+      <div class="acc-ico" style="background:linear-gradient(135deg,#3b1066,#6d28d9);">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6.5" stroke="white" stroke-width="1.6"/><line x1="9" y1="6.5" x2="9" y2="9" stroke="white" stroke-width="1.6" stroke-linecap="round"/><circle cx="9" cy="12" r="0.9" fill="white"/></svg>
+      </div>
+      <span class="acc-title">O que é</span>
+      <span class="acc-toggle">+</span>
+    </div>
+    <div class="acc-body">
+      <p class="desc">Você sobe seus documentos uma vez. Depois é só perguntar em português — o NotebookLM lê o material, responde e ainda diz exatamente em qual página encontrou. Se a resposta não estiver no documento, ele fala que não sabe. Não inventa.</p>
+      <p class="desc" style="margin-top:12px;">Você pode subir:</p>
+      <ul class="itens">
+        <li>PDFs e apostilas</li>
+        <li>Sites e artigos (pelo link)</li>
+        <li>Vídeos do YouTube</li>
+        <li>Documentos do Google Drive</li>
+      </ul>
+      <p class="desc" style="margin-top:12px;">Além do chat, o Studio transforma o material em outros formatos prontos para usar — podcast, slides, mapa mental, cartões de estudo e mais.</p>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-hdr" onclick="toggle(this)">
+      <div class="acc-ico" style="background:linear-gradient(135deg,#4c1d95,#7c3aed);">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9L7 13L15 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="acc-title">O que faz</span>
+      <span class="acc-toggle">+</span>
+    </div>
+    <div class="acc-body">
+      <div class="caps">
+        <div class="cap"><div class="cap-ico" style="background:#ede9fe;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M14 3H6C5.4 3 5 3.4 5 4V12C5 12.6 5.4 13 6 13H9L10 15.5L11 13H14C14.6 13 15 12.6 15 12V4C15 3.4 14.6 3 14 3Z" stroke="#6d28d9" stroke-width="1.6" stroke-linejoin="round"/><line x1="7" y1="7.5" x2="13" y2="7.5" stroke="#6d28d9" stroke-width="1.3" stroke-linecap="round"/><line x1="7" y1="10" x2="11" y2="10" stroke="#6d28d9" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="cap-text"><span class="cap-label">Consulta</span><span class="cap-desc">Você digita uma pergunta. Ele lê o documento e te responde</span></div></div>
+        <div class="cap"><div class="cap-ico" style="background:#ede9fe;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="11" height="14" rx="2" stroke="#6d28d9" stroke-width="1.6"/><line x1="6" y1="7" x2="11" y2="7" stroke="#6d28d9" stroke-width="1.3" stroke-linecap="round"/><line x1="6" y1="10" x2="11" y2="10" stroke="#6d28d9" stroke-width="1.3" stroke-linecap="round"/><circle cx="15" cy="14" r="3.5" fill="#6d28d9"/><path d="M13.7 14L14.6 14.9L16.5 13" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cap-text"><span class="cap-label">Cita a fonte</span><span class="cap-desc">Toda resposta vem com "está na página X" — você confere na hora</span></div></div>
+        <div class="cap"><div class="cap-ico" style="background:#fce7f3;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M4 10.5C4 7.2 6.7 4.5 10 4.5C13.3 4.5 16 7.2 16 10.5" stroke="#9d174d" stroke-width="1.6" stroke-linecap="round"/><rect x="2.5" y="10" width="3" height="5" rx="1.5" stroke="#9d174d" stroke-width="1.5"/><rect x="14.5" y="10" width="3" height="5" rx="1.5" stroke="#9d174d" stroke-width="1.5"/></svg></div><div class="cap-text"><span class="cap-label">Resumo em áudio</span><span class="cap-desc">Gera um podcast de dois apresentadores sobre o documento — você pode entrar na conversa em tempo real</span></div></div>
+        <div class="cap"><div class="cap-ico" style="background:#dbeafe;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="3" width="16" height="11" rx="2" stroke="#1d4ed8" stroke-width="1.6"/><line x1="2" y1="7" x2="18" y2="7" stroke="#1d4ed8" stroke-width="1.2"/><line x1="7" y1="3" x2="7" y2="7" stroke="#1d4ed8" stroke-width="1.2"/><path d="M8 17L10 14L12 17" stroke="#1d4ed8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="cap-text"><span class="cap-label">Apresentação</span><span class="cap-desc">Cria slides a partir do documento — exporta como PPTX ou PDF</span></div></div>
+        <div class="cap"><div class="cap-ico" style="background:#d1fae5;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="4" y="2" width="12" height="16" rx="2" stroke="#065f46" stroke-width="1.6"/><line x1="7" y1="7" x2="13" y2="7" stroke="#065f46" stroke-width="1.3" stroke-linecap="round"/><line x1="7" y1="10" x2="13" y2="10" stroke="#065f46" stroke-width="1.3" stroke-linecap="round"/><line x1="7" y1="13" x2="10" y2="13" stroke="#065f46" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="cap-text"><span class="cap-label">Resumo em vídeo</span><span class="cap-desc">Gera um vídeo com animações e narração resumindo o conteúdo do documento</span></div></div>
+        <div class="cap"><div class="cap-ico" style="background:#fef3c7;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="5" r="2" stroke="#92400e" stroke-width="1.5"/><circle cx="4" cy="15" r="2" stroke="#92400e" stroke-width="1.5"/><circle cx="16" cy="15" r="2" stroke="#92400e" stroke-width="1.5"/><line x1="10" y1="7" x2="5.4" y2="13.3" stroke="#92400e" stroke-width="1.3"/><line x1="10" y1="7" x2="14.6" y2="13.3" stroke="#92400e" stroke-width="1.3"/></svg></div><div class="cap-text"><span class="cap-label">Mapa mental</span><span class="cap-desc">Mapa interativo dos conceitos — clica em qualquer ramo e abre um chat sobre aquele tópico</span></div></div>
+        <div class="cap"><div class="cap-ico" style="background:#e0f2fe;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="14" width="4" height="4" rx="1" fill="#0369a1"/><rect x="8" y="10" width="4" height="8" rx="1" fill="#0369a1" fill-opacity=".6"/><rect x="14" y="6" width="4" height="12" rx="1" fill="#0369a1" fill-opacity=".3"/><line x1="2" y1="18.5" x2="18" y2="18.5" stroke="#0369a1" stroke-width="1.3"/></svg></div><div class="cap-text"><span class="cap-label">Relatórios</span><span class="cap-desc">Você escolhe o tipo — FAQ, guia de estudo, briefing ou relatório — e ele escreve</span></div></div>
+        <div class="cap"><div class="cap-ico" style="background:#d1fae5;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="5" y="4" width="12" height="9" rx="2" stroke="#065f46" stroke-width="1.5" fill="white"/><rect x="3" y="7" width="12" height="9" rx="2" stroke="#065f46" stroke-width="1.5" fill="white"/><line x1="6" y1="11.5" x2="12" y2="11.5" stroke="#065f46" stroke-width="1.2" stroke-linecap="round"/><line x1="6" y1="13.5" x2="10" y2="13.5" stroke="#065f46" stroke-width="1.2" stroke-linecap="round"/></svg></div><div class="cap-text"><span class="cap-label">Cartões</span><span class="cap-desc">Gera cartões de pergunta e resposta baseados só no que está no documento</span></div></div>
+        <div class="cap"><div class="cap-ico" style="background:#fce7f3;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="14" height="16" rx="2" stroke="#9d174d" stroke-width="1.6"/><path d="M6 8L7.5 9.5L10.5 6.5" stroke="#9d174d" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="8" x2="15" y2="8" stroke="#9d174d" stroke-width="1.3" stroke-linecap="round"/><path d="M6 13L7.5 14.5L10.5 11.5" stroke="#9d174d" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="13" x2="15" y2="13" stroke="#9d174d" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="cap-text"><span class="cap-label">Teste</span><span class="cap-desc">Gera um questionário sobre o material para você se testar</span></div></div>
+        <div class="cap"><div class="cap-ico" style="background:#fef9c3;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="16" height="16" rx="2" stroke="#854d0e" stroke-width="1.5"/><path d="M6 14L9 8L12 12L14 9L16 14" stroke="#854d0e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="6" r="2" fill="#854d0e" fill-opacity=".3" stroke="#854d0e" stroke-width="1.2"/></svg></div><div class="cap-text"><span class="cap-label">Infográfico</span><span class="cap-desc">Identifica os dados e conceitos principais e monta uma imagem visual organizada</span></div></div>
+        <div class="cap"><div class="cap-ico" style="background:#f0fdf4;"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="16" height="16" rx="2" stroke="#166534" stroke-width="1.5"/><line x1="2" y1="7" x2="18" y2="7" stroke="#166534" stroke-width="1.1"/><line x1="2" y1="12" x2="18" y2="12" stroke="#166534" stroke-width="1.1"/><line x1="7" y1="2" x2="7" y2="18" stroke="#166534" stroke-width="1.1"/></svg></div><div class="cap-text"><span class="cap-label">Tabela de dados</span><span class="cap-desc">Organiza as informações das fontes em uma tabela estruturada</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-hdr" onclick="toggle(this)">
+      <div class="acc-ico" style="background:linear-gradient(135deg,#064e3b,#059669);">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9 L7 13 L15 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="acc-title">Como usar</span>
+      <span class="acc-toggle">+</span>
+    </div>
+    <div class="acc-body">
+      <div class="steps">
+        <div class="step"><div class="snum">1</div><span>Acesse <strong>notebooklm.google.com</strong></span></div>
+        <div class="step"><div class="snum">2</div><span>Login com conta Google (Gmail)</span></div>
+        <div class="step"><div class="snum">3</div><span><strong>Novo caderno</strong> → dar um nome</span></div>
+        <div class="step"><div class="snum">4</div><span><strong>Adicionar fonte</strong> → seus PDFs</span></div>
+        <div class="step"><div class="snum">5</div><span>Aguardar processamento (1–2 min)</span></div>
+        <div class="step"><div class="snum">6</div><span>Digitar a pergunta no chat à direita</span></div>
+        <div class="step"><div class="snum">7</div><span>Resposta vem com indicação da fonte</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="acc">
+    <div class="acc-hdr" onclick="toggle(this)">
+      <div class="acc-ico" style="background:linear-gradient(135deg,#312e81,#6d28d9);">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2.5" y="2.5" width="13" height="13" rx="2" stroke="white" stroke-width="1.6" fill="white" fill-opacity=".12"/><path d="M5.5 9 L8 11.5 L12.5 6.5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="acc-title">O que esperar</span>
+      <span class="acc-toggle">+</span>
+    </div>
+    <div class="acc-body">
+      <div class="pros-cons">
+        <div class="pc-col">
+          <span class="pro">Cita a fonte em toda resposta — você confere de onde veio</span>
+          <span class="pro">Quando a resposta não está no material, não responde — não inventa</span>
+          <span class="pro">Funciona totalmente em português</span>
+          <span class="pro">Aceita PDF, Word, CSV, URL, YouTube, Drive, áudio e imagens</span>
+          <span class="pro">Abre direto no navegador — sem instalar nada</span>
+          <span class="pro">Deep Research busca fontes na web por você</span>
+        </div>
+        <div class="pc-col">
+          <span class="con">50 perguntas por dia — suficiente para uma sessão, não para uso o dia todo</span>
+          <span class="con">3 áudios gerados por dia — não dá pra criar vários de uma vez</span>
+          <span class="con">Máximo de 50 arquivos por caderno — um caderno por disciplina resolve bem</span>
+          <span class="con">Arquivo de até 200 MB — apostila muito grande pode não caber</span>
+          <span class="con">YouTube: só vídeos públicos com legendas</span>
+          <span class="con">PDF com proteção de cópia não pode ser importado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</main>
+
+<div class="cta-bar">
+  <a href="https://notebooklm.google.com" target="_blank" class="btn-cta">Abrir NotebookLM</a>
+</div>
+
+<script>
+  function toggle(hdr) { hdr.closest('.acc').classList.toggle('open'); }
+</script>

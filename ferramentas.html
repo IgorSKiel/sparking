@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sparking — Ferramentas de Cálculo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="sparking.css">
+<script src="sparking.js" defer></script>
+<style>
+.hdr{background:var(--navy);border-bottom:4px solid var(--red);position:relative;overflow:hidden;}
+.hdr::before{content:'';position:absolute;top:0;right:0;width:130px;height:100%;background:var(--teal);opacity:.13;clip-path:polygon(40% 0,100% 0,100% 100%,0 100%);}
+.hdr-inner{max-width:860px;margin:0 auto;padding:18px 24px 16px;}
+.hdr-tag{display:inline-block;background:var(--teal);color:#fff;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em;padding:3px 10px;border-radius:20px;margin-bottom:8px;}
+.hdr h1{font-size:1.55rem;font-weight:900;letter-spacing:-.5px;color:#fff;line-height:1;}
+.hdr p{font-size:.86rem;color:rgba(255,255,255,.65);margin-top:4px;font-weight:500;}
+.hdr-meta{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;}
+.hdr-stat{font-size:.82rem;font-weight:600;color:rgba(255,255,255,.7);}
+.hdr-stat-num{font-size:1.1rem;font-weight:900;color:#fff;}
+
+.wrap{max-width:860px;margin:0 auto;padding:20px 20px 40px;}
+
+.section{margin-bottom:20px;}
+.section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.section-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.section-name{font-size:1rem;font-weight:800;color:var(--navy);}
+.section-count{display:inline-block;background:var(--border);color:var(--sub);font-size:.7rem;font-weight:800;padding:1px 7px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;}
+
+.tool-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:var(--shadow);text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:8px;transition:transform .15s,box-shadow .15s;}
+.tool-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.12);border-color:var(--teal);}
+.tool-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.tool-name{font-size:.95rem;font-weight:800;color:var(--navy);line-height:1.3;}
+.tool-arrow{color:var(--teal);font-size:1.1rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.tool-desc{font-size:.8rem;color:var(--sub);line-height:1.5;flex:1;}
+.tool-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px;}
+.tag{font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.04em;}
+.tag-chart{background:#dbeafe;color:#1e3a8a;}
+.tag-canvas{background:#d1fae5;color:#064e3b;}
+.tag-cross{background:#ede9fe;color:#4c1d95;}
+.tag-exp{background:var(--teal-lt);color:var(--teal);}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="hdr-inner">
+    <div class="hdr-tag">⚡ Sparking</div>
+    <h1>Ferramentas de Cálculo</h1>
+    <p>Calculadoras interativas para engenharia — parâmetros ao vivo, crosshair em todos os gráficos e aba de experimento para sobrepor dados reais.</p>
+    <div class="hdr-meta">
+      <div class="hdr-stat"><span class="hdr-stat-num">16</span>&nbsp;ferramentas</div>
+      <div class="hdr-stat"><span class="hdr-stat-num">8</span>&nbsp;disciplinas</div>
+      <div class="hdr-stat">Teórico + Experimento em todas</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- Eletrotécnica 1 -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-icon" style="background:#E8F4FF;">⚡</div>
+    <div class="section-name">Eletrotécnica 1<span class="section-count">1</span></div>
+  </div>
+  <div class="tools-grid">
+    <a class="tool-card" href="eletrot1.html">
+      <div class="tool-card-top"><div class="tool-name">Circuito RLC — Fasores e Impedância</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Diagrama fasorial, impedância série/paralelo, triângulo de potências, fator de potência.</div>
+      <div class="tool-tags"><span class="tag tag-canvas">Canvas</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- Eletrotécnica 2 -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-icon" style="background:#FFF0E0;">🔄</div>
+    <div class="section-name">Eletrotécnica 2<span class="section-count">2</span></div>
+  </div>
+  <div class="tools-grid">
+    <a class="tool-card" href="eletrot2.html">
+      <div class="tool-card-top"><div class="tool-name">Ressonância RLC — Z × Frequência</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Curva Z×f ao redor da frequência de ressonância, fator Q, largura de banda. Fasores e triângulo de potências.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-canvas">Canvas</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+    <a class="tool-card" href="circuitos.html">
+      <div class="tool-card-top"><div class="tool-name">Transitórios RC, RL, RLC e Filtros</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Resposta transitória e permanente para 4 topologias. Filtro RC ganho×frequência com visualização de Bode simplificado.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- Eletrônica -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-icon" style="background:#F0FFE8;">💡</div>
+    <div class="section-name">Eletrônica<span class="section-count">3</span></div>
+  </div>
+  <div class="tools-grid">
+    <a class="tool-card" href="eletronica-diodo.html">
+      <div class="tool-card-top"><div class="tool-name">Diodo — Curva I×V e Ponto Q</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Modelo Shockley, reta de carga, ponto de operação por bissecção. Parâmetros I<sub>S</sub>, n, V<sub>CC</sub>, R ajustáveis.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+    <a class="tool-card" href="eletronica-bjt.html">
+      <div class="tool-card-top"><div class="tool-name">BJT — Curvas I<sub>C</sub> × V<sub>CE</sub></div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">5 curvas de base, reta de carga, ponto Q, região de operação (ativa / saturação / corte). Efeito Early visualizável.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+    <a class="tool-card" href="eletronica-retificador.html">
+      <div class="tool-card-top"><div class="tool-name">Retificador — Forma de Onda</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Simulação ciclo a ciclo de retificador meia onda / onda completa com e sem capacitor de filtro. V<sub>ripple</sub> calculado.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- Máquinas Elétricas -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-icon" style="background:#F8E8FF;">⚙️</div>
+    <div class="section-name">Máquinas Elétricas<span class="section-count">3</span></div>
+  </div>
+  <div class="tools-grid">
+    <a class="tool-card" href="maquinas-trafo.html">
+      <div class="tool-card-top"><div class="tool-name">Transformador — η e Regulação VR</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Rendimento η×carregamento com ponto ótimo automático. Regulação VR×FP mostrando inversão para carga adiantada.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+    <a class="tool-card" href="maquinas-motor-ind.html">
+      <div class="tool-card-top"><div class="tool-name">Motor de Indução — Torque × Velocidade</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Equivalente de Thevenin, 3 tipos de carga (constante, linear, quadrática), ponto de operação automático.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+    <a class="tool-card" href="maquinas-motor-cc.html">
+      <div class="tool-card-top"><div class="tool-name">Motor CC — Velocidade × Torque</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Curva n×T com escala log no torque, queda de velocidade em carga, advertência de velocidade de vazio.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- SEP -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-icon" style="background:#FFF3E0;">🏭</div>
+    <div class="section-name">SEP — Sistemas de Potência<span class="section-count">2</span></div>
+  </div>
+  <div class="tools-grid">
+    <a class="tool-card" href="sep-pdelta.html">
+      <div class="tool-card-top"><div class="tool-name">P-δ + Corrente de Curto Trifásico</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Curva de transferência de potência P = (VS·VR/X)·sin(δ). Perfil de I<sub>cc</sub> ao longo da linha em função da distância.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+    <a class="tool-card" href="protecao-coordenograma.html">
+      <div class="tool-card-top"><div class="tool-name">Coordenograma de Proteção 51/50</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Curvas IEC (SI/VI/EI), relé 50, curva de dano do transformador e ponto de inrush em escala log-log.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- GTDE -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-icon" style="background:#E8FFEE;">🔌</div>
+    <div class="section-name">GTDE — Transmissão e Distribuição<span class="section-count">1</span></div>
+  </div>
+  <div class="tools-grid">
+    <a class="tool-card" href="gtde-lt.html">
+      <div class="tool-card-top"><div class="tool-name">Perfil de Tensão + ΔV% × FP</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Perfil |V(x)| ao longo da LT com Efeito Ferranti para carga capacitiva. Queda ΔV% em função do FP — ponto de inversão automático.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- Controle -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-icon" style="background:#E8F0FF;">📈</div>
+    <div class="section-name">Controle<span class="section-count">1</span></div>
+  </div>
+  <div class="tools-grid">
+    <a class="tool-card" href="controle-bode.html">
+      <div class="tool-card-top"><div class="tool-name">Bode + Resposta ao Degrau</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Diagrama de Bode (magnitude + fase) e resposta ao degrau para sistemas de 1ª e 2ª ordem. Overshoot, t_pico e t_acom. ao vivo.</div>
+      <div class="tool-tags"><span class="tag tag-chart">Chart.js</span><span class="tag tag-cross">Crosshair</span><span class="tag tag-exp">Experimento</span></div>
+    </a>
+  </div>
+</div>
+
+<!-- Digitais -->
+<div class="section">
+  <div class="section-hdr">
+    <div class="section-icon" style="background:#FFF0F0;">🔢</div>
+    <div class="section-name">Circuitos Digitais<span class="section-count">2</span></div>
+  </div>
+  <div class="tools-grid">
+    <a class="tool-card" href="digitais-timing.html">
+      <div class="tool-card-top"><div class="tool-name">Temporização — Flip-Flops D, JK, T</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Diagrama de temporização interativo: edite os bits de entrada ciclo a ciclo e veja Q e Q̄ atualizarem ao vivo.</div>
+      <div class="tool-tags"><span class="tag tag-canvas">Canvas</span><span class="tag tag-exp">Interativo</span></div>
+    </a>
+    <a class="tool-card" href="digitais-karnaugh.html">
+      <div class="tool-card-top"><div class="tool-name">Mapa de Karnaugh (2–4 variáveis)</div><span class="tool-arrow">→</span></div>
+      <div class="tool-desc">Clique nas células para 0/1/X. Agrupamento automático e expressão SOP mínima com todos os implicantes primos identificados.</div>
+      <div class="tool-tags"><span class="tag tag-exp">Interativo</span><span class="tag tag-exp">Auto-SOP</span></div>
+    </a>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

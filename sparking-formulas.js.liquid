@@ -1,0 +1,14 @@
+---
+---
+(function(){
+var F={
+{% for f in site.data.formulas %}{{ f[0] | jsonify }}:{{ f[1] | jsonify }},
+{% endfor %}
+};
+document.addEventListener('DOMContentLoaded',function(){
+  var tool=document.body.getAttribute('data-tool');
+  if(!tool||!F[tool])return;
+  var el=document.getElementById('panel-form');
+  if(el)el.innerHTML=F[tool];
+});
+})();

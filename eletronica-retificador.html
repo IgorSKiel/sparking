@@ -1,0 +1,177 @@
+---
+layout: tool
+title: "Eletrônica — Retificador"
+tool_id: retificador
+render_with_liquid: false
+---
+<div class="hdr">
+  <div class="hdr-tag">Sparking · Eletrônica</div>
+  <h1>Retificador + Filtro de Capacitor</h1>
+  <p>Forma de onda de saída com e sem capacitor — veja o ripple cair ao aumentar C</p>
+</div>
+<div class="wrap">
+
+<div class="tabs">
+  <button class="tab active" onclick="setTab('main',this)">Análise</button>
+  <button class="tab" onclick="setTab('form',this)">Fórmulas</button>
+</div>
+
+<div id="panel-main" class="panel active">
+
+<div class="insight">
+  <span class="insight-icon">🔋</span>
+  <span id="insight-txt">Aumente C e veja o ripple cair. Com C grande, a saída se aproxima de uma linha reta DC.</span>
+</div>
+
+<div class="main-grid">
+  <div class="card">
+    <div class="sub-tabs">
+      <button class="sub-tab active" onclick="setSubPanel('teo',this)">Teórico</button>
+      <button class="sub-tab" onclick="setSubPanel('exp',this)">Experimento</button>
+    </div>
+    <div id="sp-teo" class="sub-panel active">
+      <div class="card-lbl">Fonte e Carga</div>
+      <div class="field"><label>Vm — tensão de pico (V)</label><input id="Vm" type="number" value="15" step="0.5" oninput="atualizar()"></div>
+      <div class="field"><label>f (Hz)</label><input id="freq" type="number" value="60" step="1" oninput="atualizar()"></div>
+      <div class="field"><label>R<sub>L</sub> (Ω)</label><input id="RL" type="number" value="1000" oninput="atualizar()"></div>
+      <div class="field"><label>C (µF)</label><input id="C" type="number" value="100" step="10" oninput="atualizar()"></div>
+      <div class="field"><label>Tipo</label><select id="tipo" onchange="atualizar()"><option value="fw">Onda completa</option><option value="hw">Meia onda</option></select></div>
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-val" id="kpi_vpk">—</div><div class="kpi-lbl">V<sub>pico</sub> saída (V)</div></div>
+        <div class="kpi"><div class="kpi-val" id="kpi_vr">—</div><div class="kpi-lbl">Ripple pico-pico (V)</div></div>
+        <div class="kpi"><div class="kpi-val" id="kpi_vdc">—</div><div class="kpi-lbl">Vdc médio (V)</div></div>
+      </div>
+    </div>
+    <div id="sp-exp" class="sub-panel">
+      <div class="exp-col-hint">t (ms) · Vout medido (V)</div>
+      <div class="exp-tbl-wrap">
+        <table class="exp-tbl">
+          <thead><tr><th>t (ms)</th><th>V (V)</th><th></th></tr></thead>
+          <tbody id="exp-tbody"></tbody>
+        </table>
+      </div>
+      <div class="exp-foot">
+        <button class="btn-add" onclick="addExpRow()">+ Linha</button>
+        <button class="btn-clr" onclick="clearExp()">Limpar</button>
+      </div>
+    </div>
+  </div>
+  <div class="card chart-card">
+    <div class="chart-title">Vout × Tempo — com e sem capacitor</div>
+    <div class="chart-wrap"><canvas id="chart-main"></canvas></div>
+  </div>
+</div>
+
+</div><!-- /panel-main -->
+
+<div id="panel-form" class="panel"></div><!-- /panel-form -->
+
+</div>
+<script>
+function setTab(id,el){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('panel-'+id).classList.add('active');
+  el.classList.add('active');
+  if(id==='form')MathJax?.typesetPromise?.([document.getElementById('panel-form')]);
+}
+var expState=[];
+var _chart=null;
+var _deb;
+
+function gv(id){return parseFloat(document.getElementById(id)?.value);}
+function sv(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+function fmN(v){if(Math.abs(v)>=100)return v.toFixed(1);if(Math.abs(v)>=1)return v.toFixed(3);if(Math.abs(v)>=0.001)return v.toPrecision(3);return v.toExponential(2);}
+function rRct(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
+
+function atualizar(){clearTimeout(_deb);_deb=setTimeout(calcular,200);}
+
+function simular(Vm,f,RL,C_F,tipo){
+  var Vd=tipo==='fw'?1.4:0.7;
+  var Vpk=Vm-Vd;if(Vpk<0)return{pts:[],ptsNoC:[],Vpk:0,Vr:0,Vdc:0};
+  var T=1/f;var NCYC=6;var tMax=NCYC*T;
+  var NSTEPS=NSTEPS=600*NCYC;var dt=tMax/NSTEPS;
+  var pts=[],ptsNoC=[];
+  var vc=0;
+  var vMax=-Infinity,vMin=Infinity;
+  var sumV=0;
+  for(var i=0;i<=NSTEPS;i++){
+    var t=i*dt;
+    var vsin=Vm*Math.sin(2*Math.PI*f*t);
+    var vrec=tipo==='fw'?Math.abs(vsin)-Vd:Math.max(0,vsin-Vd);
+    if(vrec<0)vrec=0;
+    ptsNoC.push({x:+(t*1000).toFixed(3),y:+vrec.toFixed(4)});
+    if(C_F>0){
+      if(vrec>vc){vc=vrec;}
+      else{vc=vc*Math.exp(-dt/(RL*C_F));if(vc<0)vc=0;}
+    }else{vc=vrec;}
+    pts.push({x:+(t*1000).toFixed(3),y:+vc.toFixed(4)});
+    if(i>NSTEPS/3){if(vc>vMax)vMax=vc;if(vc<vMin)vMin=vc;sumV+=vc;}
+  }
+  var Vdc=sumV/(NSTEPS*2/3+1);
+  return{pts,ptsNoC,Vpk:vMax,Vr:vMax-vMin,Vdc};
+}
+
+function isExpActive(){
+  return !!document.getElementById('sp-exp')?.classList.contains('active');
+}
+
+function calcular(){
+  var Vm=gv('Vm'),f=gv('freq'),RL=gv('RL'),C_uF=gv('C'),tipo=document.getElementById('tipo').value;
+  if(!Vm||!f||!RL)return;
+  var C_F=C_uF/1e6;
+  var res=simular(Vm,f,RL,C_F,tipo);
+  sv('kpi_vpk',res.Vpk.toFixed(2));sv('kpi_vr',res.Vr.toFixed(3));sv('kpi_vdc',res.Vdc.toFixed(2));
+  document.getElementById('insight-txt').textContent='Ripple pico-pico: '+res.Vr.toFixed(3)+' V ('+((res.Vr/res.Vpk*100).toFixed(1))+'% de Vpico). Vdc médio: '+res.Vdc.toFixed(2)+' V. Aumente C para reduzir o ripple.';
+
+  var datasets=[];
+  if(!isExpActive()){
+    datasets=[
+      {label:'Vout (com C)',data:res.pts,borderColor:'#007575',backgroundColor:'transparent',borderWidth:2.5,pointRadius:0,tension:0},
+      {label:'Sem C (apenas diodo)',data:res.ptsNoC,borderColor:'#C8102E',backgroundColor:'transparent',borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:0}
+    ];
+    showStats('main',null);
+  } else {
+    var ep=getExpPts();
+    if(ep){datasets.push({type:'scatter',label:'Medido',data:ep,borderColor:'#F0A500',backgroundColor:'#F0A50099',pointRadius:3,pointHoverRadius:5,showLine:true,borderWidth:2});const _xmn=ep.reduce((a,p)=>Math.min(a,p.x),Infinity),_xmx=ep.reduce((a,p)=>Math.max(a,p.x),-Infinity);const _rg=regDataset(ep,_xmn,_xmx);if(_rg)datasets.push(_rg);showStats('main',ep);}
+    else{showStats('main',null);}
+  }
+
+  var tMax_ms=(6/f)*1000;
+  var ctx=document.getElementById('chart-main').getContext('2d');
+  if(_chart)_chart.destroy();
+  _chart=new Chart(ctx,{type:'line',plugins:[crosshairPlugin],data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:true,position:'top',labels:{font:{size:13,family:'Inter',weight:'600'},color:'#556070',usePointStyle:true,pointStyleWidth:10}},tooltip:{enabled:false}},scales:{x:{type:'linear',min:0,max:+tMax_ms.toFixed(1),grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'Tempo (ms)',color:'#556070',font:{size:11}}},y:{type:'linear',min:0,grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'V_out (V)',color:'#556070',font:{size:11}}}}}});
+}
+
+function addExpRow(){expState.push({id:Date.now()+Math.random(),x:NaN,y:NaN});renderExpTable();}
+function delExpRow(id){expState=expState.filter(function(r){return r.id!==id;});renderExpTable();calcular();}
+function clearExp(){expState=[];renderExpTable();calcular();}
+function renderExpTable(){
+  var tbody=document.getElementById('exp-tbody');tbody.innerHTML='';
+  expState.forEach(function(row){
+    var tr=document.createElement('tr');
+    ['x','y'].forEach(function(k){
+      var td=document.createElement('td'),inp=document.createElement('input');
+      inp.type='number';inp.step='any';if(!isNaN(row[k]))inp.value=row[k];
+      inp.oninput=function(e){row[k]=parseFloat(e.target.value);calcular();};
+      td.appendChild(inp);tr.appendChild(td);
+    });
+    var tdD=document.createElement('td'),btn=document.createElement('button');
+    btn.className='exp-del';btn.textContent='✕';btn.onclick=function(){delExpRow(row.id);};
+    tdD.appendChild(btn);tr.appendChild(tdD);tbody.appendChild(tr);
+  });
+}
+function getExpPts(){
+  var pts=expState.map(function(r){return{x:r.x,y:r.y};}).filter(function(p){return!isNaN(p.x)&&!isNaN(p.y)&&isFinite(p.x)&&isFinite(p.y);});
+  return pts.length?pts:null;
+}
+function setSubPanel(spid,btn){
+  document.querySelectorAll('.sub-panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.sub-tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('sp-'+spid).classList.add('active');btn.classList.add('active');
+  if(spid==='exp'&&expState.length===0)addExpRow();
+  calcular();
+}
+calcular();
+
+</script>

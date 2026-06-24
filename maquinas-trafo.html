@@ -1,0 +1,230 @@
+---
+layout: tool
+title: "Máquinas — Transformador"
+tool_id: trafo
+render_with_liquid: false
+---
+<div class="hdr">
+  <div class="hdr-tag">Sparking · Máquinas</div>
+  <h1>Transformador — Rendimento e Regulação</h1>
+  <p>η × fator de carga e Regulação de Tensão × FP</p>
+</div>
+<div class="wrap">
+
+<div class="tabs">
+  <button class="tab active" onclick="setTab('eta',this)">Rendimento η × x</button>
+  <button class="tab" onclick="setTab('vr',this)">Regulação VR × FP</button>
+  <button class="tab" onclick="setTab('form',this)">Fórmulas</button>
+</div>
+
+<!-- ETA -->
+<div id="panel-eta" class="panel active">
+  <div class="insight"><span class="insight-icon">⚡</span><span id="ins-eta">Mude FP: curva se desloca. Pico de η ocorre em xopt = √(Pfe/Pcu).</span></div>
+  <div class="main-grid">
+    <div class="card">
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="setSubPanel('eta','teo',this)">Teórico</button>
+        <button class="sub-tab" onclick="setSubPanel('eta','exp',this)">Experimento</button>
+      </div>
+      <div id="sp-eta-teo" class="sub-panel active">
+        <div class="card-lbl">Transformador</div>
+        <div class="field"><label>Sn (kVA)</label><input id="eta_Sn" type="number" value="100" step="5" oninput="calcEta()"></div>
+        <div class="field"><label>Perdas ferro (W)</label><input id="eta_Pfe" type="number" value="400" step="10" oninput="calcEta()"></div>
+        <div class="field"><label>Perdas cobre nominal (W)</label><input id="eta_Pcu" type="number" value="1200" step="10" oninput="calcEta()"></div>
+        <div class="field"><label>FP da carga</label><input id="eta_FP" type="number" value="0.85" step="0.05" min="0.1" max="1" oninput="calcEta()"></div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-val" id="eta_xopt">—</div><div class="kpi-lbl">xopt (carga ótima)</div></div>
+          <div class="kpi"><div class="kpi-val" id="eta_max">—</div><div class="kpi-lbl">η<sub>máx</sub> (%)</div></div>
+          <div class="kpi"><div class="kpi-val" id="eta_fl">—</div><div class="kpi-lbl">η a plena carga (%)</div></div>
+        </div>
+      </div>
+      <div id="sp-eta-exp" class="sub-panel">
+        <div class="exp-col-hint">x (0–1) · η medido (%)</div>
+        <div class="exp-tbl-wrap">
+          <table class="exp-tbl">
+            <thead><tr><th>x</th><th>η (%)</th><th></th></tr></thead>
+            <tbody id="exp-tbody-eta"></tbody>
+          </table>
+        </div>
+        <div class="exp-foot">
+          <button class="btn-add" onclick="addExpRow('eta')">+ Linha</button>
+          <button class="btn-clr" onclick="clearExp('eta')">Limpar</button>
+        </div>
+      </div>
+    </div>
+    <div class="card chart-card">
+      <div class="chart-title">Rendimento × Fator de Carga</div>
+      <div class="chart-wrap"><canvas id="chart-eta"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- VR -->
+<div id="panel-vr" class="panel">
+  <div class="insight"><span class="insight-icon">📉</span><span id="ins-vr">VR negativo: tensão no secundário SOBE com carga capacitiva — não-intuitivo!</span></div>
+  <div class="main-grid">
+    <div class="card">
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="setSubPanel('vr','teo',this)">Teórico</button>
+        <button class="sub-tab" onclick="setSubPanel('vr','exp',this)">Experimento</button>
+      </div>
+      <div id="sp-vr-teo" class="sub-panel active">
+        <div class="card-lbl">Parâmetros</div>
+        <div class="field"><label>Req (Ω)</label><input id="vr_Req" type="number" value="0.5" step="0.05" oninput="calcVR()"></div>
+        <div class="field"><label>Xeq (Ω)</label><input id="vr_Xeq" type="number" value="2.0" step="0.1" oninput="calcVR()"></div>
+        <div class="field"><label>Ifl — corrente plena carga (A)</label><input id="vr_Ifl" type="number" value="100" oninput="calcVR()"></div>
+        <div class="field"><label>V2n — tensão nominal sec. (V)</label><input id="vr_V2n" type="number" value="220" oninput="calcVR()"></div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-val" id="vr_lag">—</div><div class="kpi-lbl">VR FP=0,8 atrasado (%)</div></div>
+          <div class="kpi"><div class="kpi-val" id="vr_lead">—</div><div class="kpi-lbl">VR FP=0,8 adiantado (%)</div></div>
+          <div class="kpi"><div class="kpi-val" id="vr_zero">—</div><div class="kpi-lbl">FP que anula VR</div></div>
+        </div>
+      </div>
+      <div id="sp-vr-exp" class="sub-panel">
+        <div class="exp-col-hint">FP (0–1, + atrasado, − adiant.) · VR medido (%)</div>
+        <div class="exp-tbl-wrap">
+          <table class="exp-tbl">
+            <thead><tr><th>FP</th><th>VR (%)</th><th></th></tr></thead>
+            <tbody id="exp-tbody-vr"></tbody>
+          </table>
+        </div>
+        <div class="exp-foot">
+          <button class="btn-add" onclick="addExpRow('vr')">+ Linha</button>
+          <button class="btn-clr" onclick="clearExp('vr')">Limpar</button>
+        </div>
+      </div>
+    </div>
+    <div class="card chart-card">
+      <div class="chart-title">Regulação de Tensão × Fator de Potência</div>
+      <div class="chart-wrap"><canvas id="chart-vr"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-form" class="panel"></div><!-- /panel-form -->
+
+</div>
+<script>
+var expState={eta:[],vr:[]};
+var charts={};
+var _deb;
+
+function gv(id){return parseFloat(document.getElementById(id)?.value);}
+function sv(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+function fmN(v){if(Math.abs(v)>=100)return v.toFixed(1);if(Math.abs(v)>=1)return v.toFixed(3);return v.toPrecision(3);}
+function rRct(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
+function makeCrosshair(xLabel,yLabel){return{id:'crosshair',afterInit:function(c){c._chX=null;c.canvas.addEventListener('mousemove',function(e){var r=c.canvas.getBoundingClientRect();c._chX=e.clientX-r.left;c.draw();});c.canvas.addEventListener('mouseleave',function(){c._chX=null;c.draw();});},afterDraw:function(c){var mx=c._chX;if(mx==null)return;var ctx=c.ctx,ca=c.chartArea;if(mx<ca.left||mx>ca.right)return;var xv=c.scales.x.getValueForPixel(mx);ctx.save();ctx.beginPath();ctx.moveTo(mx,ca.top);ctx.lineTo(mx,ca.bottom);ctx.strokeStyle='rgba(27,46,80,.35)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);var vals=[];c.data.datasets.forEach(function(ds){if(ds.type==='scatter')return;var pts=ds.data,lo=null,hi=null;for(var j=0;j<pts.length-1;j++){if(pts[j].x<=xv&&pts[j+1].x>=xv){lo=pts[j];hi=pts[j+1];break;}}if(!lo)return;var t=hi.x===lo.x?0:(xv-lo.x)/(hi.x-lo.x);var yv=lo.y+t*(hi.y-lo.y);var yp=c.scales.y.getPixelForValue(yv);ctx.beginPath();ctx.arc(mx,yp,4,0,2*Math.PI);ctx.fillStyle=ds.borderColor;ctx.fill();vals.push({label:ds.label,y:yv,color:ds.borderColor});});if(!vals.length){ctx.restore();return;}var pad=9,lh=18;ctx.font='600 12px Inter,sans-serif';var lines=[xLabel+': '+fmN(xv)].concat(vals.map(function(v){return v.label+': '+fmN(v.y)+' '+yLabel;}));var mw=Math.max.apply(null,lines.map(function(l){return ctx.measureText(l).width;}));var bw=mw+pad*2,bh=lines.length*lh+pad*2-2,bx=mx+14;if(bx+bw>ca.right-4)bx=mx-bw-14;ctx.fillStyle='rgba(255,255,255,.96)';ctx.strokeStyle='#CDD3E0';ctx.lineWidth=1;rRct(ctx,bx,ca.top+8,bw,bh,7);ctx.fill();ctx.stroke();lines.forEach(function(line,i){ctx.fillStyle=i===0?'#556070':vals[i-1].color;ctx.font=i===0?'12px Inter,sans-serif':'700 12px Inter,sans-serif';ctx.fillText(line,bx+pad,ca.top+8+pad+i*lh+12);});ctx.restore();}};}
+
+function isExpActive(pid){
+  return !!document.getElementById('sp-'+pid+'-exp')?.classList.contains('active');
+}
+
+function calcEta(){
+  var Sn=gv('eta_Sn')*1000,Pfe=gv('eta_Pfe'),Pcu=gv('eta_Pcu'),FP=gv('eta_FP');
+  if(!Sn||!Pfe||!Pcu||!FP)return;
+  var xopt=Math.sqrt(Pfe/Pcu);
+  var etaMax=0,etaFl=0;
+  var datasets=[];
+  if(!isExpActive('eta')){
+    var N=200;var pts=[];
+    for(var i=1;i<=N;i++){
+      var x=i*1.5/N;
+      var Pout=x*Sn*FP,Ploss=Pfe+x*x*Pcu;
+      var eta=Pout/(Pout+Ploss)*100;
+      if(eta>etaMax)etaMax=eta;
+      if(Math.abs(x-1)<1.5/N*0.7)etaFl=eta;
+      pts.push({x:+x.toFixed(3),y:+eta.toFixed(3)});
+    }
+    sv('eta_xopt',xopt.toFixed(3));sv('eta_max',etaMax.toFixed(2));sv('eta_fl',etaFl.toFixed(2));
+    document.getElementById('ins-eta').textContent='η máximo: '+etaMax.toFixed(2)+'% em xopt = '+xopt.toFixed(3)+'. A plena carga: '+etaFl.toFixed(2)+'%. FP = '+FP+' — mude o FP para ver a curva se deslocar.';
+    datasets=[{label:'η (FP='+FP+')',data:pts,borderColor:'#007575',backgroundColor:'#00757512',borderWidth:2.5,pointRadius:0,tension:0.2,fill:true}];
+    datasets.push({type:'scatter',label:'xopt',data:[{x:+xopt.toFixed(3),y:+etaMax.toFixed(3)}],borderColor:'#C8102E',backgroundColor:'#C8102E',pointRadius:8});
+    showStats('vr',null);
+  } else {
+    var ep=getExpPts('eta');
+    if(ep){datasets.push({type:'scatter',label:'Medido',data:ep,borderColor:'#F0A500',backgroundColor:'#F0A50099',pointRadius:3,pointHoverRadius:5,showLine:true,borderWidth:2});const _rg2=regDataset(ep,ep.reduce((a,p)=>Math.min(a,p.x),Infinity),ep.reduce((a,p)=>Math.max(a,p.x),-Infinity));if(_rg2)datasets.push(_rg2);showStats('vr',ep);}
+    else{showStats('vr',null);}
+  }
+
+  var ctx=document.getElementById('chart-eta').getContext('2d');
+  if(charts.eta)charts.eta.destroy();
+  charts.eta=new Chart(ctx,{type:'line',plugins:[makeCrosshair('x','%')],data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:true,position:'top',labels:{font:{size:13,family:'Inter',weight:'600'},color:'#556070',usePointStyle:true,pointStyleWidth:10}},tooltip:{enabled:false}},scales:{x:{type:'linear',min:0,max:1.5,grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'Fator de carga x',color:'#556070',font:{size:11}}},y:{type:'linear',min:80,max:101,grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'η (%)',color:'#556070',font:{size:11}}}}}});
+}
+
+function calcVR(){
+  var Req=gv('vr_Req'),Xeq=gv('vr_Xeq'),Ifl=gv('vr_Ifl'),V2n=gv('vr_V2n');
+  if(!Req||!Xeq||!Ifl||!V2n)return;
+  var N=200;var ptsLag=[],ptsLead=[];
+  for(var i=1;i<=N;i++){
+    var FP=i/N;
+    var phi=Math.acos(FP);
+    var VR_lag=Ifl*(Req*FP+Xeq*Math.sin(phi))/V2n*100;
+    var VR_lead=Ifl*(Req*FP-Xeq*Math.sin(phi))/V2n*100;
+    ptsLag.push({x:+FP.toFixed(4),y:+VR_lag.toFixed(3)});
+    ptsLead.push({x:+FP.toFixed(4),y:+VR_lead.toFixed(3)});
+  }
+  var VR_lag_08=Ifl*(Req*0.8+Xeq*0.6)/V2n*100;
+  var VR_lead_08=Ifl*(Req*0.8-Xeq*0.6)/V2n*100;
+  var FP_zero=Req/Math.sqrt(Req*Req+Xeq*Xeq);
+  sv('vr_lag',VR_lag_08.toFixed(2));sv('vr_lead',VR_lead_08.toFixed(2));sv('vr_zero',FP_zero.toFixed(3));
+  document.getElementById('ins-vr').textContent='VR = 0 em FP = '+FP_zero.toFixed(3)+' (adiantado). Abaixo desse FP, V_2 aumenta com a carga — regulação negativa.';
+
+  var datasets=[];
+  if(!isExpActive('vr')){
+    datasets=[
+      {label:'VR atrasado',data:ptsLag,borderColor:'#C8102E',backgroundColor:'transparent',borderWidth:2.5,pointRadius:0,tension:0.1},
+      {label:'VR adiantado',data:ptsLead,borderColor:'#007575',backgroundColor:'transparent',borderWidth:2.5,pointRadius:0,tension:0.1}
+    ];
+    showStats('vr',null);
+  } else {
+    var ep=getExpPts('vr');
+    if(ep){datasets.push({type:'scatter',label:'Medido',data:ep,borderColor:'#F0A500',backgroundColor:'#F0A50099',pointRadius:3,pointHoverRadius:5,showLine:true,borderWidth:2});const _rg2=regDataset(ep,ep.reduce((a,p)=>Math.min(a,p.x),Infinity),ep.reduce((a,p)=>Math.max(a,p.x),-Infinity));if(_rg2)datasets.push(_rg2);showStats('vr',ep);}
+    else{showStats('vr',null);}
+  }
+
+  var allVR=ptsLag.concat(ptsLead).map(function(p){return p.y;});
+  var yMin=Math.min.apply(null,allVR)*1.1-1,yMax=Math.max.apply(null,allVR)*1.1+1;
+  var ctx=document.getElementById('chart-vr').getContext('2d');
+  if(charts.vr)charts.vr.destroy();
+  charts.vr=new Chart(ctx,{type:'line',plugins:[makeCrosshair('FP','%')],data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:true,position:'top',labels:{font:{size:13,family:'Inter',weight:'600'},color:'#556070',usePointStyle:true,pointStyleWidth:10}},tooltip:{enabled:false}},scales:{x:{type:'linear',min:0,max:1,grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'Fator de Potência',color:'#556070',font:{size:11}}},y:{type:'linear',min:+yMin.toFixed(1),max:+yMax.toFixed(1),grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'VR (%)',color:'#556070',font:{size:11}}}}}});
+}
+
+function addExpRow(pid){expState[pid].push({id:Date.now()+Math.random(),x:NaN,y:NaN});renderExpTable(pid);}
+function delExpRow(pid,id){expState[pid]=expState[pid].filter(function(r){return r.id!==id;});renderExpTable(pid);pid==='eta'?calcEta():calcVR();}
+function clearExp(pid){expState[pid]=[];renderExpTable(pid);pid==='eta'?calcEta():calcVR();}
+function renderExpTable(pid){
+  var tbody=document.getElementById('exp-tbody-'+pid);tbody.innerHTML='';
+  expState[pid].forEach(function(row){
+    var tr=document.createElement('tr');
+    ['x','y'].forEach(function(k){
+      var td=document.createElement('td'),inp=document.createElement('input');
+      inp.type='number';inp.step='any';if(!isNaN(row[k]))inp.value=row[k];
+      inp.oninput=function(e){row[k]=parseFloat(e.target.value);pid==='eta'?calcEta():calcVR();};
+      td.appendChild(inp);tr.appendChild(td);
+    });
+    var tdD=document.createElement('td'),btn=document.createElement('button');
+    btn.className='exp-del';btn.textContent='✕';btn.onclick=function(){delExpRow(pid,row.id);};
+    tdD.appendChild(btn);tr.appendChild(tdD);tbody.appendChild(tr);
+  });
+}
+function getExpPts(pid){
+  var pts=expState[pid].map(function(r){return{x:r.x,y:r.y};}).filter(function(p){return!isNaN(p.x)&&!isNaN(p.y)&&isFinite(p.x)&&isFinite(p.y);});
+  return pts.length?pts:null;
+}
+function setSubPanel(pid,spid,btn){
+  var panel=document.getElementById('panel-'+pid);
+  panel.querySelectorAll('.sub-panel').forEach(function(p){p.classList.remove('active');});
+  panel.querySelectorAll('.sub-tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('sp-'+pid+'-'+spid).classList.add('active');btn.classList.add('active');
+  if(spid==='exp'&&expState[pid].length===0)addExpRow(pid);
+  pid==='eta'?calcEta():calcVR();
+}
+function setTab(id,el){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');
+  setTimeout(function(){if(id!=='form'){id==='eta'?calcEta():calcVR();}},40);
+}
+calcEta();calcVR();
+
+</script>
