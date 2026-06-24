@@ -1,0 +1,287 @@
+---
+layout: tool
+title: "Controle — Bode"
+tool_id: bode
+render_with_liquid: false
+---
+<div class="hdr">
+  <div class="hdr-tag">Sparking · Controle</div>
+  <h1>Bode + Resposta ao Degrau</h1>
+  <p>1ª e 2ª ordem — diagrama de Bode e resposta temporal conectados</p>
+</div>
+<div class="wrap">
+
+<div class="tabs">
+  <button class="tab active" onclick="setTab('bode',this)">Diagrama de Bode</button>
+  <button class="tab" onclick="setTab('degrau',this)">Resposta ao Degrau</button>
+  <button class="tab" onclick="setTab('form',this)">Fórmulas</button>
+</div>
+
+<!-- BODE -->
+<div id="panel-bode" class="panel active">
+  <div class="insight"><span class="insight-icon">📊</span><span id="ins-bode">Reduza ζ abaixo de 0,7: o pico de ressonância no Bode e a oscilação no degrau aparecem juntos.</span></div>
+  <div class="main-grid">
+    <div class="card">
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="setSubPanel('bode','teo',this)">Teórico</button>
+        <button class="sub-tab" onclick="setSubPanel('bode','exp',this)">Experimento</button>
+      </div>
+      <div id="sp-bode-teo" class="sub-panel active">
+        <div class="card-lbl">Sistema</div>
+        <div class="field"><label>Ordem</label><select id="ordem" onchange="calcBode()"><option value="2">2ª Ordem</option><option value="1">1ª Ordem</option></select></div>
+        <div class="field"><label>K (ganho DC)</label><input id="K" type="number" value="1" step="0.1" oninput="calcBode()"></div>
+        <div id="row-tau" class="field"><label>τ (constante de tempo, s)</label><input id="tau" type="number" value="1" step="0.1" oninput="calcBode()"></div>
+        <div id="row-wn" class="field" style="display:none"><label>ωn (rad/s)</label><input id="wn" type="number" value="10" step="1" oninput="calcBode()"></div>
+        <div id="row-zeta" class="field" style="display:none"><label>ζ (amortecimento)</label><input id="zeta" type="number" value="0.5" step="0.05" min="0.05" max="3" oninput="calcBode()"></div>
+        <div class="kpi-row">
+          <div class="kpi" id="kpi-Mp-box"><div class="kpi-val" id="kpi_Mp">—</div><div class="kpi-lbl">Pico |H| (dB)</div></div>
+          <div class="kpi"><div class="kpi-val" id="kpi_PM">—</div><div class="kpi-lbl">Margem de fase (°)</div></div>
+          <div class="kpi"><div class="kpi-val" id="kpi_wc">—</div><div class="kpi-lbl">ω cruzamento (rad/s)</div></div>
+        </div>
+      </div>
+      <div id="sp-bode-exp" class="sub-panel">
+        <div class="exp-col-hint">ω (rad/s) · |H| dB medido</div>
+        <div class="exp-tbl-wrap">
+          <table class="exp-tbl">
+            <thead><tr><th>ω (r/s)</th><th>|H| (dB)</th><th></th></tr></thead>
+            <tbody id="exp-tbody-bode"></tbody>
+          </table>
+        </div>
+        <div class="exp-foot">
+          <button class="btn-add" onclick="addExpRow('bode')">+ Linha</button>
+          <button class="btn-clr" onclick="clearExp('bode')">Limpar</button>
+        </div>
+      </div>
+    </div>
+    <div class="card chart-card">
+      <div><div class="chart-title">Magnitude (dB)</div><div class="chart-wrap"><canvas id="chart-bode-mag"></canvas></div></div>
+      <div><div class="chart-title">Fase (°)</div><div class="chart-wrap"><canvas id="chart-bode-fase"></canvas></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DEGRAU -->
+<div id="panel-degrau" class="panel">
+  <div class="insight"><span class="insight-icon">⏱️</span><span id="ins-degrau">Mude ζ e observe: overshoot, tempo de pico e tempo de acomodação mudam ao vivo.</span></div>
+  <div class="main-grid">
+    <div class="card">
+      <div class="sub-tabs">
+        <button class="sub-tab active" onclick="setSubPanel('degrau','teo',this)">Teórico</button>
+        <button class="sub-tab" onclick="setSubPanel('degrau','exp',this)">Experimento</button>
+      </div>
+      <div id="sp-degrau-teo" class="sub-panel active">
+        <div class="card-lbl">Sistema (mesmos parâmetros)</div>
+        <div class="field" style="font-size:.8rem;color:var(--sub);padding:6px 10px;background:var(--surf2);border-radius:8px;">Altere os parâmetros na aba Bode — aqui o gráfico atualiza automaticamente.</div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-val" id="kpi_MP_pct">—</div><div class="kpi-lbl">Overshoot (%)</div></div>
+          <div class="kpi"><div class="kpi-val" id="kpi_tp">—</div><div class="kpi-lbl">t pico (s)</div></div>
+          <div class="kpi"><div class="kpi-val" id="kpi_ts">—</div><div class="kpi-lbl">acomod. 2% (s)</div></div>
+        </div>
+      </div>
+      <div id="sp-degrau-exp" class="sub-panel">
+        <div class="exp-col-hint">t (s) · y medido</div>
+        <div class="exp-tbl-wrap">
+          <table class="exp-tbl">
+            <thead><tr><th>t (s)</th><th>y</th><th></th></tr></thead>
+            <tbody id="exp-tbody-degrau"></tbody>
+          </table>
+        </div>
+        <div class="exp-foot">
+          <button class="btn-add" onclick="addExpRow('degrau')">+ Linha</button>
+          <button class="btn-clr" onclick="clearExp('degrau')">Limpar</button>
+        </div>
+      </div>
+    </div>
+    <div class="card chart-card">
+      <div class="chart-title">y(t) — resposta ao degrau unitário</div>
+      <div class="chart-wrap tall"><canvas id="chart-degrau"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div id="panel-form" class="panel"></div>
+
+</div>
+<script>
+var expState={bode:[],degrau:[]};
+var charts={};
+var _deb;
+
+function gv(id){return parseFloat(document.getElementById(id)?.value);}
+function sv(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
+function fmN(v){if(Math.abs(v)>=100)return v.toFixed(1);if(Math.abs(v)>=1)return v.toFixed(3);return v.toPrecision(3);}
+function rRct(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
+function makeCrosshair(xLabel,yLabel){return{id:'crosshair_'+xLabel,afterInit:function(c){c._chX=null;c.canvas.addEventListener('mousemove',function(e){var r=c.canvas.getBoundingClientRect();c._chX=e.clientX-r.left;c.draw();});c.canvas.addEventListener('mouseleave',function(){c._chX=null;c.draw();});},afterDraw:function(c){var mx=c._chX;if(mx==null)return;var ctx=c.ctx,ca=c.chartArea;if(mx<ca.left||mx>ca.right)return;var xv=c.scales.x.getValueForPixel(mx);ctx.save();ctx.beginPath();ctx.moveTo(mx,ca.top);ctx.lineTo(mx,ca.bottom);ctx.strokeStyle='rgba(27,46,80,.35)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);var vals=[];c.data.datasets.forEach(function(ds){if(ds.type==='scatter')return;var pts=ds.data,lo=null,hi=null;for(var j=0;j<pts.length-1;j++){if(pts[j].x<=xv&&pts[j+1].x>=xv){lo=pts[j];hi=pts[j+1];break;}}if(!lo)return;var t=hi.x===lo.x?0:(xv-lo.x)/(hi.x-lo.x);var yv=lo.y+t*(hi.y-lo.y);var yp=c.scales.y.getPixelForValue(yv);ctx.beginPath();ctx.arc(mx,yp,4,0,2*Math.PI);ctx.fillStyle=ds.borderColor;ctx.fill();vals.push({label:ds.label,y:yv,color:ds.borderColor});});if(!vals.length){ctx.restore();return;}var pad=8,lh=16;ctx.font='600 11px Inter,sans-serif';var lines=[xLabel+': '+fmN(xv)].concat(vals.map(function(v){return v.label+': '+fmN(v.y)+' '+yLabel;}));var mw=Math.max.apply(null,lines.map(function(l){return ctx.measureText(l).width;}));var bw=mw+pad*2,bh=lines.length*lh+pad*2-2,bx=mx+12;if(bx+bw>ca.right-4)bx=mx-bw-12;ctx.fillStyle='rgba(255,255,255,.96)';ctx.strokeStyle='#CDD3E0';ctx.lineWidth=1;rRct(ctx,bx,ca.top+6,bw,bh,6);ctx.fill();ctx.stroke();lines.forEach(function(line,i){ctx.fillStyle=i===0?'#556070':vals[i-1].color;ctx.font=i===0?'11px Inter,sans-serif':'700 11px Inter,sans-serif';ctx.fillText(line,bx+pad,ca.top+6+pad+i*lh+10);});ctx.restore();}};}
+
+function H_mag(w,ordem,K,tau,wn,zeta){
+  if(ordem===1){var r=w*tau;return 20*Math.log10(K/Math.sqrt(1+r*r));}
+  else{var u=w/wn;var re=1-u*u;var im=2*zeta*u;return 20*Math.log10(K/Math.sqrt(re*re+im*im));}
+}
+function H_phase(w,ordem,tau,wn,zeta){
+  if(ordem===1)return -Math.atan2(w*tau,1)*180/Math.PI;
+  else{var u=w/wn;return -Math.atan2(2*zeta*u,1-u*u)*180/Math.PI;}
+}
+
+function isExpActive(pid){
+  return !!document.getElementById('sp-'+pid+'-exp')?.classList.contains('active');
+}
+
+function calcBode(){
+  clearTimeout(_deb);_deb=setTimeout(_calcBode,200);
+}
+function _calcBode(){
+  var ordem=parseInt(document.getElementById('ordem').value);
+  var K=gv('K'),tau=gv('tau'),wn=gv('wn'),zeta=gv('zeta');
+  document.getElementById('row-tau').style.display=ordem===1?'':'none';
+  document.getElementById('row-wn').style.display=ordem===2?'':'none';
+  document.getElementById('row-zeta').style.display=ordem===2?'':'none';
+
+  if(ordem===1&&(!K||!tau))return;
+  if(ordem===2&&(!K||!wn||!zeta))return;
+
+  var wRef=ordem===1?1/tau:wn;
+  var N=300;
+  var ptsMag=[],ptsFase=[];
+  var wMin=wRef/100,wMax=wRef*100;
+  var Mp_dB=-Infinity,wc=null;
+  for(var i=0;i<=N;i++){
+    var w=wMin*Math.pow(wMax/wMin,i/N);
+    var mag=H_mag(w,ordem,K,tau,wn,zeta);
+    var fase=H_phase(w,ordem,tau,wn,zeta);
+    ptsMag.push({x:+w.toFixed(4),y:+mag.toFixed(3)});
+    ptsFase.push({x:+w.toFixed(4),y:+fase.toFixed(3)});
+    if(mag>Mp_dB)Mp_dB=mag;
+    if(wc===null&&mag<=0)wc=w;
+  }
+  var PM=wc?H_phase(wc,ordem,tau,wn,zeta)+180:180;
+  sv('kpi_Mp',Mp_dB.toFixed(2));sv('kpi_PM',PM?PM.toFixed(1):'∞');sv('kpi_wc',wc?wc.toFixed(3):'—');
+
+  var Mp_pct=0,tp_s='∞',ts_s='—';
+  if(ordem===2&&zeta<1){
+    Mp_pct=Math.exp(-Math.PI*zeta/Math.sqrt(1-zeta*zeta))*100;
+    var wd=wn*Math.sqrt(1-zeta*zeta);
+    tp_s=(Math.PI/wd).toFixed(3);
+    ts_s=(4/(zeta*wn)).toFixed(3);
+  }else if(ordem===1){ts_s=(5*tau).toFixed(3);}
+  sv('kpi_MP_pct',ordem===2?(Mp_pct.toFixed(1)+'%'):'0%');sv('kpi_tp',tp_s+'s');sv('kpi_ts',ts_s?ts_s+'s':'—');
+
+  document.getElementById('ins-bode').textContent=ordem===2?'ζ = '+zeta+': '+(Mp_pct>0?'Overshoot '+Mp_pct.toFixed(1)+'%, pico Bode +'+Math.max(0,Mp_dB-20*Math.log10(K)).toFixed(1)+' dB acima do DC.':'Sistema amortecido (sem overshoot).')+' Margem de fase: '+PM.toFixed(1)+'°.':'1ª ordem: sem pico, fase de 0° a -90°. τ = '+tau+' s, ω_c = '+(1/tau).toFixed(3)+' rad/s.';
+
+  var dsMag=[];
+  if(!isExpActive('bode')){
+    dsMag=[{label:'|H(jω)| dB',data:ptsMag,borderColor:'#007575',backgroundColor:'transparent',borderWidth:2.5,pointRadius:0,tension:0.05}];
+    showStats('bode-mag',null);
+  } else {
+    var ep=getExpPts('bode');
+    if(ep){dsMag.push({type:'scatter',label:'Medido',data:ep,borderColor:'#F0A500',backgroundColor:'#F0A50099',pointRadius:3,pointHoverRadius:5,showLine:true,borderWidth:2});const _rg1=regDataset(ep,ep.reduce((a,p)=>Math.min(a,p.x),Infinity),ep.reduce((a,p)=>Math.max(a,p.x),-Infinity));if(_rg1)dsMag.push(_rg1);showStats('bode-mag',ep);}
+    else{showStats('bode-mag',null);}
+  }
+  var dsFase=[{label:'φ(ω) °',data:ptsFase,borderColor:'#C8102E',backgroundColor:'transparent',borderWidth:2.5,pointRadius:0,tension:0.05}];
+
+  var mkC=function(cid,ds,yLabel){
+    var ctx=document.getElementById(cid).getContext('2d');
+    if(charts[cid])charts[cid].destroy();
+    var yVals=ds[0].data.map(function(p){return p.y;});
+    var yMin=Math.min.apply(null,yVals)-5,yMax=Math.max.apply(null,yVals)+5;
+    charts[cid]=new Chart(ctx,{type:'line',plugins:[makeCrosshair('ω','')],data:{datasets:ds},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{type:'logarithmic',grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:10}},title:{display:true,text:'ω (rad/s)',color:'#556070',font:{size:10}}},sense_y:{type:'linear',min:+yMin.toFixed(0),max:+yMax.toFixed(0),grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:10}},title:{display:true,text:yLabel,color:'#556070',font:{size:10}}}}}});
+  };
+
+  var ctx_mag=document.getElementById('chart-bode-mag').getContext('2d');
+  if(charts['chart-bode-mag'])charts['chart-bode-mag'].destroy();
+  var yValsMag=ptsMag.map(function(p){return p.y;});
+  var yMinMag=Math.min.apply(null,yValsMag)-5,yMaxMag=Math.max.apply(null,yValsMag)+5;
+  charts['chart-bode-mag']=new Chart(ctx_mag,{type:'line',plugins:[makeCrosshair('ω','dB')],data:{datasets:dsMag},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{type:'logarithmic',grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:10}},title:{display:true,text:'ω (rad/s)',color:'#556070',font:{size:10}}},y:{type:'linear',min:+yMinMag.toFixed(0),max:+yMaxMag.toFixed(0),grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:10}},title:{display:true,text:'|H| (dB)',color:'#556070',font:{size:10}}}}}});
+
+  var ctx_fase=document.getElementById('chart-bode-fase').getContext('2d');
+  if(charts['chart-bode-fase'])charts['chart-bode-fase'].destroy();
+  var yValsFase=ptsFase.map(function(p){return p.y;});
+  var yMinFase=Math.min.apply(null,yValsFase)-5,yMaxFase=Math.max.apply(null,yValsFase)+5;
+  charts['chart-bode-fase']=new Chart(ctx_fase,{type:'line',plugins:[makeCrosshair('ω','°')],data:{datasets:dsFase},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:false},tooltip:{enabled:false}},scales:{x:{type:'logarithmic',grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:10}},title:{display:true,text:'ω (rad/s)',color:'#556070',font:{size:10}}},y:{type:'linear',min:+yMinFase.toFixed(0),max:+yMaxFase.toFixed(0),grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:10}},title:{display:true,text:'Fase (°)',color:'#556070',font:{size:10}}}}}});
+
+  calcDegrau();
+}
+
+function calcDegrau(){
+  var ordem=parseInt(document.getElementById('ordem').value);
+  var K=gv('K'),tau=gv('tau'),wn=gv('wn'),zeta=gv('zeta');
+  if(ordem===1&&(!K||!tau))return;
+  if(ordem===2&&(!K||!wn||!zeta))return;
+  var tMax,N=400,pts=[],Mp_pct=0,tp_s=null,ts_s=null;
+  if(ordem===1){tMax=tau*8;for(var i=0;i<=N;i++){var t=i*tMax/N;pts.push({x:+t.toFixed(4),y:+(K*(1-Math.exp(-t/tau))).toFixed(5)});};ts_s=tau*5;}
+  else{
+    if(zeta<1){var wd=wn*Math.sqrt(1-zeta*zeta);tMax=Math.max(8/(zeta*wn),20*Math.PI/wd);
+      for(var i=0;i<=N;i++){var t=i*tMax/N;var y=K*(1-Math.exp(-zeta*wn*t)*(Math.cos(wd*t)+(zeta/Math.sqrt(1-zeta*zeta))*Math.sin(wd*t)));pts.push({x:+t.toFixed(5),y:+y.toFixed(5)});}
+      Mp_pct=Math.exp(-Math.PI*zeta/Math.sqrt(1-zeta*zeta))*100;tp_s=Math.PI/wd;ts_s=4/(zeta*wn);}
+    else if(zeta===1){tMax=10/wn;for(var i=0;i<=N;i++){var t=i*tMax/N;pts.push({x:+t.toFixed(5),y:+(K*(1-(1+wn*t)*Math.exp(-wn*t))).toFixed(5)});};ts_s=5/wn;}
+    else{var s1=-zeta*wn+wn*Math.sqrt(zeta*zeta-1),s2=-zeta*wn-wn*Math.sqrt(zeta*zeta-1);tMax=10/Math.abs(s1);
+      for(var i=0;i<=N;i++){var t=i*tMax/N;var A=K*s2/(s2-s1),B=-K*s1/(s2-s1);var y=K-(A*Math.exp(-s1*t)+B*Math.exp(-s2*t));pts.push({x:+t.toFixed(5),y:+y.toFixed(5)});}
+      ts_s=5/Math.abs(s1);}
+  }
+  sv('kpi_MP_pct',(Mp_pct>0.1?Mp_pct.toFixed(1)+'%':'0%'));sv('kpi_tp',tp_s?tp_s.toFixed(3)+'s':'—');sv('kpi_ts',ts_s?ts_s.toFixed(3)+'s':'—');
+  document.getElementById('ins-degrau').textContent='Overshoot: '+(Mp_pct>0.1?Mp_pct.toFixed(1)+'%':'0% (sem sobressinal)')+(tp_s?'. Tempo de pico: '+tp_s.toFixed(3)+'s.':'')+' Acomodação (2%): '+(ts_s?ts_s.toFixed(3)+'s':'—')+'.';
+
+  var ds=[];
+  if(!isExpActive('degrau')){
+    ds=[{label:'y(t)',data:pts,borderColor:'#007575',backgroundColor:'#00757515',borderWidth:2.5,pointRadius:0,tension:0.05,fill:true}];
+    showStats('degrau',null);
+  } else {
+    var ep=getExpPts('degrau');
+    if(ep){ds.push({type:'scatter',label:'Medido',data:ep,borderColor:'#F0A500',backgroundColor:'#F0A50099',pointRadius:3,pointHoverRadius:5,showLine:true,borderWidth:2});const _rg2=regDataset(ep,ep.reduce((a,p)=>Math.min(a,p.x),Infinity),ep.reduce((a,p)=>Math.max(a,p.x),-Infinity));if(_rg2)ds.push(_rg2);showStats('degrau',ep);}
+    else{showStats('degrau',null);}
+  }
+
+  var ctx=document.getElementById('chart-degrau').getContext('2d');
+  if(charts['chart-degrau'])charts['chart-degrau'].destroy();
+  var yVals=pts.map(function(p){return p.y;});
+  var yMax=Math.max.apply(null,yVals)*1.1+0.1;
+  charts['chart-degrau']=new Chart(ctx,{type:'line',plugins:[makeCrosshair('t','')],data:{datasets:ds},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:true,position:'top',labels:{font:{size:13,family:'Inter',weight:'600'},color:'#556070',usePointStyle:true,pointStyleWidth:10}},tooltip:{enabled:false}},scales:{x:{type:'linear',min:0,ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'t (s)',color:'#556070',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}},y:{type:'linear',min:0,max:+yMax.toFixed(2),ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'y(t)',color:'#556070',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}}}}});
+}
+
+function addExpRow(pid){expState[pid].push({id:Date.now()+Math.random(),x:NaN,y:NaN});renderExpTable(pid);}
+function delExpRow(pid,id){expState[pid]=expState[pid].filter(function(r){return r.id!==id;});renderExpTable(pid);pid==='bode'?_calcBode():calcDegrau();}
+function clearExp(pid){expState[pid]=[];renderExpTable(pid);pid==='bode'?_calcBode():calcDegrau();}
+function renderExpTable(pid){
+  var tbody=document.getElementById('exp-tbody-'+pid);tbody.innerHTML='';
+  expState[pid].forEach(function(row){
+    var tr=document.createElement('tr');
+    ['x','y'].forEach(function(k){
+      var td=document.createElement('td'),inp=document.createElement('input');
+      inp.type='number';inp.step='any';if(!isNaN(row[k]))inp.value=row[k];
+      inp.oninput=function(e){row[k]=parseFloat(e.target.value);pid==='bode'?_calcBode():calcDegrau();};
+      td.appendChild(inp);tr.appendChild(td);
+    });
+    var tdD=document.createElement('td'),btn=document.createElement('button');
+    btn.className='exp-del';btn.textContent='✕';btn.onclick=function(){delExpRow(pid,row.id);};
+    tdD.appendChild(btn);tr.appendChild(tdD);tbody.appendChild(tr);
+  });
+}
+function getExpPts(pid){
+  var pts=expState[pid].map(function(r){return{x:r.x,y:r.y};}).filter(function(p){return!isNaN(p.x)&&!isNaN(p.y)&&isFinite(p.x)&&isFinite(p.y);});
+  return pts.length?pts:null;
+}
+function setSubPanel(pid,spid,btn){
+  var panel=document.getElementById('panel-'+pid);
+  panel.querySelectorAll('.sub-panel').forEach(function(p){p.classList.remove('active');});
+  panel.querySelectorAll('.sub-tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('sp-'+pid+'-'+spid).classList.add('active');btn.classList.add('active');
+  if(spid==='exp'&&expState[pid].length===0)addExpRow(pid);
+  pid==='bode'?_calcBode():calcDegrau();
+}
+function setTab(id,el){
+  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');
+  setTimeout(function(){if(id!=='form'){id==='bode'?_calcBode():calcDegrau();}},40);
+}
+document.getElementById('ordem').addEventListener('change',function(){
+  var o=this.value;
+  document.getElementById('row-tau').style.display=o==='1'?'':'none';
+  document.getElementById('row-wn').style.display=o==='2'?'':'none';
+  document.getElementById('row-zeta').style.display=o==='2'?'':'none';
+});
+document.getElementById('row-wn').style.display='block';
+document.getElementById('row-zeta').style.display='block';
+document.getElementById('row-tau').style.display='none';
+calcBode();
+
+</script>

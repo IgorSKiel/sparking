@@ -1,0 +1,276 @@
+---
+layout: page
+title: "Gerador de Exercícios"
+---
+<style>
+.drop-zone{border:2px dashed var(--border);border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;background:var(--surf2);transition:border-color .2s;}
+.drop-zone:hover,.drop-zone.over{border-color:var(--teal);}
+.drop-zone.has-img{padding:8px;border-style:solid;border-color:var(--teal);}
+.drop-zone img{max-width:100%;max-height:180px;border-radius:8px;display:block;margin:0 auto;}
+.drop-hint{font-size:.82rem;font-weight:600;color:var(--sub);}
+.drop-sub{font-size:.72rem;color:var(--sub);margin-top:3px;}
+
+.sym-anchor{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(860px,100vw);height:0;pointer-events:none;z-index:200;}
+.sym-float{position:absolute;right:16px;top:0;pointer-events:all;}
+.sym-toggle{display:flex;flex-direction:column;align-items:center;gap:2px;width:44px;padding:8px 0;border-radius:10px;background:var(--navy);color:#fff;border:none;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.sym-toggle span:first-child{font-size:1rem;line-height:1;}
+.sym-toggle span:last-child{font-size:.52rem;font-weight:700;letter-spacing:.03em;opacity:.8;}
+.sym-popup{display:none;position:absolute;right:52px;top:0;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.15);padding:12px;width:268px;max-height:65vh;overflow-y:auto;}
+.sym-popup.open{display:flex;flex-direction:column;gap:10px;}
+.sym-row{display:flex;flex-wrap:wrap;gap:3px;}
+.sym-lbl{font-size:.62rem;font-weight:800;color:var(--sub);text-transform:uppercase;letter-spacing:.05em;width:100%;margin-bottom:2px;}
+.sym-btn{min-width:26px;height:26px;border:1px solid var(--border);border-radius:5px;background:var(--surf2);font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0 4px;font-family:inherit;transition:border-color .1s,background .1s;}
+.sym-btn:hover{border-color:var(--teal);background:var(--teal-lt);}
+
+.item-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.item-lbl{min-width:18px;font-weight:800;color:var(--navy);font-size:.88rem;}
+.item-del{background:none;border:none;cursor:pointer;color:var(--sub);font-size:.85rem;padding:0 4px;}
+
+.q-list{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+.q-item{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;}
+.q-num{min-width:30px;height:30px;background:var(--navy);color:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82rem;flex-shrink:0;}
+.q-body{flex:1;}
+.q-valor{font-size:.72rem;font-weight:700;color:var(--teal);background:var(--teal-lt);padding:2px 8px;border-radius:5px;display:inline-block;margin-bottom:8px;}
+.q-img{max-width:100%;max-height:200px;border-radius:8px;display:block;margin-bottom:8px;}
+.q-text{font-size:.88rem;line-height:1.6;color:var(--text);white-space:pre-wrap;margin-bottom:6px;}
+.q-items{list-style:none;padding:0;margin:6px 0 0;display:flex;flex-direction:column;gap:3px;}
+.q-items li{font-size:.88rem;color:var(--text);}
+.q-del{background:none;border:none;cursor:pointer;color:var(--sub);font-size:1rem;padding:4px;line-height:1;flex-shrink:0;}
+
+.btn-copy{width:100%;padding:13px;background:var(--teal);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:800;cursor:pointer;font-family:inherit;margin-top:8px;}
+.btn-copy:disabled{background:var(--border);color:var(--sub);cursor:default;}
+.copy-status{font-size:.82rem;font-weight:600;text-align:center;margin-top:6px;min-height:18px;}
+
+@media print{
+  nav,.form-card,.btn-copy,.copy-status{display:none!important;}
+  body{background:#fff;max-width:none;}
+  .hdr{background:#fff!important;border-bottom:2px solid #000;padding:12px 0;}
+  .hdr-tag{background:#000!important;}
+  .hdr h1{color:#000!important;font-size:16px;}
+  .hdr p{color:#444!important;}
+  .wrap{padding:8px 0;}
+  .q-list{gap:16px;}
+  .q-item{border:1px solid #ccc;break-inside:avoid;page-break-inside:avoid;}
+  .q-num{background:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  .q-del{display:none;}
+}
+</style>
+
+
+<nav style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #CDD3E0;position:sticky;top:0;z-index:99;">
+  <a href="../index.html" style="text-decoration:none;color:#1B2E50;font-size:13px;font-weight:700;">&#8592; Início</a>
+  <span style="background:#007575;color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;">Sparking</span>
+</nav>
+
+<div class="hdr">
+  <div class="hdr-tag">Sparking · Exercício</div>
+  <h1>Montador de Exercício</h1>
+  <p>Adicione questões com ou sem imagem → copie formatado para o seu template</p>
+</div>
+
+<div class="wrap">
+
+<div class="card form-card" style="display:flex;flex-direction:column;gap:12px;position:relative;">
+  <div class="card-lbl">Nova questão</div>
+
+  <!-- Imagem -->
+  <div>
+    <div class="drop-zone" id="drop" onclick="document.getElementById('file-in').click()">
+      <div class="drop-hint">Imagem do circuito (opcional)</div>
+      <div class="drop-sub">Clique ou arraste um print do CircuitLab</div>
+    </div>
+    <input type="file" id="file-in" accept="image/*" style="display:none" onchange="loadImg(this)">
+  </div>
+
+  <!-- Enunciado -->
+  <div class="field">
+    <label>Enunciado</label>
+    <textarea id="enunciado" rows="3" placeholder="Escreva o enunciado aqui..."></textarea>
+  </div>
+
+  <!-- Itens de resolução -->
+  <div>
+    <div class="card-lbl" style="margin-bottom:8px;">Itens de resolução (opcional)</div>
+    <div id="itens-wrap"></div>
+    <button class="btn-add" style="width:auto;padding:7px 14px;font-size:.82rem;" onclick="addItem()">+ Item</button>
+  </div>
+
+  <!-- Valor -->
+  <div class="field" style="max-width:160px;">
+    <label>Valor (pontos)</label>
+    <input type="text" id="valor" placeholder="Ex: 2,0">
+  </div>
+
+  <button class="btn-add" onclick="adicionar()">+ Adicionar questão</button>
+</div>
+
+<div class="q-list" id="lista"></div>
+
+<button class="btn-copy" id="btn-copy" onclick="copiar()" disabled>Copiar para colar no Word / Google Docs</button>
+<div class="copy-status" id="copy-status"></div>
+
+</div>
+
+<div class="sym-anchor">
+<div class="sym-float" id="sym-float">
+  <button class="sym-toggle" onclick="toggleSym()"><span>Ω</span><span>símbolos</span></button>
+  <div class="sym-popup" id="sym-popup">
+    <div class="sym-row"><div class="sym-lbl">Grego min.</div><button class="sym-btn" onclick="ins('α')">α</button><button class="sym-btn" onclick="ins('β')">β</button><button class="sym-btn" onclick="ins('γ')">γ</button><button class="sym-btn" onclick="ins('δ')">δ</button><button class="sym-btn" onclick="ins('ε')">ε</button><button class="sym-btn" onclick="ins('ζ')">ζ</button><button class="sym-btn" onclick="ins('η')">η</button><button class="sym-btn" onclick="ins('θ')">θ</button><button class="sym-btn" onclick="ins('λ')">λ</button><button class="sym-btn" onclick="ins('μ')">μ</button><button class="sym-btn" onclick="ins('ν')">ν</button><button class="sym-btn" onclick="ins('π')">π</button><button class="sym-btn" onclick="ins('ρ')">ρ</button><button class="sym-btn" onclick="ins('σ')">σ</button><button class="sym-btn" onclick="ins('τ')">τ</button><button class="sym-btn" onclick="ins('φ')">φ</button><button class="sym-btn" onclick="ins('ψ')">ψ</button><button class="sym-btn" onclick="ins('ω')">ω</button></div>
+    <div class="sym-row"><div class="sym-lbl">Grego mai.</div><button class="sym-btn" onclick="ins('Γ')">Γ</button><button class="sym-btn" onclick="ins('Δ')">Δ</button><button class="sym-btn" onclick="ins('Θ')">Θ</button><button class="sym-btn" onclick="ins('Λ')">Λ</button><button class="sym-btn" onclick="ins('Π')">Π</button><button class="sym-btn" onclick="ins('Σ')">Σ</button><button class="sym-btn" onclick="ins('Φ')">Φ</button><button class="sym-btn" onclick="ins('Ψ')">Ψ</button><button class="sym-btn" onclick="ins('Ω')">Ω</button></div>
+    <div class="sym-row"><div class="sym-lbl">Matemática</div><button class="sym-btn" onclick="ins('±')">±</button><button class="sym-btn" onclick="ins('×')">×</button><button class="sym-btn" onclick="ins('÷')">÷</button><button class="sym-btn" onclick="ins('≤')">≤</button><button class="sym-btn" onclick="ins('≥')">≥</button><button class="sym-btn" onclick="ins('≠')">≠</button><button class="sym-btn" onclick="ins('≈')">≈</button><button class="sym-btn" onclick="ins('√')">√</button><button class="sym-btn" onclick="ins('∞')">∞</button><button class="sym-btn" onclick="ins('∑')">∑</button><button class="sym-btn" onclick="ins('∫')">∫</button><button class="sym-btn" onclick="ins('∂')">∂</button><button class="sym-btn" onclick="ins('∠')">∠</button><button class="sym-btn" onclick="ins('°')">°</button><button class="sym-btn" onclick="ins('∝')">∝</button><button class="sym-btn" onclick="ins('→')">→</button><button class="sym-btn" onclick="ins('←')">←</button></div>
+    <div class="sym-row"><div class="sym-lbl">Potências ⁿ</div><button class="sym-btn" onclick="ins('⁰')">⁰</button><button class="sym-btn" onclick="ins('¹')">¹</button><button class="sym-btn" onclick="ins('²')">²</button><button class="sym-btn" onclick="ins('³')">³</button><button class="sym-btn" onclick="ins('⁴')">⁴</button><button class="sym-btn" onclick="ins('⁵')">⁵</button><button class="sym-btn" onclick="ins('⁶')">⁶</button><button class="sym-btn" onclick="ins('⁷')">⁷</button><button class="sym-btn" onclick="ins('⁸')">⁸</button><button class="sym-btn" onclick="ins('⁹')">⁹</button><button class="sym-btn" onclick="ins('⁺')">⁺</button><button class="sym-btn" onclick="ins('⁻')">⁻</button></div>
+    <div class="sym-row"><div class="sym-lbl">Índices ₙ</div><button class="sym-btn" onclick="ins('₀')">₀</button><button class="sym-btn" onclick="ins('₁')">₁</button><button class="sym-btn" onclick="ins('₂')">₂</button><button class="sym-btn" onclick="ins('₃')">₃</button><button class="sym-btn" onclick="ins('₄')">₄</button><button class="sym-btn" onclick="ins('₅')">₅</button><button class="sym-btn" onclick="ins('₆')">₆</button><button class="sym-btn" onclick="ins('₇')">₇</button><button class="sym-btn" onclick="ins('₈')">₈</button><button class="sym-btn" onclick="ins('₉')">₉</button><button class="sym-btn" onclick="ins('₊')">₊</button><button class="sym-btn" onclick="ins('₋')">₋</button></div>
+  </div>
+</div>
+</div>
+
+<script>
+var imgSrc=null;
+var questoes=[];
+var lastFocused=null;
+var letras='abcdefghijklmnopqrstuvwxyz';
+
+function toggleSym(){document.getElementById('sym-popup').classList.toggle('open');}
+document.addEventListener('click',function(e){
+  var fl=document.getElementById('sym-float');
+  if(!fl.contains(e.target))document.getElementById('sym-popup').classList.remove('open');
+});
+
+document.addEventListener('focusin',function(e){
+  if(e.target.matches('textarea,input[type=text]'))lastFocused=e.target;
+});
+
+function ins(s){
+  if(!lastFocused)return;
+  var st=lastFocused.selectionStart,en=lastFocused.selectionEnd,v=lastFocused.value;
+  lastFocused.value=v.slice(0,st)+s+v.slice(en);
+  lastFocused.selectionStart=lastFocused.selectionEnd=st+s.length;
+  lastFocused.focus();
+}
+
+function loadImg(inp){
+  var f=inp.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){
+    var dz=document.getElementById('drop');
+    dz.innerHTML='<img src="'+e.target.result+'">';
+    dz.classList.add('has-img');
+    imgSrc=e.target.result;
+  };
+  r.readAsDataURL(f);
+}
+
+var dz=document.getElementById('drop');
+dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over');});
+dz.addEventListener('dragleave',function(){dz.classList.remove('over');});
+dz.addEventListener('drop',function(e){
+  e.preventDefault();dz.classList.remove('over');
+  var f=e.dataTransfer.files[0];if(!f||!f.type.startsWith('image/'))return;
+  var inp=document.getElementById('file-in');
+  var dt=new DataTransfer();dt.items.add(f);inp.files=dt.files;
+  loadImg(inp);
+});
+
+function addItem(){
+  var wrap=document.getElementById('itens-wrap');
+  var idx=wrap.children.length;
+  var row=document.createElement('div');row.className='item-row';
+  row.innerHTML='<span class="item-lbl">'+letras[idx]+')</span>'+
+    '<input type="text" placeholder="ex: Calcule a corrente I" style="flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.88rem;">'+
+    '<button class="item-del" onclick="delItem(this)">✕</button>';
+  wrap.appendChild(row);
+  row.querySelector('input').focus();
+  lastFocused=row.querySelector('input');
+  reindexItems();
+}
+
+function delItem(btn){
+  btn.closest('.item-row').remove();
+  reindexItems();
+}
+
+function reindexItems(){
+  document.querySelectorAll('#itens-wrap .item-row').forEach(function(r,i){
+    r.querySelector('.item-lbl').textContent=letras[i]+')';
+  });
+}
+
+function getItems(){
+  var items=[];
+  document.querySelectorAll('#itens-wrap .item-row input').forEach(function(inp,i){
+    var v=inp.value.trim();if(v)items.push(letras[i]+') '+v);
+  });
+  return items;
+}
+
+function adicionar(){
+  var txt=document.getElementById('enunciado').value.trim();
+  var val=document.getElementById('valor').value.trim();
+  if(!txt)return;
+  questoes.push({img:imgSrc,texto:txt,itens:getItems(),valor:val});
+  renderLista();
+  document.getElementById('enunciado').value='';
+  document.getElementById('valor').value='';
+  document.getElementById('file-in').value='';
+  document.getElementById('itens-wrap').innerHTML='';
+  imgSrc=null;
+  var dz=document.getElementById('drop');
+  dz.innerHTML='<div class="drop-hint">Imagem do circuito (opcional)</div><div class="drop-sub">Clique ou arraste um print do CircuitLab</div>';
+  dz.classList.remove('has-img');
+}
+
+function remover(i){questoes.splice(i,1);renderLista();}
+
+function renderLista(){
+  var lista=document.getElementById('lista');
+  lista.innerHTML='';
+  questoes.forEach(function(q,i){
+    var itensHtml=q.itens.length?'<ul class="q-items">'+q.itens.map(function(it){return'<li>'+escHtml(it)+'</li>';}).join('')+'</ul>':'';
+    var d=document.createElement('div');
+    d.className='q-item';
+    d.innerHTML=
+      '<div class="q-num">'+(i+1)+'</div>'+
+      '<div class="q-body">'+
+        (q.valor?'<span class="q-valor">'+escHtml(q.valor)+' pts</span>':'')+
+        (q.img?'<img class="q-img" src="'+q.img+'">':'')+
+        '<div class="q-text">'+escHtml(q.texto)+'</div>'+
+        itensHtml+
+      '</div>'+
+      '<button class="q-del" onclick="remover('+i+')" title="Remover">✕</button>';
+    lista.appendChild(d);
+  });
+  document.getElementById('btn-copy').disabled=questoes.length===0;
+}
+
+async function copiar(){
+  var htmlParts=questoes.map(function(q,i){
+    var imgTag=q.img?'<img src="'+q.img+'" style="max-width:100%;display:block;margin:8px 0;border-radius:6px;">':'';
+    var itensTag=q.itens.length?'<ul style="margin:8px 0 0 16px;padding:0;">'+q.itens.map(function(it){return'<li style="font-size:11pt;margin-bottom:4px;">'+escHtml(it)+'</li>';}).join('')+'</ul>':'';
+    return'<div style="font-family:Arial,sans-serif;font-size:11pt;border:1px solid #ccc;border-radius:6px;padding:14px;margin-bottom:12px;">'+
+      '<strong>Questão '+(i+1)+'</strong>'+
+      (q.valor?' <span style="color:#007575;font-size:9pt;font-weight:bold;">'+escHtml(q.valor)+' pts</span>':'')+
+      '<br><br>'+
+      imgTag+
+      '<span>'+escHtml(q.texto)+'</span>'+
+      itensTag+
+      '</div>';
+  });
+  var html=htmlParts.join('');
+  var plain=questoes.map(function(q,i){
+    return'Questão '+(i+1)+(q.valor?' ('+q.valor+' pts)':'')+'\n\n'+q.texto+(q.itens.length?'\n'+q.itens.join('\n'):'')+'\n';
+  }).join('\n---\n\n');
+
+  var st=document.getElementById('copy-status');
+  try{
+    await navigator.clipboard.write([new ClipboardItem({
+      'text/html':new Blob([html],{type:'text/html'}),
+      'text/plain':new Blob([plain],{type:'text/plain'})
+    })]);
+    st.style.color='var(--teal)';st.textContent='✓ Copiado! Cole com Ctrl+V no seu template.';
+  }catch(e){
+    st.style.color='var(--red)';st.textContent='Erro: '+e.message;
+  }
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+</script>

@@ -1,0 +1,212 @@
+---
+layout: page
+title: "Criar Ferramenta Personalizada"
+---
+<style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:#1B2E50; --teal:#007575; --red:#C8102E;
+      --bg:#ECEEF4; --card:#fff; --text:#1A2640; --sub:#556070; --border:#CDD3E0;
+      --green:#15803D;
+    }
+    html { background: var(--bg); }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); max-width:860px; margin:0 auto; font-size:15px; }
+
+    .topbar { display:flex; align-items:center; justify-content:space-between; padding:10px 16px; background:#fff; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; }
+    .back { text-decoration:none; color:var(--navy); font-size:13px; font-weight:700; }
+    .back::before { content:"← "; }
+    .badge { background:var(--teal); color:#fff; font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; padding:3px 10px; border-radius:4px; }
+
+    .hdr { background:var(--navy); padding:18px 24px 16px; margin-bottom:14px; border-bottom:4px solid var(--red); position:relative; overflow:hidden; }
+    .hdr::before { content:''; position:absolute; top:0; right:0; width:130px; height:100%; background:var(--teal); opacity:.13; clip-path:polygon(40% 0,100% 0,100% 100%,0 100%); }
+    .hdr-tag { display:inline-block; background:var(--teal); color:#fff; font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:.09em; padding:3px 10px; border-radius:20px; margin-bottom:8px; }
+    .hdr h1 { font-size:1.55rem; font-weight:900; letter-spacing:-.5px; color:#fff; line-height:1; }
+    .hdr p { font-size:.86rem; color:rgba(255,255,255,.65); margin-top:4px; font-weight:500; }
+
+    main { padding:0 16px 100px; display:flex; flex-direction:column; gap:10px; }
+
+    /* ── Accordion card ── */
+    .acc { background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 1px 6px rgba(0,0,0,.07); }
+
+    .acc-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 20px; cursor:pointer; user-select:none; gap:12px;
+      transition:background .12s;
+    }
+    .acc-header:hover { background:#f8f9fc; }
+
+    .acc-icon {
+      width:40px; height:40px; border-radius:10px; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .acc-title { font-size:15px; font-weight:700; color:var(--text); flex:1; }
+    .acc-toggle {
+      width:26px; height:26px; border-radius:50%; background:var(--bg);
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      color:var(--sub); font-size:16px; font-weight:300; transition:transform .2s;
+    }
+    .acc.open .acc-toggle { transform:rotate(45deg); }
+
+    .acc-body { display:none; padding:0 20px 20px; border-top:1px solid var(--border); }
+    .acc.open .acc-body { display:block; }
+
+    /* ── Content styles inside accordion ── */
+    .acc-body p { font-size:15px; color:var(--text); line-height:1.65; margin-top:14px; }
+
+    .steps { display:flex; flex-direction:column; gap:12px; margin-top:14px; }
+    .step { display:flex; gap:12px; align-items:flex-start; }
+    .snum { background:var(--navy); color:#fff; font-size:12px; font-weight:800; min-width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin-top:2px; flex-shrink:0; }
+    .step p { font-size:15px; color:var(--text); line-height:1.6; }
+    .step strong { color:var(--navy); font-weight:700; }
+
+    .template { background:var(--bg); border-radius:10px; padding:16px; border:1px solid var(--border); margin-top:14px; }
+    .tfield { display:flex; flex-direction:column; gap:4px; margin-bottom:12px; }
+    .tfield:last-child { margin-bottom:0; }
+    .tlabel { font-size:11.5px; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:.05em; }
+    .tinput { background:#fff; border:1px solid var(--border); border-radius:7px; padding:9px 12px; font-size:14px; color:var(--sub); font-style:italic; }
+
+    .list { display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+    .list-item { display:flex; gap:10px; align-items:flex-start; font-size:15px; color:var(--text); line-height:1.55; }
+    .ico-no  { color:var(--red);   font-weight:800; font-size:15px; flex-shrink:0; }
+    .ico-ok  { color:var(--green); font-weight:800; font-size:15px; flex-shrink:0; }
+    .divider { border:none; border-top:1px solid var(--border); margin:8px 0; }
+
+    a { color:#2563eb; font-weight:700; text-decoration:underline; }
+
+    .tip { background:#fffbeb; border:1px solid #fcd34d; border-radius:8px; padding:10px 14px; font-size:12.5px; color:#78350f; margin-top:8px; line-height:1.55; }
+    .tip strong { color:#92400e; }
+
+    .cta-bar { position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid var(--border); padding:14px 20px; }
+    .btn-cta { display:block; background:var(--navy); color:#fff; text-decoration:none; font-size:15px; font-weight:700; padding:14px; border-radius:10px; text-align:center; max-width:680px; margin:0 auto; }
+  </style>
+
+
+<nav class="topbar">
+  <a href="claude.html" class="back">Voltar</a>
+  <span class="badge">Sparking</span>
+</nav>
+
+<div class="hdr">
+  <div class="hdr-tag">Guia</div>
+  <h1>Como pedir uma ferramenta ao Claude</h1>
+  <p>Toque em cada seção para expandir</p>
+</div>
+
+<main>
+
+  <!-- 1. O que é -->
+  <div class="acc">
+    <div class="acc-header" onclick="toggle(this)">
+      <div class="acc-icon" style="background:linear-gradient(135deg,#1B2E50,#2563eb);">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="8" stroke="white" stroke-width="2"/><line x1="11" y1="8" x2="11" y2="11" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="14" r="1" fill="white"/></svg>
+      </div>
+      <span class="acc-title">O que é</span>
+      <span class="acc-toggle">+</span>
+    </div>
+    <div class="acc-body">
+      <p>Você descreve a calculadora que precisa — fórmula, campos, unidades — e o Claude escreve o código. Abre direto no navegador, sem instalar nada, sem programador.</p>
+      <p style="margin-top:10px;">O ponto crítico: tudo que você não especificar, ele decide por conta. Fórmula alternativa, unidade diferente, rótulo em inglês. O template abaixo existe para você tomar essas decisões antes de pedir — senão a ferramenta que chega não é a que você queria.</p>
+    </div>
+  </div>
+
+  <!-- 2. Como pedir -->
+  <div class="acc">
+    <div class="acc-header" onclick="toggle(this)">
+      <div class="acc-icon" style="background:linear-gradient(135deg,#064e3b,#059669);">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 11 L9 16 L18 6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="acc-title">Como pedir — passo a passo</span>
+      <span class="acc-toggle">+</span>
+    </div>
+    <div class="acc-body">
+      <div class="steps">
+        <div class="step"><div class="snum">1</div><p>Preencha o template abaixo</p></div>
+        <div class="step"><div class="snum">2</div><p>Acesse <a href="https://claude.ai" target="_blank">claude.ai</a> e abra uma conversa nova</p></div>
+        <div class="step"><div class="snum">3</div><p>Cole o template preenchido na caixa de texto e pressione <strong>Enter</strong></p></div>
+        <div class="step"><div class="snum">4</div><p>Quando aparecer o bloco de código, clique em <strong>Preview</strong> ou <strong>Visualizar</strong></p></div>
+        <div class="tip">Se não aparecer o botão, role a resposta para baixo — ele fica no final do bloco.</div>
+        <div class="step"><div class="snum">5</div><p>Teste com um valor que você já sabe a resposta</p></div>
+        <div class="step"><div class="snum">6</div><p>Se algo estiver errado, descreva o problema na mesma conversa e peça pra corrigir</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Template -->
+  <div class="acc">
+    <div class="acc-header" onclick="toggle(this)">
+      <div class="acc-icon" style="background:linear-gradient(135deg,#7c1a1a,#C8102E);">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="4" y="3" width="14" height="16" rx="2" stroke="white" stroke-width="1.8" fill="white" fill-opacity=".15"/><line x1="7" y1="8" x2="15" y2="8" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="11" x2="13" y2="11" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="14" x2="15" y2="14" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </div>
+      <span class="acc-title">Template — preencha antes de pedir</span>
+      <span class="acc-toggle">+</span>
+    </div>
+    <div class="acc-body">
+      <div class="template">
+        <div class="tfield"><span class="tlabel">Nome da ferramenta</span><div class="tinput">Ex: Calculadora de divisor de tensão</div></div>
+        <div class="tfield"><span class="tlabel">O que calcula</span><div class="tinput">Ex: Tensão de saída de um divisor resistivo com R1 e R2</div></div>
+        <div class="tfield"><span class="tlabel">Fórmula exata</span><div class="tinput">Ex: Vout = Vin × R2 / (R1 + R2)</div></div>
+        <div class="tfield"><span class="tlabel">Campos de entrada (nome e unidade)</span><div class="tinput">Ex: Vin em volts, R1 em ohms, R2 em ohms</div></div>
+        <div class="tfield"><span class="tlabel">Campos de saída (nome e unidade)</span><div class="tinput">Ex: Vout em volts, corrente em miliamperes</div></div>
+        <div class="tfield"><span class="tlabel">Dispositivo principal de uso</span><div class="tinput">Ex: Celular Android / Projetor em sala / Computador</div></div>
+        <div class="tfield"><span class="tlabel">Separador decimal</span><div class="tinput">Vírgula (padrão brasileiro)</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. O que pode dar errado -->
+  <div class="acc">
+    <div class="acc-header" onclick="toggle(this)">
+      <div class="acc-icon" style="background:linear-gradient(135deg,#78350f,#d97706);">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 4 L20 18 L2 18 Z" stroke="white" stroke-width="1.8" fill="white" fill-opacity=".15" stroke-linejoin="round"/><line x1="11" y1="10" x2="11" y2="14" stroke="white" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="16.5" r="1" fill="white"/></svg>
+      </div>
+      <span class="acc-title">O que pode dar errado</span>
+      <span class="acc-toggle">+</span>
+    </div>
+    <div class="acc-body">
+      <div class="list">
+        <div class="list-item"><span class="ico-no">✗</span><span>Fórmula diferente da que você usa em aula — existem versões alternativas para a mesma coisa</span></div>
+        <div class="list-item"><span class="ico-no">✗</span><span>Unidade assumida errada — Hz ou rad/s? Graus ou radianos?</span></div>
+        <div class="list-item"><span class="ico-no">✗</span><span>Ponto no lugar de vírgula como separador decimal</span></div>
+        <div class="list-item"><span class="ico-no">✗</span><span>Rótulos em inglês — aluno só conhece o termo em português</span></div>
+        <div class="list-item"><span class="ico-no">✗</span><span>Mostra símbolo de erro enquanto o campo ainda está sendo preenchido</span></div>
+        <div class="list-item"><span class="ico-no">✗</span><span>Claude adiciona botões e funções que você não pediu — cada extra é um ponto de erro</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. O que esperar -->
+  <div class="acc">
+    <div class="acc-header" onclick="toggle(this)">
+      <div class="acc-icon" style="background:linear-gradient(135deg,#312e81,#6d28d9);">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="3" y="3" width="16" height="16" rx="3" stroke="white" stroke-width="1.8" fill="white" fill-opacity=".15"/><path d="M7 11 L10 14 L15 8" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="acc-title">O que esperar do resultado</span>
+      <span class="acc-toggle">+</span>
+    </div>
+    <div class="acc-body">
+      <div class="list">
+        <div class="list-item"><span class="ico-ok">✓</span><span>Calculadoras e conversores com campos de entrada e resultado</span></div>
+        <div class="list-item"><span class="ico-ok">✓</span><span>Tabelas que filtram e ordenam dados</span></div>
+        <div class="list-item"><span class="ico-ok">✓</span><span>Gráficos simples de barra ou linha</span></div>
+        <div class="list-item"><span class="ico-ok">✓</span><span>Interface de uma tela só, objetiva — sem instalação</span></div>
+        <hr class="divider">
+        <div class="list-item"><span class="ico-no">✗</span><span>Ferramentas com muitas telas — quanto mais complexo, mais erros aparecem</span></div>
+        <div class="list-item"><span class="ico-no">✗</span><span>Gráficos técnicos detalhados como triângulos vetoriais ou diagramas de fasor</span></div>
+        <div class="list-item"><span class="ico-no">✗</span><span>Ferramentas que precisam guardar dados entre sessões</span></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="cta-bar">
+  <a href="https://claude.ai" target="_blank" class="btn-cta">Abrir Claude para pedir</a>
+</div>
+
+<script>
+  function toggle(header) {
+    const acc = header.closest('.acc');
+    acc.classList.toggle('open');
+  }
+</script>
+
