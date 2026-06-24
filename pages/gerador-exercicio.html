@@ -1,7 +1,11 @@
----
-layout: page
-title: "Gerador de Exercícios"
----
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Exercícios</title>
+</head>
+<body>
 <style>
 .drop-zone{border:2px dashed var(--border);border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;background:var(--surf2);transition:border-color .2s;}
 .drop-zone:hover,.drop-zone.over{border-color:var(--teal);}
@@ -274,3 +278,5 @@ async function copiar(){
 
 function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 </script>
+</body>
+</html>

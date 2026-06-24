@@ -1,18 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GTDE — Linha de Transmissão</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="sparking.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="sparking.js"></script>
-<script src="sparking-formulas.js"></script>
-</head>
-<body data-tool="gtde">
-<nav style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #CDD3E0;position:sticky;top:0;z-index:99;"><a href="pages/ferramentas.html" style="text-decoration:none;color:#1B2E50;font-size:13px;font-weight:700;">&#8592; Ferramentas</a><span style="background:#007575;color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;">Sparking</span></nav>
+---
+layout: tool
+title: "GTDE — Linha de Transmissão"
+tool_id: gtde
+render_with_liquid: false
+---
 <div class="hdr">
   <div class="hdr-tag">Sparking · GTDE</div>
   <h1>Linha de Transmissão — Perfil de Tensão</h1>
@@ -258,5 +249,3 @@ function setTab(id,el){
 calcPerfil();calcDvFp();
 
 </script>
-</body>
-</html>
