@@ -10,7 +10,73 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="sparking.js"></script>
 <script src="sparking-formulas.js"></script>
+<style>
+main{padding:0 4px 80px;}
+.sec{background:var(--card);border-radius:14px;padding:16px;box-shadow:var(--shadow);margin-bottom:10px;}
+.sec-label{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--sub);margin-bottom:10px;}
+.hidden{display:none!important;}
 
+/* Formula grid */
+.formula-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px;}
+.f-group-label{grid-column:1/-1;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--sub);margin-top:10px;padding-bottom:4px;border-bottom:1px solid var(--border);}
+.f-group-label:first-child{margin-top:0;}
+.f-card{background:var(--surf2);border:2px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:border-color .15s,background .15s;}
+.f-card:hover{border-color:var(--ac);background:var(--ac-light);}
+.f-card.selected{border-color:var(--ac);background:var(--ac-light);}
+.f-nome{font-size:.88rem;font-weight:700;color:var(--text);}
+.f-expr{font-size:.78rem;color:var(--sub);margin-top:3px;}
+
+/* Vars grid */
+.vars-grid{display:flex;flex-direction:column;gap:8px;}
+.var-row{display:flex;align-items:center;gap:10px;background:var(--surf2);border-radius:8px;padding:8px 12px;}
+.var-name{font-size:.9rem;font-weight:700;color:var(--text);flex:1;}
+.var-unit{font-size:.8rem;color:var(--sub);min-width:30px;}
+.var-calc-badge{font-size:.72rem;font-weight:800;background:var(--teal-lt);color:var(--teal);padding:2px 8px;border-radius:20px;}
+.var-toggle{display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+.var-toggle button{background:#fff;border:none;padding:5px 10px;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--sub);font-family:inherit;}
+.var-toggle button.active{background:var(--ac);color:#fff;}
+.var-fixed-input{width:80px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:5px 8px;font-size:.88rem;font-family:inherit;}
+
+/* Axes */
+.axis-row{display:flex;gap:12px;}
+.axis-group{display:flex;align-items:center;gap:8px;}
+.axis-group label{font-size:.85rem;font-weight:700;color:var(--text);}
+.axis-group select{background:#fff;border:2px solid var(--border);border-radius:8px;padding:6px 10px;font-size:.88rem;font-family:inherit;color:var(--text);}
+
+/* Chart */
+.chart-wrap{position:relative;background:var(--surf2);border-radius:10px;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;}
+.chart-wrap canvas{position:absolute;inset:0;width:100%!important;height:100%!important;}
+#chart-placeholder{font-size:.9rem;color:var(--sub);font-weight:600;}
+.xy-label{position:absolute;background:rgba(27,46,80,.85);color:#fff;font-size:.78rem;font-weight:700;padding:4px 8px;border-radius:6px;pointer-events:none;display:none;}
+
+/* Table */
+.table-wrap{overflow-x:auto;margin-top:10px;}
+#data-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+#data-table th{background:var(--navy);color:#fff;font-weight:700;padding:8px 10px;text-align:left;white-space:nowrap;}
+#data-table td{border-bottom:1px solid var(--border);padding:4px 6px;}
+#data-table input{width:100%;background:transparent;border:none;padding:4px 4px;font-size:.85rem;font-family:inherit;outline:none;}
+#data-table input:focus{background:var(--teal-lt);border-radius:4px;}
+.auto-badge{font-size:.65rem;background:var(--teal-lt);color:var(--teal);padding:1px 5px;border-radius:10px;margin-left:5px;font-weight:800;}
+.calc-cell input{color:var(--sub);}
+.del-cell{width:30px;text-align:center;}
+.btn-del{background:none;border:none;cursor:pointer;color:var(--sub);font-size:1rem;padding:2px 6px;}
+.btn-del:hover{color:var(--red);}
+
+/* Buttons */
+.btn-link{background:none;border:none;cursor:pointer;color:var(--ac);font-size:.82rem;font-weight:700;padding:0;font-family:inherit;}
+.btn-sm{background:var(--surf2);border:1px solid var(--border);border-radius:6px;padding:6px 12px;font-size:.82rem;font-weight:700;cursor:pointer;font-family:inherit;color:var(--text);}
+.btn-sm:hover{border-color:var(--ac);color:var(--ac);}
+.inp{background:#fff;border:2px solid var(--border);border-radius:8px;padding:7px 10px;font-size:.88rem;font-family:inherit;outline:none;}
+.inp:focus{border-color:var(--ac);}
+
+/* Custom columns */
+.custom-add{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.custom-col-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.custom-col-chip{display:flex;align-items:center;gap:5px;background:var(--surf2);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:.82rem;font-weight:600;}
+.custom-col-unit{color:var(--sub);}
+.chip-del{background:none;border:none;cursor:pointer;color:var(--sub);font-size:.9rem;padding:0 2px;line-height:1;}
+.chip-del:hover{color:var(--red);}
+</style>
 </head>
 <body data-tool="graficos">
 <nav class="sparking-nav"><a href="pages/ferramentas.html">&#8592; Ferramentas</a><span class="badge">Sparking</span></nav>

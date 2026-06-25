@@ -4,16 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gerador de Exercícios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../sparking.css">
 </head>
 <body>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --navy:#1B2E50;--teal:#007575;--teal-lt:#DCF0EF;--red:#C8102E;
-  --bg:#ECEEF4;--card:#fff;--surf2:#F3F5FA;--text:#1A2640;--sub:#556070;--border:#CDD3E0;
-}
-html{background:var(--bg);}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);max-width:860px;margin:0 auto;font-size:15px;}
+.field textarea{width:100%;background:#fff;border:2px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;color:var(--text);font-family:inherit;outline:none;resize:vertical;transition:border-color .15s;}
+.field textarea:focus{border-color:var(--ac);}
 .drop-zone{border:2px dashed var(--border);border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;background:var(--surf2);transition:border-color .2s;}
 .drop-zone:hover,.drop-zone.over{border-color:var(--teal);}
 .drop-zone.has-img{padding:8px;border-style:solid;border-color:var(--teal);}
@@ -68,9 +66,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 </style>
 
 
-<nav style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #CDD3E0;position:sticky;top:0;z-index:99;">
-  <a href="../index.html" style="text-decoration:none;color:#1B2E50;font-size:13px;font-weight:700;">&#8592; Início</a>
-  <span style="background:#007575;color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;">Sparking</span>
+<nav class="sparking-nav">
+  <a href="../index.html">&#8592; Início</a>
+  <span class="badge">Sparking</span>
 </nav>
 
 <div class="hdr">
