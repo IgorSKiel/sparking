@@ -146,8 +146,16 @@ foreach ($f in $toolFiles) {
     $toolEntry = $ptsTbl.PSObject.Properties[$fm.tool_id]
     if ($toolEntry) {
         foreach ($panel in $toolEntry.Value.PSObject.Properties) {
-            $content = $content.Replace("<!-- pts-tbl:$($panel.Name) -->", (Get-PtsTbl $panel.Value))
+            $placeholder = "<!-- pts-tbl:$($panel.Name) -->"
+            $replaced = $content.Replace($placeholder, (Get-PtsTbl $panel.Value))
+            if ($replaced -eq $content) {
+                Write-Host "[WARN] $($f.Name): placeholder '$placeholder' nao encontrado -> tabela ausente no output!" -ForegroundColor Red
+            }
+            $content = $replaced
         }
+    }
+    if ($content -match '<!--\s*pts-tbl:[^-]+-->') {
+        Write-Host "[WARN] $($f.Name): marcacao pts-tbl sem correspondencia no JSON encontrada no output!" -ForegroundColor Red
     }
     $html = "<!DOCTYPE html>`n<html lang=""pt-BR"">`n<head>`n$head`n</head>`n<body data-tool=""$($fm.tool_id)"">`n$nav`n$content`n</body>`n</html>"
 
