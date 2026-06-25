@@ -177,11 +177,6 @@ expState.ohm=[];expState.pot=[];expState.div=[];expState.mp=[];
 function getPotXCol(){return document.getElementById('pot_xcol')?.value||'I';}
 document.addEventListener('change',e=>{if(e.target.id==='pot_xcol'){const h=document.getElementById('pot_xh');if(h)h.textContent=e.target.value==='I'?'I (A)':'V (V)';}});
 
-/* ── isExpActive helper ── */
-function isExpActive(pid){
-  return !!document.getElementById('sp-'+pid+'-exp')?.classList.contains('active');
-}
-
 /* ── calcs ── */
 function calcOhm(){
   const R=get('ohm_R'),Vm=get('ohm_Vmax');
@@ -284,25 +279,6 @@ function calcMp(){
 
 const CALC={ohm:calcOhm,pot:calcPot,div:calcDiv,mp:calcMp};
 function calc(id){clearTimeout(deb);deb=setTimeout(()=>CALC[id]?.(),200);}
-
-/* ── navegação ── */
-function setPanel(id,el){
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
-  el.classList.add('active');
-  setTimeout(()=>{CALC[id]?.();MathJax?.typesetPromise?.([document.getElementById('panel-'+id)]);},50);
-}
-
-function setSubPanel(pid,spid,btn){
-  const panel=document.getElementById('panel-'+pid);
-  panel.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
-  panel.querySelectorAll('.sub-tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sp-'+pid+'-'+spid).classList.add('active');
-  btn.classList.add('active');
-  if(spid==='exp'&&expState[pid].length===0)addExpRow(pid);
-  CALC[pid]?.();
-}
 
 calcOhm();
 </script>

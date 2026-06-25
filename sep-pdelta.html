@@ -10,10 +10,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="sparking.js"></script>
 <script src="sparking-formulas.js"></script>
-<style>.pts-tbl{width:fit-content;border-collapse:collapse;margin-top:14px;font-size:12px;border:1px solid #CDD3E0;border-radius:6px;overflow:hidden}.pts-tbl th{padding:5px 12px;background:#1B2E50;color:#fff;font-size:11px;font-weight:700;text-align:left;letter-spacing:.04em}.pts-tbl th:first-child{border-right:1px solid #3a4f6e}.pts-tbl td{padding:6px 12px;vertical-align:middle}.pts-tbl td:first-child{color:#65676B;background:#F8F9FC;border-right:1px solid #CDD3E0}.pts-tbl td:last-child{font-weight:700;color:#1B2E50;font-variant-numeric:tabular-nums;white-space:nowrap}.pts-tbl tr:not(:last-child) td{border-bottom:1px solid #CDD3E0}</style>
+
 </head>
 <body data-tool="sep">
-<nav style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #CDD3E0;position:sticky;top:0;z-index:99;"><a href="pages/ferramentas.html" style="text-decoration:none;color:#1B2E50;font-size:13px;font-weight:700;">&#8592; Ferramentas</a><span style="background:#007575;color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;">Sparking</span></nav>
+<nav class="sparking-nav"><a href="pages/ferramentas.html">&#8592; Ferramentas</a><span class="badge">Sparking</span></nav>
 <div class="hdr">
   <div class="hdr-tag">Sparking · SEP</div>
   <h1>Sistemas Elétricos de Potência</h1>
@@ -113,16 +113,9 @@ var expState={pdelta:[],icc:[]};
 var charts={};
 var _deb;
 
-function gv(id){return parseFloat(document.getElementById(id)?.value);}
 function sv(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
 function fmN(v){if(Math.abs(v)>=100)return v.toFixed(1);if(Math.abs(v)>=1)return v.toFixed(3);return v.toPrecision(3);}
 function rRct(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
-function makeCrosshair(xLabel,yLabel){return{id:'crosshair',afterInit:function(c){c._chX=null;c.canvas.addEventListener('mousemove',function(e){var r=c.canvas.getBoundingClientRect();c._chX=e.clientX-r.left;c.draw();});c.canvas.addEventListener('mouseleave',function(){c._chX=null;c.draw();});},afterDraw:function(c){var mx=c._chX;if(mx==null)return;var ctx=c.ctx,ca=c.chartArea;if(mx<ca.left||mx>ca.right)return;var xv=c.scales.x.getValueForPixel(mx);ctx.save();ctx.beginPath();ctx.moveTo(mx,ca.top);ctx.lineTo(mx,ca.bottom);ctx.strokeStyle='rgba(27,46,80,.35)';ctx.lineWidth=1;ctx.setLineDash([4,3]);ctx.stroke();ctx.setLineDash([]);var vals=[];c.data.datasets.forEach(function(ds){if(ds.type==='scatter')return;var pts=ds.data,lo=null,hi=null;for(var j=0;j<pts.length-1;j++){if(pts[j].x<=xv&&pts[j+1].x>=xv){lo=pts[j];hi=pts[j+1];break;}}if(!lo)return;var t=hi.x===lo.x?0:(xv-lo.x)/(hi.x-lo.x);var yv=lo.y+t*(hi.y-lo.y);var yp=c.scales.y.getPixelForValue(yv);ctx.beginPath();ctx.arc(mx,yp,4,0,2*Math.PI);ctx.fillStyle=ds.borderColor;ctx.fill();vals.push({label:ds.label,y:yv,color:ds.borderColor});});if(!vals.length){ctx.restore();return;}var pad=9,lh=18;ctx.font='600 12px Inter,sans-serif';var lines=[xLabel+': '+fmN(xv)].concat(vals.map(function(v){return v.label+': '+fmN(v.y)+' '+yLabel;}));var mw=Math.max.apply(null,lines.map(function(l){return ctx.measureText(l).width;}));var bw=mw+pad*2,bh=lines.length*lh+pad*2-2,bx=mx+14;if(bx+bw>ca.right-4)bx=mx-bw-14;ctx.fillStyle='rgba(255,255,255,.96)';ctx.strokeStyle='#CDD3E0';ctx.lineWidth=1;rRct(ctx,bx,ca.top+8,bw,bh,7);ctx.fill();ctx.stroke();lines.forEach(function(line,i){ctx.fillStyle=i===0?'#556070':vals[i-1].color;ctx.font=i===0?'12px Inter,sans-serif':'700 12px Inter,sans-serif';ctx.fillText(line,bx+pad,ca.top+8+pad+i*lh+12);});ctx.restore();}};}
-
-function isExpActive(pid){
-  return !!document.getElementById('sp-'+pid+'-exp')?.classList.contains('active');
-}
-
 function calcPdelta(){
   var VS=gv('pd_VS'),VR=gv('pd_VR'),X=gv('pd_X'),d_op=gv('pd_delta');
   if(!VS||!VR||!X)return;
@@ -151,10 +144,7 @@ function calcPdelta(){
     else{showStats('pdelta',null);}
   }
 
-  var ctx=document.getElementById('chart-pdelta').getContext('2d');
-  if(charts.pdelta)charts.pdelta.destroy();
-  charts.pdelta=new Chart(ctx,{type:'line',plugins:[makeCrosshair('δ (°)','pu')],data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:true,position:'top',labels:{font:{size:13,family:'Inter',weight:'600'},color:'#556070',usePointStyle:true,pointStyleWidth:10}},tooltip:{enabled:false}},scales:{x:{type:'linear',min:0,max:180,ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'δ (°)',color:'#556070',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}},y:{type:'linear',min:+(-Pmax*0.1).toFixed(2),max:+(Pmax*1.15).toFixed(2),ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'P (pu)',color:'#556070',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}}}}});
-}
+  makeChart('pdelta',datasets,'δ (°)','P (pu)',{x:{min:0,max:180},y:{min:+(-Pmax*0.1).toFixed(2),max:+(Pmax*1.15).toFixed(2)},plugins:[makeCrosshair('δ (°)','pu')]});
 
 function calcIcc(){
   var VF_kV=gv('icc_VF'),Rs_mO=gv('icc_Rs'),Xs_mO=gv('icc_Xs'),r=gv('icc_r'),x=gv('icc_x'),dmax=gv('icc_dmax');
@@ -183,10 +173,7 @@ function calcIcc(){
     else{showStats('pdelta',null);}
   }
 
-  var ctx=document.getElementById('chart-icc').getContext('2d');
-  if(charts.icc)charts.icc.destroy();
-  charts.icc=new Chart(ctx,{type:'line',plugins:[makeCrosshair('d (km)','kA')],data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:true,position:'top',labels:{font:{size:13,family:'Inter',weight:'600'},color:'#556070',usePointStyle:true,pointStyleWidth:10}},tooltip:{enabled:false}},scales:{x:{type:'linear',min:0,max:dmax,ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'Distância (km)',color:'#556070',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}},y:{type:'linear',min:0,ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'Icc (kA)',color:'#556070',font:{size:11}},grid:{color:'rgba(0,0,0,.06)'}}}}});
-}
+  makeChart('icc',datasets,'Distância (km)','Icc (kA)',{x:{min:0,max:dmax},y:{min:0},plugins:[makeCrosshair('d (km)','kA')]});
 
 function addExpRow(pid){expState[pid].push({id:Date.now()+Math.random(),x:NaN,y:NaN});renderExpTable(pid);}
 function delExpRow(pid,id){expState[pid]=expState[pid].filter(function(r){return r.id!==id;});renderExpTable(pid);pid==='pdelta'?calcPdelta():calcIcc();}
@@ -222,7 +209,7 @@ function setTab(id,el){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
   document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');
-  setTimeout(function(){if(id!=='form'){id==='pdelta'?calcPdelta():calcIcc();}},40);
+  requestAnimationFrame(function(){if(id!=='form'){id==='pdelta'?calcPdelta():calcIcc();}});
 }
 calcPdelta();calcIcc();
 

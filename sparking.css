@@ -5,6 +5,7 @@
   --navy:#1B2E50;--teal:#007575;--teal-lt:#DCF0EF;
   --red:#C8102E;--red-lt:#FDEAEA;
   --green:#15803D;--green-lt:#DCFCE7;
+  --amber:#D97706;--amber-lt:#FEF3C7;
   --ac:#007575;--ac-light:#DCF0EF;--ac2:#C8102E;--ac3:#1B2E50;
   --shadow:0 1px 4px rgba(0,0,0,.10),0 0 0 1px rgba(0,0,0,.05);
 }
@@ -156,3 +157,12 @@ canvas.diagram{width:100%;height:320px;display:block;}
 .fvars-tbl td:first-child{font-weight:700;color:var(--ac);font-family:'Courier New',monospace;font-size:.8rem;}
 .fvars-tbl tr:last-child td{border-bottom:none;}
 .fconst{font-size:.74rem;color:var(--sub);margin-top:8px;padding:6px 8px;background:var(--surf2);border-radius:6px;font-style:italic;line-height:1.7;}
+
+/* PTS-TBL */
+.pts-tbl{width:fit-content;border-collapse:collapse;margin-top:14px;font-size:12px;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.pts-tbl th{padding:5px 12px;background:var(--navy);color:#fff;font-size:11px;font-weight:700;text-align:left;letter-spacing:.04em}
+.pts-tbl th:first-child{border-right:1px solid #3a4f6e}
+.pts-tbl td{padding:6px 12px;vertical-align:middle}
+.pts-tbl td:first-child{color:#65676B;background:#F8F9FC;border-right:1px solid var(--border)}
+.pts-tbl td:last-child{font-weight:700;color:var(--navy);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pts-tbl tr:not(:last-child) td{border-bottom:1px solid var(--border)}

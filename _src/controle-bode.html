@@ -99,7 +99,6 @@ var expState={bode:[],degrau:[]};
 var charts={};
 var _deb;
 
-function gv(id){return parseFloat(document.getElementById(id)?.value);}
 function sv(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
 function fmN(v){if(Math.abs(v)>=100)return v.toFixed(1);if(Math.abs(v)>=1)return v.toFixed(3);return v.toPrecision(3);}
 function rRct(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
@@ -112,10 +111,6 @@ function H_mag(w,ordem,K,tau,wn,zeta){
 function H_phase(w,ordem,tau,wn,zeta){
   if(ordem===1)return -Math.atan2(w*tau,1)*180/Math.PI;
   else{var u=w/wn;return -Math.atan2(2*zeta*u,1-u*u)*180/Math.PI;}
-}
-
-function isExpActive(pid){
-  return !!document.getElementById('sp-'+pid+'-exp')?.classList.contains('active');
 }
 
 function calcBode(){
@@ -265,7 +260,7 @@ function setTab(id,el){
   document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
   document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
   document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');
-  setTimeout(function(){if(id!=='form'){id==='bode'?_calcBode():calcDegrau();}},40);
+  requestAnimationFrame(function(){if(id!=='form'){id==='bode'?_calcBode():calcDegrau();}});
 }
 document.getElementById('ordem').addEventListener('change',function(){
   var o=this.value;

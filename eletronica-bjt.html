@@ -12,10 +12,10 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="sparking.js"></script>
 <script src="sparking-formulas.js"></script>
-<style>.pts-tbl{width:fit-content;border-collapse:collapse;margin-top:14px;font-size:12px;border:1px solid #CDD3E0;border-radius:6px;overflow:hidden}.pts-tbl th{padding:5px 12px;background:#1B2E50;color:#fff;font-size:11px;font-weight:700;text-align:left;letter-spacing:.04em}.pts-tbl th:first-child{border-right:1px solid #3a4f6e}.pts-tbl td{padding:6px 12px;vertical-align:middle}.pts-tbl td:first-child{color:#65676B;background:#F8F9FC;border-right:1px solid #CDD3E0}.pts-tbl td:last-child{font-weight:700;color:#1B2E50;font-variant-numeric:tabular-nums;white-space:nowrap}.pts-tbl tr:not(:last-child) td{border-bottom:1px solid #CDD3E0}</style>
+
 </head>
 <body data-tool="bjt">
-<nav style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #CDD3E0;position:sticky;top:0;z-index:99;"><a href="pages/ferramentas.html" style="text-decoration:none;color:#1B2E50;font-size:13px;font-weight:700;">&#8592; Ferramentas</a><span style="background:#007575;color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;">Sparking</span></nav>
+<nav class="sparking-nav"><a href="pages/ferramentas.html">&#8592; Ferramentas</a><span class="badge">Sparking</span></nav>
 <div class="hdr">
   <div class="hdr-tag">Sparking · Eletrônica</div>
   <h1>BJT — Família de Curvas + Reta de Carga</h1>
@@ -24,8 +24,8 @@
 <div class="wrap">
 
 <div class="tabs">
-  <button class="tab active" onclick="setTab('main',this)">Análise</button>
-  <button class="tab" onclick="setTab('form',this)">Fórmulas</button>
+  <button class="tab active" onclick="setPanel('main',this)">Análise</button>
+  <button class="tab" onclick="setPanel('form',this)">Fórmulas</button>
 </div>
 
 <div id="panel-main" class="panel active">
@@ -38,10 +38,10 @@
 <div class="main-grid">
   <div class="card">
     <div class="sub-tabs">
-      <button class="sub-tab active" onclick="setSubPanel('teo',this)">Teórico</button>
-      <button class="sub-tab" onclick="setSubPanel('exp',this)">Experimento</button>
+      <button class="sub-tab active" onclick="setSubPanel('main','teo',this)">Teórico</button>
+      <button class="sub-tab" onclick="setSubPanel('main','exp',this)">Experimento</button>
     </div>
-    <div id="sp-teo" class="sub-panel active">
+    <div id="sp-main-teo" class="sub-panel active">
       <div class="card-lbl">Transistor</div>
       <div class="field"><label>β (ganho de corrente)</label><input id="beta" type="number" value="100" min="10" oninput="atualizar()"></div>
       <div class="field"><label>λ (Early, V⁻¹)</label><input id="lambda" type="number" value="0.01" step="0.001" min="0" oninput="atualizar()"></div>
@@ -51,17 +51,17 @@
       <div class="field"><label>I<sub>B</sub> no ponto Q (µA)</label><input id="IBQ" type="number" value="40" step="5" oninput="atualizar()"></div>
       <div class="field"><label>I<sub>B</sub> máximo (µA)</label><input id="IBmax" type="number" value="100" step="10" oninput="atualizar()"></div>
     </div>
-    <div id="sp-exp" class="sub-panel">
+    <div id="sp-main-exp" class="sub-panel">
       <div class="exp-col-hint">V<sub>CE</sub> (V) · I<sub>C</sub> medido (mA)</div>
       <div class="exp-tbl-wrap">
         <table class="exp-tbl">
           <thead><tr><th>V<sub>CE</sub> (V)</th><th>I<sub>C</sub> (mA)</th><th></th></tr></thead>
-          <tbody id="exp-tbody"></tbody>
+          <tbody id="exp-tbody-main"></tbody>
         </table>
       </div>
       <div class="exp-foot">
-        <button class="btn-add" onclick="addExpRow()">+ Linha</button>
-        <button class="btn-clr" onclick="clearExp()">Limpar</button>
+        <button class="btn-add" onclick="addExpRow('main')">+ Linha</button>
+        <button class="btn-clr" onclick="clearExp('main')">Limpar</button>
       </div>
     </div>
   </div>
@@ -78,18 +78,8 @@
 
 </div>
 <script>
-function setTab(id,el){
-  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('panel-'+id).classList.add('active');
-  el.classList.add('active');
-  if(id==='form')MathJax?.typesetPromise?.([document.getElementById('panel-form')]);
-}
-var expState=[];
-var _chart=null;
 var _deb;
 
-function gv(id){return parseFloat(document.getElementById(id)?.value);}
 function sv(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
 function fmN(v){if(Math.abs(v)>=100)return v.toFixed(1);if(Math.abs(v)>=1)return v.toFixed(3);if(Math.abs(v)>=0.001)return v.toPrecision(3);return v.toExponential(2);}
 function rRct(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
@@ -102,10 +92,6 @@ function bjt_ic(IB_A,beta,lam,vce){
   var ic_active=beta*IB_A*(1+lam*vce);
   if(vce<VCE_SAT){return ic_active*(vce/VCE_SAT);}
   return ic_active;
-}
-
-function isExpActive(){
-  return !!document.getElementById('sp-exp')?.classList.contains('active');
 }
 
 function atualizar(){clearTimeout(_deb);_deb=setTimeout(calcular,200);}
@@ -124,7 +110,7 @@ function calcular(){
   if(VQ<VCE_SAT){VQ=VCE_SAT;IC_Q_A=(Vcc-VQ)/Rc;}
   var IQ_mA=IC_Q_A*1000;
 
-  if(!isExpActive()){
+  if(!isExpActive('main')){
     var NCURVES=5;
     for(var k=0;k<NCURVES;k++){
       var IB_A=IBmax_A*(k+1)/NCURVES;
@@ -143,7 +129,7 @@ function calcular(){
     datasets.push({type:'scatter',label:'Q',data:[{x:+VQ.toFixed(3),y:+IQ_mA.toFixed(4)}],borderColor:'#000',backgroundColor:'#000',pointRadius:9,pointStyle:'crossRot'});
     showStats('main',null);
   } else {
-    var ep=getExpPts();
+    var ep=getExpPts('main');
     if(ep){datasets.push({type:'scatter',label:'Medido',data:ep,borderColor:'#F0A500',backgroundColor:'#F0A50099',pointRadius:3,pointHoverRadius:5,showLine:true,borderWidth:2});const _xmn=ep.reduce((a,p)=>Math.min(a,p.x),Infinity),_xmx=ep.reduce((a,p)=>Math.max(a,p.x),-Infinity);const _rg=regDataset(ep,_xmn,_xmx);if(_rg)datasets.push(_rg);showStats('main',ep);}
     else{showStats('main',null);}
   }
@@ -157,42 +143,11 @@ function calcular(){
   sv('pt-bjt-VQ',VQ.toFixed(2)+' V');sv('pt-bjt-IQ',IQ_mA.toFixed(2)+' mA');sv('pt-bjt-Isat',Isat.toFixed(1)+' mA');sv('pt-bjt-Vce2',(Vcc/2).toFixed(1)+' V');
   document.getElementById('insight-txt').textContent='Q = ('+VQ.toFixed(2)+' V, '+IQ_mA.toFixed(2)+' mA) — região '+regiao+'. ICsat = '+Isat.toFixed(1)+' mA quando VCE → 0. VCC/2 = '+(Vcc/2).toFixed(1)+' V (centro ideal da reta de carga para amplificador).';
 
-  var ctx=document.getElementById('chart-main').getContext('2d');
-  if(_chart)_chart.destroy();
-  _chart=new Chart(ctx,{type:'line',plugins:[crosshairPlugin],data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:true,position:'top',labels:{font:{size:11,family:'Inter',weight:'600'},color:'#556070',usePointStyle:true,pointStyleWidth:10,boxWidth:14}},tooltip:{enabled:false}},scales:{x:{type:'linear',min:0,max:+Vcc.toFixed(1),grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'V_CE (V)',color:'#556070',font:{size:11}}},y:{type:'linear',min:0,max:+(Isat*1.15).toFixed(2),grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'I_C (mA)',color:'#556070',font:{size:11}}}}}});
+  makeChart('main',datasets,'V_CE (V)','I_C (mA)',{x:{min:0,max:+Vcc.toFixed(1)},y:{min:0,max:+(Isat*1.15).toFixed(2)},legendSize:11});
 }
 
-function addExpRow(){expState.push({id:Date.now()+Math.random(),x:NaN,y:NaN});renderExpTable();}
-function delExpRow(id){expState=expState.filter(function(r){return r.id!==id;});renderExpTable();calcular();}
-function clearExp(){expState=[];renderExpTable();calcular();}
-function renderExpTable(){
-  var tbody=document.getElementById('exp-tbody');tbody.innerHTML='';
-  expState.forEach(function(row){
-    var tr=document.createElement('tr');
-    ['x','y'].forEach(function(k){
-      var td=document.createElement('td'),inp=document.createElement('input');
-      inp.type='number';inp.step='any';if(!isNaN(row[k]))inp.value=row[k];
-      inp.oninput=function(e){row[k]=parseFloat(e.target.value);calcular();};
-      td.appendChild(inp);tr.appendChild(td);
-    });
-    var tdD=document.createElement('td'),btn=document.createElement('button');
-    btn.className='exp-del';btn.textContent='✕';btn.onclick=function(){delExpRow(row.id);};
-    tdD.appendChild(btn);tr.appendChild(tdD);tbody.appendChild(tr);
-  });
-}
-function getExpPts(){
-  var pts=expState.map(function(r){return{x:r.x,y:r.y};}).filter(function(p){return!isNaN(p.x)&&!isNaN(p.y)&&isFinite(p.x)&&isFinite(p.y);});
-  return pts.length?pts:null;
-}
-function setSubPanel(spid,btn){
-  document.querySelectorAll('.sub-panel').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.sub-tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('sp-'+spid).classList.add('active');btn.classList.add('active');
-  if(spid==='exp'&&expState.length===0)addExpRow();
-  calcular();
-}
+var CALC={main:calcular};
 calcular();
-
 </script>
 </body>
 </html>

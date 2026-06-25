@@ -187,21 +187,6 @@ function makeChart(id,datasets,xL,yL,xType){xType=xType||'linear';if(charts[id])
 var ln=(data,label,cor)=>({label,data,borderColor:cor||'#007575',backgroundColor:'transparent',borderWidth:2.5,pointRadius:0,tension:0.2});
 var sc=(data,label)=>({type:'scatter',label,data,borderColor:'#F0A500',backgroundColor:'#F0A50099',pointRadius:6,pointHoverRadius:8});
 
-/* ── sub-tabs ── */
-function setSubPanel(pid,spid,btn){
-  const panel=document.getElementById('panel-'+pid);
-  panel.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));
-  panel.querySelectorAll('.sub-tab').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sp-'+pid+'-'+spid).classList.add('active');btn.classList.add('active');
-  if(spid==='exp'&&expState[pid].length===0)addExpRow(pid);
-  CALC[pid]?.();
-}
-
-/* ── isExpActive helper ── */
-function isExpActive(pid){
-  return !!document.getElementById('sp-'+pid+'-exp')?.classList.contains('active');
-}
-
 /* ── calcs ── */
 function calcRc(){
   const R=get('rc_R'),C=get('rc_C')/1e6,V0=get('rc_V0'),Vf=get('rc_Vf');
@@ -285,6 +270,5 @@ function calcFilt(){
 
 const CALC={rc:calcRc,rl:calcRl,rlc:calcRlc,filt:calcFilt};
 function calc(id){clearTimeout(deb);deb=setTimeout(()=>CALC[id]?.(),250);}
-function setPanel(id,el){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');setTimeout(()=>{CALC[id]?.();if(window.MathJax)MathJax.typesetPromise?.([document.getElementById('panel-'+id)]);},50);}
 calcRc();
 </script>

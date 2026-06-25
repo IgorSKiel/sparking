@@ -1,4 +1,4 @@
----
+﻿---
 layout: tool
 title: "Digitais — Temporização"
 tool_id: timing
@@ -248,5 +248,5 @@ function desenhar(){
 // Init
 mudarTipo();mudarCiclos();
 
-function setTab(id,el){document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');if(id==='main')setTimeout(function(){mudarTipo();mudarCiclos();},40);}
+function setTab(id,el){document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');if(id==='main')requestAnimationFrame(function(){mudarTipo();mudarCiclos();});}
 </script>

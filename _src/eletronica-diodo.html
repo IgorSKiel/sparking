@@ -13,8 +13,8 @@ render_with_liquid: false
 <div class="wrap">
 
 <div class="tabs">
-  <button class="tab active" onclick="setTab('main',this)">Análise</button>
-  <button class="tab" onclick="setTab('form',this)">Fórmulas</button>
+  <button class="tab active" onclick="setPanel('main',this)">Análise</button>
+  <button class="tab" onclick="setPanel('form',this)">Fórmulas</button>
 </div>
 
 <div id="panel-main" class="panel active">
@@ -27,10 +27,10 @@ render_with_liquid: false
 <div class="main-grid">
   <div class="card">
     <div class="sub-tabs">
-      <button class="sub-tab active" onclick="setSubPanel('teo',this)">Teórico</button>
-      <button class="sub-tab" onclick="setSubPanel('exp',this)">Experimento</button>
+      <button class="sub-tab active" onclick="setSubPanel('main','teo',this)">Teórico</button>
+      <button class="sub-tab" onclick="setSubPanel('main','exp',this)">Experimento</button>
     </div>
-    <div id="sp-teo" class="sub-panel active">
+    <div id="sp-main-teo" class="sub-panel active">
       <div class="card-lbl">Circuito</div>
       <div class="field"><label>V<sub>CC</sub> (V)</label><input id="Vcc" type="number" value="5" step="0.1" oninput="atualizar()"></div>
       <div class="field"><label>R (Ω)</label><input id="R" type="number" value="1000" oninput="atualizar()"></div>
@@ -38,17 +38,17 @@ render_with_liquid: false
       <div class="field"><label>I<sub>S</sub> (pA)</label><input id="IS" type="number" value="1" step="0.1" min="0.001" oninput="atualizar()"></div>
       <div class="field"><label>n (fator de idealidade)</label><input id="n_id" type="number" value="1.8" step="0.1" min="1" max="2" oninput="atualizar()"></div>
     </div>
-    <div id="sp-exp" class="sub-panel">
+    <div id="sp-main-exp" class="sub-panel">
       <div class="exp-col-hint">VD (V) · I<sub>D</sub> medido (mA)</div>
       <div class="exp-tbl-wrap">
         <table class="exp-tbl">
           <thead><tr><th>VD (V)</th><th>I<sub>D</sub> (mA)</th><th></th></tr></thead>
-          <tbody id="exp-tbody"></tbody>
+          <tbody id="exp-tbody-main"></tbody>
         </table>
       </div>
       <div class="exp-foot">
-        <button class="btn-add" onclick="addExpRow()">+ Linha</button>
-        <button class="btn-clr" onclick="clearExp()">Limpar</button>
+        <button class="btn-add" onclick="addExpRow('main')">+ Linha</button>
+        <button class="btn-clr" onclick="clearExp('main')">Limpar</button>
       </div>
     </div>
   </div>
@@ -65,32 +65,17 @@ render_with_liquid: false
 
 </div>
 <script>
-function setTab(id,el){
-  document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('panel-'+id).classList.add('active');
-  el.classList.add('active');
-  if(id==='form')MathJax?.typesetPromise?.([document.getElementById('panel-form')]);
-}
 const VT=0.02585;
-var expState=[];
-var _chart=null;
 var _deb;
 
-function gv(id){return parseFloat(document.getElementById(id)?.value);}
 function sv(id,v){var el=document.getElementById(id);if(el)el.textContent=v;}
 function fmN(v){if(Math.abs(v)>=100)return v.toFixed(1);if(Math.abs(v)>=1)return v.toFixed(3);if(Math.abs(v)>=0.001)return v.toPrecision(3);return v.toExponential(2);}
 function rRct(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();}
-
 
 function findQ(IS,n,Vcc,R){
   var lo=0,hi=Vcc,vq=0;
   for(var i=0;i<60;i++){var mid=(lo+hi)/2;var id_sh=IS*(Math.exp(mid/(n*VT))-1);var id_rl=(Vcc-mid)/R;if(id_sh<id_rl)lo=mid;else hi=mid;vq=mid;}
   return vq;
-}
-
-function isExpActive(){
-  return !!document.getElementById('sp-exp')?.classList.contains('active');
 }
 
 function atualizar(){clearTimeout(_deb);_deb=setTimeout(calcular,200);}
@@ -108,7 +93,7 @@ function calcular(){
   document.getElementById('insight-txt').textContent='Q = ('+VQ.toFixed(3)+' V, '+IQ_mA.toFixed(3)+' mA). Diodo conduz '+VQ.toFixed(3)+' V. Restam '+(Vcc-VQ).toFixed(3)+' V sobre R ('+R+' Ω).';
 
   var datasets=[];
-  if(!isExpActive()){
+  if(!isExpActive('main')){
     var N=300;
     var ptsShock=[],ptsRL=[];
     var clipY=Imax*3;
@@ -126,45 +111,14 @@ function calcular(){
     ];
     showStats('main',null);
   } else {
-    var ep=getExpPts();
+    var ep=getExpPts('main');
     if(ep){datasets.push({type:'scatter',label:'Medido',data:ep,borderColor:'#F0A500',backgroundColor:'#F0A50099',pointRadius:3,pointHoverRadius:5,showLine:true,borderWidth:2});const _xmn=ep.reduce((a,p)=>Math.min(a,p.x),Infinity),_xmx=ep.reduce((a,p)=>Math.max(a,p.x),-Infinity);const _rg=regDataset(ep,_xmn,_xmx);if(_rg)datasets.push(_rg);showStats('main',ep);}
     else{showStats('main',null);}
   }
 
-  var ctx=document.getElementById('chart-main').getContext('2d');
-  if(_chart)_chart.destroy();
-  _chart=new Chart(ctx,{type:'line',plugins:[crosshairPlugin],data:{datasets},options:{responsive:true,maintainAspectRatio:false,animation:{duration:200},plugins:{legend:{display:true,position:'top',labels:{font:{size:13,family:'Inter',weight:'600'},color:'#556070',usePointStyle:true,pointStyleWidth:10}},tooltip:{enabled:false}},scales:{x:{type:'linear',min:0,max:+Vcc.toFixed(2),grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'V_D (V)',color:'#556070',font:{size:11}}},y:{type:'linear',min:0,max:+(Imax*1.15).toFixed(3),grid:{color:'rgba(0,0,0,.06)'},ticks:{color:'#556070',font:{size:11}},title:{display:true,text:'I_D (mA)',color:'#556070',font:{size:11}}}}}});
+  makeChart('main',datasets,'V_D (V)','I_D (mA)',{x:{min:0,max:+Vcc.toFixed(2)},y:{min:0,max:+(Imax*1.15).toFixed(3)}});
 }
 
-function addExpRow(){expState.push({id:Date.now()+Math.random(),x:NaN,y:NaN});renderExpTable();}
-function delExpRow(rowId){expState=expState.filter(function(r){return r.id!==rowId;});renderExpTable();calcular();}
-function clearExp(){expState=[];renderExpTable();calcular();}
-function renderExpTable(){
-  var tbody=document.getElementById('exp-tbody');tbody.innerHTML='';
-  expState.forEach(function(row){
-    var tr=document.createElement('tr');
-    ['x','y'].forEach(function(k){
-      var td=document.createElement('td'),inp=document.createElement('input');
-      inp.type='number';inp.step='any';if(!isNaN(row[k]))inp.value=row[k];
-      inp.oninput=function(e){row[k]=parseFloat(e.target.value);calcular();};
-      td.appendChild(inp);tr.appendChild(td);
-    });
-    var tdD=document.createElement('td'),btn=document.createElement('button');
-    btn.className='exp-del';btn.textContent='✕';btn.onclick=function(){delExpRow(row.id);};
-    tdD.appendChild(btn);tr.appendChild(tdD);tbody.appendChild(tr);
-  });
-}
-function getExpPts(){
-  var pts=expState.map(function(r){return{x:r.x,y:r.y};}).filter(function(p){return!isNaN(p.x)&&!isNaN(p.y)&&isFinite(p.x)&&isFinite(p.y);});
-  return pts.length?pts:null;
-}
-function setSubPanel(spid,btn){
-  document.querySelectorAll('.sub-panel').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.sub-tab').forEach(function(b){b.classList.remove('active');});
-  document.getElementById('sp-'+spid).classList.add('active');btn.classList.add('active');
-  if(spid==='exp'&&expState.length===0)addExpRow();
-  calcular();
-}
+var CALC={main:calcular};
 calcular();
-
 </script>
