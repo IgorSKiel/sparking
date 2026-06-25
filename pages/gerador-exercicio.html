@@ -7,6 +7,13 @@
 </head>
 <body>
 <style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1B2E50;--teal:#007575;--teal-lt:#DCF0EF;--red:#C8102E;
+  --bg:#ECEEF4;--card:#fff;--surf2:#F3F5FA;--text:#1A2640;--sub:#556070;--border:#CDD3E0;
+}
+html{background:var(--bg);}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);max-width:860px;margin:0 auto;font-size:15px;}
 .drop-zone{border:2px dashed var(--border);border-radius:12px;padding:20px 16px;text-align:center;cursor:pointer;background:var(--surf2);transition:border-color .2s;}
 .drop-zone:hover,.drop-zone.over{border-color:var(--teal);}
 .drop-zone.has-img{padding:8px;border-style:solid;border-color:var(--teal);}

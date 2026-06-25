@@ -134,5 +134,6 @@ window.addEventListener('pageshow',function(e){
     document.querySelectorAll('link[rel=stylesheet]').forEach(function(l){
       var h=l.href;l.href='';l.href=h;
     });
+    Object.values(charts).forEach(function(c){try{c.resize();}catch(_){}});
   }
 });
