@@ -1,4 +1,4 @@
----
+﻿---
 layout: tool
 title: "Máquinas — Motor de Indução"
 tool_id: motor-ind
@@ -40,12 +40,6 @@ render_with_liquid: false
       <div class="card-lbl" style="margin-top:6px">Carga</div>
       <div class="field"><label>Tipo</label><select id="carga_tipo" onchange="atualizar()"><option value="const">Constante</option><option value="quad">Quadrática (bomba)</option><option value="lin">Linear</option></select></div>
       <div class="field"><label>T carga nominal (N·m)</label><input id="Tcarga" type="number" value="30" step="1" oninput="atualizar()"></div>
-      <div class="kpi-row">
-        <div class="kpi"><div class="kpi-val" id="kpi_ns">—</div><div class="kpi-lbl">n sinc. (rpm)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_Tmax">—</div><div class="kpi-lbl">T<sub>max</sub> (N·m)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_smax">—</div><div class="kpi-lbl">s em T<sub>max</sub></div></div>
-        <div class="kpi" id="kpi_nQ_box"><div class="kpi-val" id="kpi_nQ">—</div><div class="kpi-lbl">n no Q (rpm)</div></div>
-      </div>
     </div>
     <div id="sp-exp" class="sub-panel">
       <div class="exp-col-hint">Velocidade (rpm) · T medido (N·m)</div>
@@ -64,6 +58,7 @@ render_with_liquid: false
   <div class="card chart-card">
     <div class="chart-title">Torque × Velocidade (rpm)</div>
     <div class="chart-wrap"><canvas id="chart-main"></canvas></div>
+    <!-- pts-tbl:main -->
   </div>
 </div>
 
@@ -144,8 +139,9 @@ function calcular(){
   }
 
   sv('kpi_ns',ns_rpm.toFixed(0));sv('kpi_Tmax',Tmax.toFixed(1));sv('kpi_smax',smax.toFixed(3));
-  if(nQ!==null){sv('kpi_nQ',nQ.toFixed(0));document.getElementById('kpi_nQ_box').style.background='var(--teal-lt)';}
-  else{sv('kpi_nQ','—');document.getElementById('kpi_nQ_box').style.background='var(--red-lt)';}
+  sv('pt-mind-ns',ns_rpm.toFixed(0)+' rpm');sv('pt-mind-Tmax',Tmax.toFixed(1)+' N·m');sv('pt-mind-smax',smax.toFixed(3));
+  if(nQ!==null){sv('kpi_nQ',nQ.toFixed(0));sv('pt-mind-nQ',nQ.toFixed(0)+' rpm');document.getElementById('kpi_nQ_box').style.background='var(--teal-lt)';}
+  else{sv('kpi_nQ','—');sv('pt-mind-nQ','Não arranca');document.getElementById('kpi_nQ_box').style.background='var(--red-lt)';}
 
   var msg=nQ!==null?'Motor opera em n = '+nQ.toFixed(0)+' rpm (escorregamento = '+((1-nQ/ns_rpm)*100).toFixed(1)+'%). T_max = '+Tmax.toFixed(1)+' N·m em s = '+smax.toFixed(3)+'.'
     :'Motor não arranca com essa carga (T_carga > T_motor para todo s). Reduza a carga ou aumente a tensão.';

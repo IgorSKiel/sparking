@@ -1,4 +1,4 @@
----
+﻿---
 layout: tool
 title: "Controle — Bode"
 tool_id: bode
@@ -33,11 +33,6 @@ render_with_liquid: false
         <div id="row-tau" class="field"><label>τ (constante de tempo, s)</label><input id="tau" type="number" value="1" step="0.1" oninput="calcBode()"></div>
         <div id="row-wn" class="field" style="display:none"><label>ωn (rad/s)</label><input id="wn" type="number" value="10" step="1" oninput="calcBode()"></div>
         <div id="row-zeta" class="field" style="display:none"><label>ζ (amortecimento)</label><input id="zeta" type="number" value="0.5" step="0.05" min="0.05" max="3" oninput="calcBode()"></div>
-        <div class="kpi-row">
-          <div class="kpi" id="kpi-Mp-box"><div class="kpi-val" id="kpi_Mp">—</div><div class="kpi-lbl">Pico |H| (dB)</div></div>
-          <div class="kpi"><div class="kpi-val" id="kpi_PM">—</div><div class="kpi-lbl">Margem de fase (°)</div></div>
-          <div class="kpi"><div class="kpi-val" id="kpi_wc">—</div><div class="kpi-lbl">ω cruzamento (rad/s)</div></div>
-        </div>
       </div>
       <div id="sp-bode-exp" class="sub-panel">
         <div class="exp-col-hint">ω (rad/s) · |H| dB medido</div>
@@ -56,6 +51,7 @@ render_with_liquid: false
     <div class="card chart-card">
       <div><div class="chart-title">Magnitude (dB)</div><div class="chart-wrap"><canvas id="chart-bode-mag"></canvas></div></div>
       <div><div class="chart-title">Fase (°)</div><div class="chart-wrap"><canvas id="chart-bode-fase"></canvas></div></div>
+      <!-- pts-tbl:bode -->
     </div>
   </div>
 </div>
@@ -72,11 +68,6 @@ render_with_liquid: false
       <div id="sp-degrau-teo" class="sub-panel active">
         <div class="card-lbl">Sistema (mesmos parâmetros)</div>
         <div class="field" style="font-size:.8rem;color:var(--sub);padding:6px 10px;background:var(--surf2);border-radius:8px;">Altere os parâmetros na aba Bode — aqui o gráfico atualiza automaticamente.</div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="kpi_MP_pct">—</div><div class="kpi-lbl">Overshoot (%)</div></div>
-          <div class="kpi"><div class="kpi-val" id="kpi_tp">—</div><div class="kpi-lbl">t pico (s)</div></div>
-          <div class="kpi"><div class="kpi-val" id="kpi_ts">—</div><div class="kpi-lbl">acomod. 2% (s)</div></div>
-        </div>
       </div>
       <div id="sp-degrau-exp" class="sub-panel">
         <div class="exp-col-hint">t (s) · y medido</div>
@@ -95,6 +86,7 @@ render_with_liquid: false
     <div class="card chart-card">
       <div class="chart-title">y(t) — resposta ao degrau unitário</div>
       <div class="chart-wrap tall"><canvas id="chart-degrau"></canvas></div>
+      <!-- pts-tbl:degrau -->
     </div>
   </div>
 </div>
@@ -155,6 +147,7 @@ function _calcBode(){
   }
   var PM=wc?H_phase(wc,ordem,tau,wn,zeta)+180:180;
   sv('kpi_Mp',Mp_dB.toFixed(2));sv('kpi_PM',PM?PM.toFixed(1):'∞');sv('kpi_wc',wc?wc.toFixed(3):'—');
+  sv('pt-bode-wc',wc?wc.toFixed(3)+' rad/s':'—');sv('pt-bode-Mp',Mp_dB.toFixed(2)+' dB');sv('pt-bode-PM',PM?PM.toFixed(1)+'°':'∞');
 
   var Mp_pct=0,tp_s='∞',ts_s='—';
   if(ordem===2&&zeta<1){
@@ -218,6 +211,7 @@ function calcDegrau(){
       ts_s=5/Math.abs(s1);}
   }
   sv('kpi_MP_pct',(Mp_pct>0.1?Mp_pct.toFixed(1)+'%':'0%'));sv('kpi_tp',tp_s?tp_s.toFixed(3)+'s':'—');sv('kpi_ts',ts_s?ts_s.toFixed(3)+'s':'—');
+  sv('pt-deg-os',Mp_pct>0.1?Mp_pct.toFixed(1)+'%':'0%');sv('pt-deg-tp',tp_s?tp_s.toFixed(3)+' s':'—');sv('pt-deg-ts',ts_s?ts_s.toFixed(3)+' s':'—');
   document.getElementById('ins-degrau').textContent='Overshoot: '+(Mp_pct>0.1?Mp_pct.toFixed(1)+'%':'0% (sem sobressinal)')+(tp_s?'. Tempo de pico: '+tp_s.toFixed(3)+'s.':'')+' Acomodação (2%): '+(ts_s?ts_s.toFixed(3)+'s':'—')+'.';
 
   var ds=[];

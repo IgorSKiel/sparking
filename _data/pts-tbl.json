@@ -1,0 +1,171 @@
+{
+  "eletrot1": {
+    "ohm": [
+      {"id": "ohm_sl",      "label": "Inclinação 1/R"},
+      {"id": "ohm_imax",    "label": "I em V<sub>max</sub>"},
+      {"id": "pt-ohm-pmax", "label": "P em V<sub>max</sub>"}
+    ],
+    "pot": [
+      {"id": "pot_pmax",      "label": "Potência no pico"},
+      {"id": "pt-pot-ihalf",  "label": "I em P<sub>max</sub>/2"},
+      {"id": "pt-pot-phalf",  "label": "P = P<sub>max</sub>/2"}
+    ],
+    "div": [
+      {"id": "div_half", "label": "V em R2 = R1"},
+      {"id": "div_sat",  "label": "Saturação"}
+    ],
+    "mp": [
+      {"id": "mp_pmax", "label": "Potência máxima transferida"}
+    ]
+  },
+  "eletrot2": {
+    "res": [
+      {"id": "res_f0",      "label": "f₀ ressonância"},
+      {"id": "res_Q",       "label": "Fator Q"},
+      {"id": "res_BW",      "label": "Largura de Banda"},
+      {"id": "pt-res-Zmin", "label": "Z mínima em f₀ (= R)"},
+      {"id": "pt-res-Imax", "label": "I máxima em f₀"},
+      {"id": "pt-res-f1",   "label": "f₁ inferior −3 dB"},
+      {"id": "pt-res-f2",   "label": "f₂ superior −3 dB"}
+    ],
+    "imp": [
+      {"id": "pt-imp-R",  "label": "R"},
+      {"id": "pt-imp-X",  "label": "X = XL − XC"},
+      {"id": "pt-imp-FP", "label": "FP = cos φ"}
+    ],
+    "fas": [
+      {"id": "pt-fas-VR", "label": "V<sub>R</sub> no resistor"},
+      {"id": "pt-fas-VL", "label": "V<sub>L</sub> no indutor"},
+      {"id": "pt-fas-VC", "label": "V<sub>C</sub> no capacitor"}
+    ],
+    "pot": [
+      {"id": "pt-pot-P", "label": "P ativa"},
+      {"id": "pt-pot-Q", "label": "Q reativa"},
+      {"id": "pt-pot-S", "label": "S aparente"}
+    ]
+  },
+  "circuitos": {
+    "rc": [
+      {"id": "rc_tau",       "label": "τ = RC"},
+      {"id": "rc_t5tau",     "label": "5τ (regime permanente)"},
+      {"id": "rc_v63",       "label": "V em τ (63%)"},
+      {"id": "pt-rc-v3tau",  "label": "V em 3τ (≈ 95%)"}
+    ],
+    "rl": [
+      {"id": "rl_tau",     "label": "τ = L/R"},
+      {"id": "rl_Iss",     "label": "I<sub>ss</sub> estacionária"},
+      {"id": "rl_t5",      "label": "5τ (regime permanente)"},
+      {"id": "pt-rl-i63",  "label": "I em τ (63% de I<sub>ss</sub>)"}
+    ],
+    "rlc": [
+      {"id": "rlc_badge",     "label": "Regime",                       "badge": true},
+      {"id": "rlc_zeta",      "label": "ζ (fator amortecimento)"},
+      {"id": "rlc_Rcrit",     "label": "R crítico"},
+      {"id": "rlc_omega0",    "label": "ω₀ natural (rad/s)"},
+      {"id": "pt-rlc-omegad", "label": "ω<sub>d</sub> amortecida (rad/s)"},
+      {"id": "pt-rlc-Td",     "label": "T<sub>d</sub> período oscilação"}
+    ],
+    "filt": [
+      {"id": "filt_fc", "label": "f<sub>c</sub> de corte"},
+      {"label": "|H| em f<sub>c</sub>",  "value": "−3.0 dB (0.707)"},
+      {"label": "Fase em f<sub>c</sub>", "value": "−45°"}
+    ]
+  },
+  "diodo": {
+    "main": [
+      {"id": "kpi_VQ",       "label": "V<sub>D</sub> no ponto Q"},
+      {"id": "kpi_IQ",       "label": "I<sub>D</sub> no ponto Q"},
+      {"id": "pt-diodo-VR",  "label": "V<sub>R</sub> sobre o resistor"},
+      {"id": "pt-diodo-PD",  "label": "P<sub>D</sub> dissipada no diodo"}
+    ]
+  },
+  "bjt": {
+    "main": [
+      {"id": "badge-reg",    "label": "Região",                              "badge": true, "badgeClass": "badge-ativa"},
+      {"id": "kpi_VQ",       "label": "V<sub>CE</sub> no ponto Q"},
+      {"id": "kpi_IQ",       "label": "I<sub>C</sub> no ponto Q"},
+      {"id": "pt-bjt-Isat",  "label": "I<sub>C</sub> saturação (V<sub>CC</sub>/R<sub>C</sub>)"},
+      {"id": "pt-bjt-Vce2",  "label": "V<sub>CC</sub>/2 — ponto ideal de Q"}
+    ]
+  },
+  "retificador": {
+    "main": [
+      {"id": "kpi_vpk",   "label": "V<sub>pico</sub> saída"},
+      {"id": "kpi_vr",    "label": "Ripple pico-pico"},
+      {"id": "kpi_vdc",   "label": "Vdc médio"},
+      {"id": "pt-ret-rf", "label": "Fator de ripple"}
+    ]
+  },
+  "trafo": {
+    "eta": [
+      {"id": "eta_xopt", "label": "x<sub>opt</sub> — carga de máx. rendimento"},
+      {"id": "eta_max",  "label": "η<sub>máx</sub> (%)"},
+      {"id": "eta_fl",   "label": "η a plena carga (%)"}
+    ],
+    "vr": [
+      {"id": "vr_lag",  "label": "VR — FP=0,8 atrasado (%)"},
+      {"id": "vr_lead", "label": "VR — FP=0,8 adiantado (%)"},
+      {"id": "vr_zero", "label": "FP que anula VR"}
+    ]
+  },
+  "motor-cc": {
+    "main": [
+      {"id": "kpi_nTmin",    "label": "n em Tmin — perigo sem carga (rpm)"},
+      {"id": "kpi_nTmax",    "label": "n em T<sub>max</sub> (rpm)"},
+      {"id": "kpi_Ia_rated", "label": "I<sub>a</sub> em T<sub>max</sub> (A)"}
+    ]
+  },
+  "motor-ind": {
+    "main": [
+      {"id": "kpi_ns",   "label": "n síncrono (rpm)"},
+      {"id": "kpi_Tmax", "label": "T<sub>max</sub> (N·m)"},
+      {"id": "kpi_smax", "label": "s em T<sub>max</sub>"},
+      {"id": "kpi_nQ",   "label": "n no ponto Q (rpm)"}
+    ]
+  },
+  "protecao": {
+    "main": [
+      {"id": "kpi_Irated",   "label": "I nominal trafo (A)"},
+      {"id": "kpi_Icc",      "label": "I<sub>cc</sub> máx (A)"},
+      {"id": "kpi_Iinrush",  "label": "Inrush ≈ 8×In (A)"}
+    ]
+  },
+  "sep": {
+    "pdelta": [
+      {"id": "pd_Pmax",   "label": "P<sub>max</sub> (pu)"},
+      {"id": "pd_P",      "label": "P em δ operação (pu)"},
+      {"id": "pd_margin", "label": "Margem de estabilidade (°)"}
+    ],
+    "icc": [
+      {"id": "icc_I3_0",   "label": "I<sub>cc</sub>3φ em 0 km (kA)"},
+      {"id": "icc_I3_end", "label": "I<sub>cc</sub>3φ fim da linha (kA)"}
+    ]
+  },
+  "bode": {
+    "bode": [
+      {"id": "kpi_Mp", "label": "Pico |H| (dB)"},
+      {"id": "kpi_PM", "label": "Margem de fase (°)"},
+      {"id": "kpi_wc", "label": "ω cruzamento (rad/s)"}
+    ],
+    "degrau": [
+      {"id": "kpi_MP_pct", "label": "Overshoot (%)"},
+      {"id": "kpi_tp",     "label": "t pico (s)"},
+      {"id": "kpi_ts",     "label": "Acomodação 2% (s)"}
+    ]
+  },
+  "timing": {
+    "main": [
+      {"id": "kpi_seq", "label": "Sequência Q"},
+      {"id": "kpi_ff",  "label": "Equação característica"}
+    ]
+  },
+  "gtde": {
+    "perfil": [
+      {"id": "pf_VR",     "label": "V<sub>R</sub> calculado (kV)"},
+      {"id": "pf_dVpct",  "label": "ΔV% total"}
+    ],
+    "dvfp": [
+      {"id": "dv_FP0", "label": "FP que anula ΔV%"}
+    ]
+  }
+}

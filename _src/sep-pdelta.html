@@ -1,4 +1,4 @@
----
+﻿---
 layout: tool
 title: "SEP — Estabilidade e Curto"
 tool_id: sep
@@ -32,11 +32,6 @@ render_with_liquid: false
         <div class="field"><label>V<sub>R</sub> — tensão da carga (pu)</label><input id="pd_VR" type="number" value="1.0" step="0.05" oninput="calcPdelta()"></div>
         <div class="field"><label>X — reatância total (pu)</label><input id="pd_X" type="number" value="0.5" step="0.05" oninput="calcPdelta()"></div>
         <div class="field"><label>δ operação (°)</label><input id="pd_delta" type="number" value="30" step="5" oninput="calcPdelta()"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="pd_Pmax">—</div><div class="kpi-lbl">P<sub>max</sub> (pu)</div></div>
-          <div class="kpi"><div class="kpi-val" id="pd_P">—</div><div class="kpi-lbl">P em δ op. (pu)</div></div>
-          <div class="kpi"><div class="kpi-val" id="pd_margin">—</div><div class="kpi-lbl">Margem de estab. (°)</div></div>
-        </div>
       </div>
       <div id="sp-pdelta-exp" class="sub-panel">
         <div class="exp-col-hint">δ (°) · P medido (pu)</div>
@@ -55,6 +50,7 @@ render_with_liquid: false
     <div class="card chart-card">
       <div class="chart-title">Potência Ativa × Ângulo de Carga δ</div>
       <div class="chart-wrap"><canvas id="chart-pdelta"></canvas></div>
+      <!-- pts-tbl:pdelta -->
     </div>
   </div>
 </div>
@@ -76,10 +72,6 @@ render_with_liquid: false
         <div class="field"><label>r linha (Ω/km)</label><input id="icc_r" type="number" value="0.30" step="0.01" oninput="calcIcc()"></div>
         <div class="field"><label>x linha (Ω/km)</label><input id="icc_x" type="number" value="0.30" step="0.01" oninput="calcIcc()"></div>
         <div class="field"><label>Dist. máx. (km)</label><input id="icc_dmax" type="number" value="30" step="1" oninput="calcIcc()"></div>
-        <div class="kpi-row">
-          <div class="kpi red"><div class="kpi-val" id="icc_I3_0">—</div><div class="kpi-lbl">I<sub>cc</sub>3φ em 0 km (kA)</div></div>
-          <div class="kpi"><div class="kpi-val" id="icc_I3_end">—</div><div class="kpi-lbl">I<sub>cc</sub>3φ fim da linha (kA)</div></div>
-        </div>
       </div>
       <div id="sp-icc-exp" class="sub-panel">
         <div class="exp-col-hint">Distância (km) · I<sub>cc</sub> medido (kA)</div>
@@ -98,6 +90,7 @@ render_with_liquid: false
     <div class="card chart-card">
       <div class="chart-title">Corrente de Curto × Distância</div>
       <div class="chart-wrap"><canvas id="chart-icc"></canvas></div>
+      <!-- pts-tbl:icc -->
     </div>
   </div>
 </div>
@@ -127,6 +120,7 @@ function calcPdelta(){
   var P_op=Pmax*Math.sin(d_op*Math.PI/180);
   var margin=90-d_op;
   sv('pd_Pmax',Pmax.toFixed(3));sv('pd_P',P_op.toFixed(3));sv('pd_margin',margin.toFixed(1));
+  sv('pt-pd-Pmax',Pmax.toFixed(3)+' pu');sv('pt-pd-Pop',P_op.toFixed(3)+' pu');sv('pt-pd-margin',margin.toFixed(1)+'°');
   document.getElementById('ins-pdelta').textContent='Pmax = '+Pmax.toFixed(3)+' pu em δ = 90°. Ponto de operação: δ = '+d_op+'°, P = '+P_op.toFixed(3)+' pu. Margem de estabilidade: '+margin.toFixed(1)+'°.';
 
   var datasets=[];
@@ -166,6 +160,7 @@ function calcIcc(){
   }
   var I3_0=pts3[0].y;var I3_end=pts3[pts3.length-1].y;
   sv('icc_I3_0',I3_0.toFixed(2));sv('icc_I3_end',I3_end.toFixed(2));
+  sv('pt-icc-I0',I3_0.toFixed(2)+' kA');sv('pt-icc-Iend',I3_end.toFixed(2)+' kA');
   document.getElementById('ins-icc').textContent='Icc3φ na subestação (d=0): '+I3_0.toFixed(2)+' kA. No fim da linha ('+dmax+' km): '+I3_end.toFixed(2)+' kA. Falta próxima é sempre mais severa.';
 
   var datasets=[];

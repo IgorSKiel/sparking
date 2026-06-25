@@ -12,6 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="sparking.js"></script>
 <script src="sparking-formulas.js"></script>
+<style>.pts-tbl{width:fit-content;border-collapse:collapse;margin-top:14px;font-size:12px;border:1px solid #CDD3E0;border-radius:6px;overflow:hidden}.pts-tbl th{padding:5px 12px;background:#1B2E50;color:#fff;font-size:11px;font-weight:700;text-align:left;letter-spacing:.04em}.pts-tbl th:first-child{border-right:1px solid #3a4f6e}.pts-tbl td{padding:6px 12px;vertical-align:middle}.pts-tbl td:first-child{color:#65676B;background:#F8F9FC;border-right:1px solid #CDD3E0}.pts-tbl td:last-child{font-weight:700;color:#1B2E50;font-variant-numeric:tabular-nums;white-space:nowrap}.pts-tbl tr:not(:last-child) td{border-bottom:1px solid #CDD3E0}</style>
 </head>
 <body data-tool="eletrot2">
 <nav style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #CDD3E0;position:sticky;top:0;z-index:99;"><a href="pages/ferramentas.html" style="text-decoration:none;color:#1B2E50;font-size:13px;font-weight:700;">&#8592; Ferramentas</a><span style="background:#007575;color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;">Sparking</span></nav>
@@ -66,11 +67,6 @@
         <div class="card-lbl">Varredura de frequência</div>
         <div class="field"><label>f mínima (Hz)</label><input id="res_fmin" type="number" value="10" oninput="calcRes()"></div>
         <div class="field"><label>f máxima (Hz)</label><input id="res_fmax" type="number" value="2000" oninput="calcRes()"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="res_f0">—</div><div class="kpi-lbl">Ressonância f₀ (Hz)</div></div>
-          <div class="kpi"><div class="kpi-val" id="res_Q">—</div><div class="kpi-lbl">Fator Q</div></div>
-          <div class="kpi"><div class="kpi-val" id="res_BW">—</div><div class="kpi-lbl">Largura de Banda (Hz)</div></div>
-        </div>
       </div>
       <div id="sp-res-exp" class="sub-panel">
         <div class="exp-tbl-wrap">
@@ -88,6 +84,7 @@
     <div class="card chart-card">
       <div class="chart-title">Z × Frequência — mínimo na ressonância</div>
       <div class="chart-wrap"><canvas id="chart-res"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>f₀ ressonância</td><td id="res_f0">&mdash;</td></tr><tr><td>Fator Q</td><td id="res_Q">&mdash;</td></tr><tr><td>Largura de Banda</td><td id="res_BW">&mdash;</td></tr><tr><td>Z mínima em f₀ (= R)</td><td id="pt-res-Zmin">&mdash;</td></tr><tr><td>I máxima em f₀</td><td id="pt-res-Imax">&mdash;</td></tr><tr><td>f₁ inferior −3 dB</td><td id="pt-res-f1">&mdash;</td></tr><tr><td>f₂ superior −3 dB</td><td id="pt-res-f2">&mdash;</td></tr></table>
     </div>
   </div>
 </div>
@@ -97,6 +94,7 @@
   <div class="canvas-card">
     <div class="canvas-title">R, reatância e impedância total — proporções reais do circuito</div>
     <canvas class="diagram" id="c-imp"></canvas>
+    <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>R</td><td id="pt-imp-R">&mdash;</td></tr><tr><td>X = XL − XC</td><td id="pt-imp-X">&mdash;</td></tr><tr><td>FP = cos φ</td><td id="pt-imp-FP">&mdash;</td></tr></table>
   </div>
 </div>
 
@@ -105,6 +103,7 @@
   <div class="canvas-card">
     <div class="canvas-title">Tensões no circuito — V<sub>R</sub>, V<sub>L</sub>, V<sub>C</sub> e tensão total</div>
     <canvas class="diagram" id="c-fas"></canvas>
+    <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>V<sub>R</sub> no resistor</td><td id="pt-fas-VR">&mdash;</td></tr><tr><td>V<sub>L</sub> no indutor</td><td id="pt-fas-VL">&mdash;</td></tr><tr><td>V<sub>C</sub> no capacitor</td><td id="pt-fas-VC">&mdash;</td></tr></table>
   </div>
 </div>
 
@@ -113,6 +112,7 @@
   <div class="canvas-card">
     <div class="canvas-title">Potência ativa, reativa e aparente — P, Q e S</div>
     <canvas class="diagram" id="c-pot"></canvas>
+    <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>P ativa</td><td id="pt-pot-P">&mdash;</td></tr><tr><td>Q reativa</td><td id="pt-pot-Q">&mdash;</td></tr><tr><td>S aparente</td><td id="pt-pot-S">&mdash;</td></tr></table>
   </div>
 </div>
 
@@ -159,6 +159,10 @@ function calcular(){
   document.getElementById('insight-txt').textContent=msg;
   desenharAtivo();
   calcRes();
+  /* pontos notáveis — triângulos */
+  sv('pt-imp-R',fmt(R)+' Ω');sv('pt-imp-X',(X>=0?'+':'')+fmt(X)+' Ω');sv('pt-imp-Z',fmt(Z)+' Ω');sv('pt-imp-phi',(phi>=0?'+':'')+fmt(phi,1)+'°');sv('pt-imp-FP',FP.toFixed(3));
+  sv('pt-fas-VR',fmt(VR)+' V');sv('pt-fas-VL',fmt(VLv)+' V');sv('pt-fas-VC',fmt(VCv)+' V');sv('pt-fas-V',fmt(V)+' V');sv('pt-fas-phi',(phi>=0?'+':'')+fmt(phi,1)+'°');
+  sv('pt-pot-P',fmt(P)+' W');sv('pt-pot-Q',(Q>=0?'+':'')+fmt(Q)+' VAr');sv('pt-pot-S',fmt(S)+' VA');sv('pt-pot-FP',FP.toFixed(3));sv('pt-pot-phi',(phi>=0?'+':'')+fmt(phi,1)+'°');
 }
 
 /* ── ressonância ── */
@@ -172,6 +176,9 @@ function calcRes(){
   var Q=f0>0?(1/R)*Math.sqrt(Lh/Cf):0;
   var BW=f0/Math.max(Q,0.001);
   sv('res_f0',fmt(f0,1));sv('res_Q',fmt(Q,2));sv('res_BW',fmt(BW,1));
+  /* pontos notáveis — ressonância */
+  var _alpha=R/(2*Lh),_wn=2*Math.PI*f0,_wsq=Math.sqrt(_alpha*_alpha+_wn*_wn);
+  sv('pt-res-f0',fmt(f0,1)+' Hz');sv('pt-res-Zmin',fmt(R)+' Ω');sv('pt-res-Imax',fmt((V||gv('inp_V'))/Math.max(R,0.001),3)+' A');sv('pt-res-f1',fmt((_wsq-_alpha)/(2*Math.PI),1)+' Hz');sv('pt-res-f2',fmt((_wsq+_alpha)/(2*Math.PI),1)+' Hz');
 
   var N=300;
   var datasets=[];
@@ -253,13 +260,13 @@ function rightAngleMark(ctx,cx,cy,sz,dirX,dirY){ctx.save();ctx.strokeStyle='#9CA
 function desenharAtivo(){var ativo=document.querySelector('.panel.active');if(!ativo)return;var id=ativo.id;if(id==='panel-imp')desenharZ();else if(id==='panel-fas')desenharFasores();else if(id==='panel-pot')desenharPotencias();}
 
 /* ── triângulo impedância ── */
-function desenharZ(){var s=estado;if(!s.Z)return;var c=prepCanvas('c-imp');if(!c)return;var ctx=c.ctx,W=c.W,H=c.H;var PADL=70,PADR=140,PADT=50,PADB=50,drawW=W-PADL-PADR,drawH=H-PADT-PADB;var yMin_p=Math.min(0,s.X),yMax_p=Math.max(0,s.X);var scX=s.R>0.5?drawW/s.R:1,scY=(yMax_p-yMin_p)>0.5?drawH/(yMax_p-yMin_p):scX;var sc=Math.min(scX,scY,6);var ox=PADL+drawW/2-s.R*sc/2,oy=PADT+drawH/2+(yMin_p+yMax_p)/2*sc;var ax=ox+s.R*sc,ay=oy,bx=ax,by=oy-s.X*sc;ctx.save();ctx.strokeStyle='#D1D5DB';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ox-12,oy);ctx.lineTo(ax+30,oy);ctx.stroke();var imTop=s.X>=0?PADT+4:oy,imBot=s.X>=0?oy:H-PADB-4;ctx.beginPath();ctx.moveTo(ox,imTop);ctx.lineTo(ox,imBot);ctx.stroke();ctx.restore();drawLabel(ctx,'Re',ax+30,oy,'#9CA3AF',10,'left',false);drawLabel(ctx,'Im',ox,imTop+10,'#9CA3AF',10,'center',false);drawDashed(ctx,ox,oy,bx,by,'#1A2640',2);drawArrow(ctx,ox,oy,ax,ay,'#007575',5);if(Math.abs(s.X)>0.5){var xColor=s.X>0?'#C8102E':'#1B2E50';drawArrow(ctx,ax,ay,bx,by,xColor,5);rightAngleMark(ctx,ax,ay,10,-1,s.X>0?-1:1);}if(Math.abs(s.X)>0.5){var arcR=Math.max(20,Math.min(36,s.R*sc*0.3)),endA=-Math.atan2(s.X*sc,s.R*sc);ctx.save();ctx.strokeStyle='#556070';ctx.lineWidth=2;ctx.beginPath();if(s.X>0)ctx.arc(ox,oy,arcR,0,endA,true);else ctx.arc(ox,oy,arcR,0,endA,false);ctx.stroke();ctx.restore();}var rLblY=s.X>=0?oy+22:oy-20;drawLabel(ctx,'R = '+fmt(s.R)+' Ω',(ox+ax)/2,rLblY,'#007575',13,'center');if(Math.abs(s.X)>0.5){var xLabel=(s.X>0?'XL−XC = ':'XC−XL = ')+fmt(Math.abs(s.X))+' Ω';drawLabel(ctx,xLabel,ax+12,(ay+by)/2,s.X>0?'#C8102E':'#1B2E50',13,'left');}drawLabel(ctx,'Z = '+fmt(s.Z)+' Ω',(ox+bx)/2-10,(oy+by)/2,'#1A2640',13,'right');if(Math.abs(s.X)>0.5){var arcR2=Math.max(20,Math.min(36,s.R*sc*0.3)),phiLblX=ox+arcR2+10,phiLblY=s.X>0?oy-24:oy+24;drawLabel(ctx,'φ = '+(s.phi>=0?'+':'')+fmt(s.phi,1)+'°',phiLblX,phiLblY,'#556070',12,'left');}ctx.fillStyle='#1A2640';ctx.beginPath();ctx.arc(ox,oy,5,0,2*Math.PI);ctx.fill();}
+function desenharZ(){var s=estado;if(!s.Z)return;var c=prepCanvas('c-imp');if(!c)return;var ctx=c.ctx,W=c.W,H=c.H;var PADL=70,PADR=140,PADT=50,PADB=50,drawW=W-PADL-PADR,drawH=H-PADT-PADB;var yMin_p=Math.min(0,s.X),yMax_p=Math.max(0,s.X);var scX=s.R>0.5?drawW/s.R:1,scY=(yMax_p-yMin_p)>0.5?drawH/(yMax_p-yMin_p):scX;var sc=Math.min(scX,scY,6);var ox=PADL+drawW/2-s.R*sc/2,oy=PADT+drawH/2+(yMin_p+yMax_p)/2*sc;var ax=ox+s.R*sc,ay=oy,bx=ax,by=oy-s.X*sc;ctx.save();ctx.strokeStyle='#D1D5DB';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(ox-12,oy);ctx.lineTo(ax+30,oy);ctx.stroke();var imTop=s.X>=0?PADT+4:oy,imBot=s.X>=0?oy:H-PADB-4;ctx.beginPath();ctx.moveTo(ox,imTop);ctx.lineTo(ox,imBot);ctx.stroke();ctx.restore();drawLabel(ctx,'Re',ax+30,oy,'#9CA3AF',10,'left',false);drawLabel(ctx,'Im',ox,imTop+10,'#9CA3AF',10,'center',false);drawDashed(ctx,ox,oy,bx,by,'#1A2640',2);drawArrow(ctx,ox,oy,ax,ay,'#007575',5);if(Math.abs(s.X)>0.5){var xColor=s.X>0?'#C8102E':'#1B2E50';drawArrow(ctx,ax,ay,bx,by,xColor,5);rightAngleMark(ctx,ax,ay,10,-1,s.X>0?-1:1);}if(Math.abs(s.X)>0.5){var arcR=Math.max(20,Math.min(36,s.R*sc*0.3)),endA=-Math.atan2(s.X*sc,s.R*sc);ctx.save();ctx.strokeStyle='#556070';ctx.lineWidth=2;ctx.beginPath();if(s.X>0)ctx.arc(ox,oy,arcR,0,endA,true);else ctx.arc(ox,oy,arcR,0,endA,false);ctx.stroke();ctx.restore();}var rLblY=s.X>=0?oy+24:oy-22;drawLabel(ctx,'R = '+fmt(s.R)+' Ω',(ox+ax)/2,rLblY,'#007575',14,'center');if(Math.abs(s.X)>0.5){var xLabel=(s.X>0?'XL−XC = ':'XC−XL = ')+fmt(Math.abs(s.X))+' Ω';drawLabel(ctx,xLabel,ax+14,(ay+by)/2,s.X>0?'#C8102E':'#1B2E50',14,'left');}drawLabel(ctx,'Z = '+fmt(s.Z)+' Ω',(ox+bx)/2-10,(oy+by)/2,'#1A2640',14,'right');if(Math.abs(s.X)>0.5){var arcR2=Math.max(22,Math.min(40,s.R*sc*0.3)),phiLblX=ox+arcR2+12,phiLblY=s.X>0?oy-26:oy+26;drawLabel(ctx,'φ = '+(s.phi>=0?'+':'')+fmt(s.phi,1)+'°',phiLblX,phiLblY,'#556070',13,'left');}ctx.fillStyle='#1A2640';ctx.beginPath();ctx.arc(ox,oy,5,0,2*Math.PI);ctx.fill();}
 
 /* ── fasores ── */
-function desenharFasores(){var s=estado;if(!s.Z)return;var c=prepCanvas('c-fas');if(!c)return;var ctx=c.ctx,W=c.W,H=c.H;var PADL=60,PADR=140,PADT=50,PADB=50,drawW=W-PADL-PADR,drawH=H-PADT-PADB;var yMin_p=Math.min(0,s.VLv-s.VCv),yMax_p=s.VLv;var scX=s.VR>0.5?drawW/s.VR:1,scY=(yMax_p-yMin_p)>0.5?drawH/(yMax_p-yMin_p):scX;var sc=Math.min(scX,scY,6);var ox=PADL+drawW/2-s.VR*sc/2,oy=PADT+drawH/2+(yMin_p+yMax_p)/2*sc;var ax=ox+s.VR*sc,ay=oy,bx=ax,by=oy-s.VLv*sc,cx=bx,cy=by+s.VCv*sc;drawDashed(ctx,ox,oy,ax+28,oy,'#9CA3AF',1.5);drawLabel(ctx,'I (ref.)',ax+32,oy,'#9CA3AF',12,'left');drawDashed(ctx,ox,oy,cx,cy,'#1A2640',2);drawArrow(ctx,ox,oy,ax,ay,'#007575',5);drawLabel(ctx,'VR = '+fmt(s.VR)+' V',(ox+ax)/2,oy+20,'#007575',13,'center');if(s.VLv>0.5){drawArrow(ctx,ax,ay,bx,by,'#C8102E',5);drawLabel(ctx,'VL = '+fmt(s.VLv)+' V',ax+10,(ay+by)/2,'#C8102E',13,'left');}if(s.VCv>0.5){drawArrow(ctx,bx,by,cx,cy,'#1B2E50',5);drawLabel(ctx,'VC = '+fmt(s.VCv)+' V',cx+10,(by+cy)/2,'#1B2E50',13,'left');}drawLabel(ctx,'V = '+fmt(s.V)+' V',(ox+cx)/2-10,(oy+cy)/2-8,'#1A2640',13,'right');if(Math.abs(cy-oy)>4){var arcR=Math.min(32,s.VR*sc*0.32),endA=Math.atan2(cy-oy,cx-ox);ctx.save();ctx.strokeStyle='#556070';ctx.lineWidth=2;ctx.beginPath();ctx.arc(ox,oy,arcR,0,endA,endA<0);ctx.stroke();ctx.restore();drawLabel(ctx,'φ='+(s.phi>=0?'+':'')+fmt(s.phi,1)+'°',ox+arcR+8,s.X>0?oy-14:oy+16,'#556070',12,'left');}if(Math.abs(s.VLv-s.VCv)>0.5)rightAngleMark(ctx,ax,ay,10,-1,s.X>0?-1:1);ctx.fillStyle='#1A2640';ctx.beginPath();ctx.arc(ox,oy,5,0,2*Math.PI);ctx.fill();}
+function desenharFasores(){var s=estado;if(!s.Z)return;var c=prepCanvas('c-fas');if(!c)return;var ctx=c.ctx,W=c.W,H=c.H;var PADL=60,PADR=140,PADT=50,PADB=50,drawW=W-PADL-PADR,drawH=H-PADT-PADB;var yMin_p=Math.min(0,s.VLv-s.VCv),yMax_p=s.VLv;var scX=s.VR>0.5?drawW/s.VR:1,scY=(yMax_p-yMin_p)>0.5?drawH/(yMax_p-yMin_p):scX;var sc=Math.min(scX,scY,6);var ox=PADL+drawW/2-s.VR*sc/2,oy=PADT+drawH/2+(yMin_p+yMax_p)/2*sc;var ax=ox+s.VR*sc,ay=oy,bx=ax,by=oy-s.VLv*sc,cx=bx,cy=by+s.VCv*sc;drawDashed(ctx,ox,oy,ax+28,oy,'#9CA3AF',1.5);drawLabel(ctx,'I (ref.)',ax+32,oy,'#9CA3AF',12,'left');drawDashed(ctx,ox,oy,cx,cy,'#1A2640',2);drawArrow(ctx,ox,oy,ax,ay,'#007575',5);drawLabel(ctx,'VR = '+fmt(s.VR)+' V',(ox+ax)/2,oy+22,'#007575',14,'center');if(s.VLv>0.5){drawArrow(ctx,ax,ay,bx,by,'#C8102E',5);drawLabel(ctx,'VL = '+fmt(s.VLv)+' V',ax+12,(ay+by)/2,'#C8102E',14,'left');}if(s.VCv>0.5){drawArrow(ctx,bx,by,cx,cy,'#1B2E50',5);drawLabel(ctx,'VC = '+fmt(s.VCv)+' V',cx+12,(by+cy)/2,'#1B2E50',14,'left');}drawLabel(ctx,'V = '+fmt(s.V)+' V',(ox+cx)/2-10,(oy+cy)/2-8,'#1A2640',14,'right');if(Math.abs(cy-oy)>4){var arcR=Math.min(32,s.VR*sc*0.32),endA=Math.atan2(cy-oy,cx-ox);ctx.save();ctx.strokeStyle='#556070';ctx.lineWidth=2;ctx.beginPath();ctx.arc(ox,oy,arcR,0,endA,endA<0);ctx.stroke();ctx.restore();drawLabel(ctx,'φ='+(s.phi>=0?'+':'')+fmt(s.phi,1)+'°',ox+arcR+10,s.X>0?oy-16:oy+18,'#556070',13,'left');}if(Math.abs(s.VLv-s.VCv)>0.5)rightAngleMark(ctx,ax,ay,10,-1,s.X>0?-1:1);ctx.fillStyle='#1A2640';ctx.beginPath();ctx.arc(ox,oy,5,0,2*Math.PI);ctx.fill();}
 
 /* ── potências ── */
-function desenharPotencias(){var s=estado;if(!s.Z)return;var c=prepCanvas('c-pot');if(!c)return;var ctx=c.ctx,W=c.W,H=c.H;var PADL=60,PADR=140,PADT=50,PADB=50,drawW=W-PADL-PADR,drawH=H-PADT-PADB;var yMin_p=Math.min(0,s.Q),yMax_p=Math.max(0,s.Q);var scX=s.P>0.5?drawW/s.P:1,scY=(yMax_p-yMin_p)>0.5?drawH/(yMax_p-yMin_p):scX;var sc=Math.min(scX,scY,6);var ox=PADL+drawW/2-s.P*sc/2,oy=PADT+drawH/2+(yMin_p+yMax_p)/2*sc;var ax=ox+s.P*sc,ay=oy,bx=ax,by=oy-s.Q*sc;drawDashed(ctx,ox,oy,bx,by,'#1A2640',2);drawArrow(ctx,ox,oy,ax,ay,'#007575',5);drawLabel(ctx,'P = '+fmt(s.P)+' W',(ox+ax)/2,oy+24,'#007575',13,'center');if(Math.abs(s.Q)>0.001){var qColor=s.Q>0?'#C8102E':'#1B2E50';drawArrow(ctx,ax,ay,bx,by,qColor,5);drawLabel(ctx,'Q = '+(s.Q>=0?'+':'')+fmt(s.Q)+' VAr',ax+12,(ay+by)/2,qColor,13,'left');rightAngleMark(ctx,ax,ay,10,-1,s.Q>0?-1:1);}if(Math.abs(s.Q)>0.001){var arcR=Math.min(32,s.P*sc*0.32),endA=-Math.atan2(s.Q*sc,s.P*sc);ctx.save();ctx.strokeStyle='#556070';ctx.lineWidth=2;ctx.beginPath();if(s.Q>0)ctx.arc(ox,oy,arcR,0,endA,true);else ctx.arc(ox,oy,arcR,0,endA,false);ctx.stroke();ctx.restore();drawLabel(ctx,'φ='+(s.phi>=0?'+':'')+fmt(s.phi,1)+'°',ox+arcR+8,s.Q>0?oy-16:oy+16,'#556070',12,'left');}drawLabel(ctx,'S = '+fmt(s.S)+' VA',(ox+bx)/2-10,(oy+by)/2-8,'#1A2640',13,'right');drawLabel(ctx,'FP = '+s.FP.toFixed(4),(ox+ax)/2,oy+40,'#556070',12,'center');ctx.fillStyle='#1A2640';ctx.beginPath();ctx.arc(ox,oy,5,0,2*Math.PI);ctx.fill();}
+function desenharPotencias(){var s=estado;if(!s.Z)return;var c=prepCanvas('c-pot');if(!c)return;var ctx=c.ctx,W=c.W,H=c.H;var PADL=60,PADR=140,PADT=50,PADB=50,drawW=W-PADL-PADR,drawH=H-PADT-PADB;var yMin_p=Math.min(0,s.Q),yMax_p=Math.max(0,s.Q);var scX=s.P>0.5?drawW/s.P:1,scY=(yMax_p-yMin_p)>0.5?drawH/(yMax_p-yMin_p):scX;var sc=Math.min(scX,scY,6);var ox=PADL+drawW/2-s.P*sc/2,oy=PADT+drawH/2+(yMin_p+yMax_p)/2*sc;var ax=ox+s.P*sc,ay=oy,bx=ax,by=oy-s.Q*sc;drawDashed(ctx,ox,oy,bx,by,'#1A2640',2);drawArrow(ctx,ox,oy,ax,ay,'#007575',5);drawLabel(ctx,'P = '+fmt(s.P)+' W',(ox+ax)/2,oy+26,'#007575',14,'center');if(Math.abs(s.Q)>0.001){var qColor=s.Q>0?'#C8102E':'#1B2E50';drawArrow(ctx,ax,ay,bx,by,qColor,5);drawLabel(ctx,'Q = '+(s.Q>=0?'+':'')+fmt(s.Q)+' VAr',ax+14,(ay+by)/2,qColor,14,'left');rightAngleMark(ctx,ax,ay,10,-1,s.Q>0?-1:1);}if(Math.abs(s.Q)>0.001){var arcR=Math.min(32,s.P*sc*0.32),endA=-Math.atan2(s.Q*sc,s.P*sc);ctx.save();ctx.strokeStyle='#556070';ctx.lineWidth=2;ctx.beginPath();if(s.Q>0)ctx.arc(ox,oy,arcR,0,endA,true);else ctx.arc(ox,oy,arcR,0,endA,false);ctx.stroke();ctx.restore();drawLabel(ctx,'φ='+(s.phi>=0?'+':'')+fmt(s.phi,1)+'°',ox+arcR+10,s.Q>0?oy-18:oy+18,'#556070',13,'left');}drawLabel(ctx,'S = '+fmt(s.S)+' VA',(ox+bx)/2-10,(oy+by)/2-8,'#1A2640',14,'right');drawLabel(ctx,'FP = '+s.FP.toFixed(4),(ox+ax)/2,oy+42,'#556070',13,'center');ctx.fillStyle='#1A2640';ctx.beginPath();ctx.arc(ox,oy,5,0,2*Math.PI);ctx.fill();}
 
 /* ── tabs ── */
 function setTab(id,el){document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');});document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});document.getElementById('panel-'+id).classList.add('active');el.classList.add('active');if(id==='form'&&window.MathJax&&MathJax.typesetPromise){MathJax.typesetPromise([document.getElementById('panel-form')]);}setTimeout(function(){if(id==='res')calcRes();else desenharAtivo();},40);}

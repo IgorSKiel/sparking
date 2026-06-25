@@ -1,4 +1,4 @@
----
+﻿---
 layout: tool
 title: "Máquinas — Motor CC"
 tool_id: motor-cc
@@ -34,11 +34,6 @@ render_with_liquid: false
       <div class="field"><label>K' — constante do motor (N·m/A²)</label><input id="Kp" type="number" value="1.5" step="0.1" min="0.1" oninput="atualizar()"></div>
       <div class="field"><label>Tmin do gráfico (N·m)</label><input id="Tmin" type="number" value="1" step="0.5" min="0.1" oninput="atualizar()"></div>
       <div class="field"><label>T<sub>max</sub> do gráfico (N·m)</label><input id="Tmax_inp" type="number" value="100" step="5" oninput="atualizar()"></div>
-      <div class="kpi-row">
-        <div class="kpi danger"><div class="kpi-val" id="kpi_nTmin">—</div><div class="kpi-lbl">n em Tmin (rpm)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_nTmax">—</div><div class="kpi-lbl">n em T<sub>max</sub> (rpm)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_Ia_rated">—</div><div class="kpi-lbl">I<sub>a</sub> em T<sub>max</sub> (A)</div></div>
-      </div>
     </div>
     <div id="sp-exp" class="sub-panel">
       <div class="exp-col-hint">T (N·m) · n medido (rpm)</div>
@@ -57,6 +52,7 @@ render_with_liquid: false
   <div class="card chart-card">
     <div class="chart-title">Velocidade × Torque — hipérbole do motor série</div>
     <div class="chart-wrap"><canvas id="chart-main"></canvas></div>
+    <!-- pts-tbl:main -->
   </div>
 </div>
 
@@ -105,6 +101,7 @@ function calcular(){
   sv('kpi_nTmin',isFinite(nAtTmin)?nAtTmin.toFixed(0):'∞');
   sv('kpi_nTmax',nAtTmax>0?nAtTmax.toFixed(0):'0');
   sv('kpi_Ia_rated',Ia_at_Tmax.toFixed(1));
+  sv('pt-mcc-nmin',isFinite(nAtTmin)?nAtTmin.toFixed(0)+' rpm':'∞ rpm');sv('pt-mcc-nmax',nAtTmax>0?nAtTmax.toFixed(0)+' rpm':'0 rpm');sv('pt-mcc-Ia',Ia_at_Tmax.toFixed(1)+' A');
   document.getElementById('insight-txt').textContent='Em T = '+Tmin+' N·m: n = '+(isFinite(nAtTmin)?nAtTmin.toFixed(0):'∞')+' rpm. Remover a carga completamente causa aceleração sem controle — destruição mecânica real em motores série.';
 
   var datasets=[];

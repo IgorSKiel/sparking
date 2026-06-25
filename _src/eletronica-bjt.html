@@ -1,4 +1,4 @@
----
+﻿---
 layout: tool
 title: "Eletrônica — BJT"
 tool_id: bjt
@@ -39,11 +39,6 @@ render_with_liquid: false
       <div class="field"><label>R<sub>C</sub> (Ω)</label><input id="Rc" type="number" value="1000" oninput="atualizar()"></div>
       <div class="field"><label>I<sub>B</sub> no ponto Q (µA)</label><input id="IBQ" type="number" value="40" step="5" oninput="atualizar()"></div>
       <div class="field"><label>I<sub>B</sub> máximo (µA)</label><input id="IBmax" type="number" value="100" step="10" oninput="atualizar()"></div>
-      <div class="kpi-row">
-        <div class="kpi" id="kpi-reg"><div id="badge-reg" class="badge badge-ativa">—</div><div class="kpi-lbl">Região</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_VQ">—</div><div class="kpi-lbl">V<sub>CE</sub> no Q (V)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_IQ">—</div><div class="kpi-lbl">I<sub>C</sub> no Q (mA)</div></div>
-      </div>
     </div>
     <div id="sp-exp" class="sub-panel">
       <div class="exp-col-hint">V<sub>CE</sub> (V) · I<sub>C</sub> medido (mA)</div>
@@ -62,6 +57,7 @@ render_with_liquid: false
   <div class="card chart-card">
     <div class="chart-title">I<sub>C</sub> × V<sub>CE</sub> — família de curvas e reta de carga</div>
     <div class="chart-wrap"><canvas id="chart-main"></canvas></div>
+    <!-- pts-tbl:main -->
   </div>
 </div>
 
@@ -147,6 +143,7 @@ function calcular(){
   var badge=document.getElementById('badge-reg');
   badge.textContent=regiao;badge.className='badge '+(regiao==='Ativa'?'badge-ativa':regiao==='Saturação'?'badge-sat':'badge-corte');
   sv('kpi_VQ',VQ.toFixed(2));sv('kpi_IQ',IQ_mA.toFixed(2));
+  sv('pt-bjt-VQ',VQ.toFixed(2)+' V');sv('pt-bjt-IQ',IQ_mA.toFixed(2)+' mA');sv('pt-bjt-Isat',Isat.toFixed(1)+' mA');sv('pt-bjt-Vce2',(Vcc/2).toFixed(1)+' V');
   document.getElementById('insight-txt').textContent='Q = ('+VQ.toFixed(2)+' V, '+IQ_mA.toFixed(2)+' mA) — região '+regiao+'. ICsat = '+Isat.toFixed(1)+' mA quando VCE → 0. VCC/2 = '+(Vcc/2).toFixed(1)+' V (centro ideal da reta de carga para amplificador).';
 
   var ctx=document.getElementById('chart-main').getContext('2d');

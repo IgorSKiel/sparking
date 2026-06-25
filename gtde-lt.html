@@ -10,6 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="sparking.js"></script>
 <script src="sparking-formulas.js"></script>
+<style>.pts-tbl{width:fit-content;border-collapse:collapse;margin-top:14px;font-size:12px;border:1px solid #CDD3E0;border-radius:6px;overflow:hidden}.pts-tbl th{padding:5px 12px;background:#1B2E50;color:#fff;font-size:11px;font-weight:700;text-align:left;letter-spacing:.04em}.pts-tbl th:first-child{border-right:1px solid #3a4f6e}.pts-tbl td{padding:6px 12px;vertical-align:middle}.pts-tbl td:first-child{color:#65676B;background:#F8F9FC;border-right:1px solid #CDD3E0}.pts-tbl td:last-child{font-weight:700;color:#1B2E50;font-variant-numeric:tabular-nums;white-space:nowrap}.pts-tbl tr:not(:last-child) td{border-bottom:1px solid #CDD3E0}</style>
 </head>
 <body data-tool="gtde">
 <nav style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #CDD3E0;position:sticky;top:0;z-index:99;"><a href="pages/ferramentas.html" style="text-decoration:none;color:#1B2E50;font-size:13px;font-weight:700;">&#8592; Ferramentas</a><span style="background:#007575;color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;">Sparking</span></nav>
@@ -45,10 +46,6 @@
         <div class="card-lbl" style="margin-top:6px">Carga no receptor</div>
         <div class="field"><label>PR (MW)</label><input id="pf_PR" type="number" value="100" step="10" oninput="calcPerfil()"></div>
         <div class="field"><label>QR (MVAr, + indut., − cap.)</label><input id="pf_QR" type="number" value="50" step="10" oninput="calcPerfil()"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="pf_VR">—</div><div class="kpi-lbl">V<sub>R</sub> calculado (kV)</div></div>
-          <div class="kpi"><div class="kpi-val" id="pf_dVpct">—</div><div class="kpi-lbl">ΔV% total</div></div>
-        </div>
       </div>
       <div id="sp-perfil-exp" class="sub-panel">
         <div class="exp-col-hint">x (km) · V medido (kV)</div>
@@ -67,6 +64,7 @@
     <div class="card chart-card">
       <div class="chart-title">|V| ao longo da linha (kV)</div>
       <div class="chart-wrap"><canvas id="chart-perfil"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>V<sub>R</sub> calculado (kV)</td><td id="pf_VR">&mdash;</td></tr><tr><td>ΔV% total</td><td id="pf_dVpct">&mdash;</td></tr></table>
     </div>
   </div>
 </div>
@@ -87,9 +85,6 @@
         <div class="field"><label>x (Ω/km)</label><input id="dv_x" type="number" value="0.40" step="0.01" oninput="calcDvFp()"></div>
         <div class="field"><label>I (A)</label><input id="dv_I" type="number" value="200" step="10" oninput="calcDvFp()"></div>
         <div class="field"><label>Comprimento (km)</label><input id="dv_d" type="number" value="200" step="10" oninput="calcDvFp()"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="dv_FP0">—</div><div class="kpi-lbl">FP que anula ΔV%</div></div>
-        </div>
       </div>
       <div id="sp-dvfp-exp" class="sub-panel">
         <div class="exp-col-hint">FP (+ atras., − adian.) · ΔV% medido</div>
@@ -108,6 +103,7 @@
     <div class="card chart-card">
       <div class="chart-title">ΔV% × Fator de Potência</div>
       <div class="chart-wrap"><canvas id="chart-dvfp"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>FP que anula ΔV%</td><td id="dv_FP0">&mdash;</td></tr></table>
     </div>
   </div>
 </div>
@@ -159,6 +155,7 @@ function calcPerfil(){
   dV_pct=(VLN/1000-VRln)/VLN*1000*100;
   var VR_line=VRln*Math.sqrt(3);
   sv('pf_VR',VR_line.toFixed(1));sv('pf_dVpct',((VLN/1000-VRln)/(VLN/1000)*100).toFixed(2));
+  sv('pt-pf-VR',VR_line.toFixed(1)+' kV');sv('pt-pf-dV',((VLN/1000-VRln)/(VLN/1000)*100).toFixed(2)+'%');
 
   var Ferranti=VRln>(VLN/1000);
   document.getElementById('ins-perfil').textContent=(Ferranti?'Efeito Ferranti ativo: VR = '+VR_line.toFixed(1)+' kV > VS = '+VS_kV+' kV. Carga leve + capacitância da linha eleva tensão no receptor.':'VR = '+VR_line.toFixed(1)+' kV. ΔV% = '+((VLN/1000-VRln)/(VLN/1000)*100).toFixed(2)+'%. Para ver Ferranti: QR negativo (carga capacitiva) com linha longa.');
@@ -197,6 +194,7 @@ function calcDvFp(){
     if(FP_zero===null&&dV_lead<=0)FP_zero=FP;
   }
   sv('dv_FP0',FP_zero?FP_zero.toFixed(3):'> 1');
+  sv('pt-dv-FP0',FP_zero?FP_zero.toFixed(3):'> 1');
   document.getElementById('ins-dvfp').textContent='ΔV% = 0 em FP = '+(FP_zero?FP_zero.toFixed(3):'> 1')+' (adiantado). Para cargas mais adiantadas que isso, V_R > V_S — tensão sobe com a carga.';
 
   var datasets=[];

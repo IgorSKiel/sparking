@@ -69,7 +69,29 @@ $enc = New-Object System.Text.UTF8Encoding $false
 [System.IO.File]::WriteAllText((Join-Path $base 'sparking-formulas.js'), $js.ToString(), $enc)
 Write-Host '[OK] sparking-formulas.js'
 
-# ─── 2. HEAD builder ──────────────────────────────────────────────────────────
+# ─── 2. PTS-TBL.JSON -> tabela de grandezas por painel ──────────────────────
+
+$ptsTblPath = Join-Path $base '_data\pts-tbl.json'
+$ptsTbl = [System.IO.File]::ReadAllText($ptsTblPath, [System.Text.Encoding]::UTF8) | ConvertFrom-Json
+
+function Get-PtsTbl($rows) {
+    $sb = [System.Text.StringBuilder]::new()
+    [void]$sb.Append('<table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead>')
+    foreach ($row in $rows) {
+        if ($null -ne $row.PSObject.Properties['value']) {
+            [void]$sb.Append("<tr><td>$($row.label)</td><td>$($row.value)</td></tr>")
+        } elseif ($null -ne $row.PSObject.Properties['badge'] -and $row.badge) {
+            $cls = if ($null -ne $row.PSObject.Properties['badgeClass']) { "badge $($row.badgeClass)" } else { 'badge' }
+            [void]$sb.Append("<tr><td>$($row.label)</td><td><div id=""$($row.id)"" class=""$cls"">&mdash;</div></td></tr>")
+        } else {
+            [void]$sb.Append("<tr><td>$($row.label)</td><td id=""$($row.id)"">&mdash;</td></tr>")
+        }
+    }
+    [void]$sb.Append('</table>')
+    return $sb.ToString()
+}
+
+# ─── 3. HEAD builder ──────────────────────────────────────────────────────────
 
 function Get-ToolHead($title, $mathjax, $chartjs) {
     $mj = "MathJax={tex:{displayMath:[['\\[','\\]']],inlineMath:[['\\(','\\)']],tags:'none'},chtml:{scale:1.1}}"
@@ -84,7 +106,8 @@ function Get-ToolHead($title, $mathjax, $chartjs) {
     if ($mathjax) { [void]$h.AppendLine('<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>') }
     if ($chartjs)  { [void]$h.AppendLine('<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>') }
     [void]$h.AppendLine('<script src="sparking.js"></script>')
-    [void]$h.Append('<script src="sparking-formulas.js"></script>')
+    [void]$h.AppendLine('<script src="sparking-formulas.js"></script>')
+    [void]$h.Append('<style>.pts-tbl{width:fit-content;border-collapse:collapse;margin-top:14px;font-size:12px;border:1px solid #CDD3E0;border-radius:6px;overflow:hidden}.pts-tbl th{padding:5px 12px;background:#1B2E50;color:#fff;font-size:11px;font-weight:700;text-align:left;letter-spacing:.04em}.pts-tbl th:first-child{border-right:1px solid #3a4f6e}.pts-tbl td{padding:6px 12px;vertical-align:middle}.pts-tbl td:first-child{color:#65676B;background:#F8F9FC;border-right:1px solid #CDD3E0}.pts-tbl td:last-child{font-weight:700;color:#1B2E50;font-variant-numeric:tabular-nums;white-space:nowrap}.pts-tbl tr:not(:last-child) td{border-bottom:1px solid #CDD3E0}</style>')
     return $h.ToString()
 }
 
@@ -120,7 +143,14 @@ foreach ($f in $toolFiles) {
     if (-not $fm) { Write-Warning "skip (sem frontmatter): $($f.Name)"; continue }
 
     $head = Get-ToolHead $fm.title $fm.mathjax $fm.chartjs
-    $html = "<!DOCTYPE html>`n<html lang=""pt-BR"">`n<head>`n$head`n</head>`n<body data-tool=""$($fm.tool_id)"">`n$nav`n$($fm.content)`n</body>`n</html>"
+    $content = $fm.content
+    $toolEntry = $ptsTbl.PSObject.Properties[$fm.tool_id]
+    if ($toolEntry) {
+        foreach ($panel in $toolEntry.Value.PSObject.Properties) {
+            $content = $content.Replace("<!-- pts-tbl:$($panel.Name) -->", (Get-PtsTbl $panel.Value))
+        }
+    }
+    $html = "<!DOCTYPE html>`n<html lang=""pt-BR"">`n<head>`n$head`n</head>`n<body data-tool=""$($fm.tool_id)"">`n$nav`n$content`n</body>`n</html>"
 
     $out = Join-Path $base $f.Name
     [System.IO.File]::WriteAllText($out, $html, $enc)

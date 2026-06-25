@@ -1,4 +1,4 @@
----
+﻿---
 layout: tool
 title: "Eletrônica — Diodo"
 tool_id: diodo
@@ -37,10 +37,6 @@ render_with_liquid: false
       <div class="card-lbl" style="margin-top:8px">Diodo</div>
       <div class="field"><label>I<sub>S</sub> (pA)</label><input id="IS" type="number" value="1" step="0.1" min="0.001" oninput="atualizar()"></div>
       <div class="field"><label>n (fator de idealidade)</label><input id="n_id" type="number" value="1.8" step="0.1" min="1" max="2" oninput="atualizar()"></div>
-      <div class="kpi-row">
-        <div class="kpi"><div class="kpi-val" id="kpi_VQ">—</div><div class="kpi-lbl">VQ (V)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_IQ">—</div><div class="kpi-lbl">IQ (mA)</div></div>
-      </div>
     </div>
     <div id="sp-exp" class="sub-panel">
       <div class="exp-col-hint">VD (V) · I<sub>D</sub> medido (mA)</div>
@@ -59,6 +55,7 @@ render_with_liquid: false
   <div class="card chart-card">
     <div class="chart-title">I<sub>D</sub> × V_D — curva do diodo e reta de carga</div>
     <div class="chart-wrap"><canvas id="chart-main"></canvas></div>
+    <!-- pts-tbl:main -->
   </div>
 </div>
 
@@ -107,6 +104,7 @@ function calcular(){
   var IQ_A=IS*(Math.exp(VQ/(n*VT))-1);
   var IQ_mA=IQ_A*1000;
   sv('kpi_VQ',VQ.toFixed(3));sv('kpi_IQ',IQ_mA.toFixed(3));
+  sv('pt-diodo-VQ',VQ.toFixed(3)+' V');sv('pt-diodo-IQ',IQ_mA.toFixed(3)+' mA');sv('pt-diodo-VR',(Vcc-VQ).toFixed(3)+' V');sv('pt-diodo-PD',(VQ*IQ_mA).toFixed(2)+' mW');
   document.getElementById('insight-txt').textContent='Q = ('+VQ.toFixed(3)+' V, '+IQ_mA.toFixed(3)+' mA). Diodo conduz '+VQ.toFixed(3)+' V. Restam '+(Vcc-VQ).toFixed(3)+' V sobre R ('+R+' Ω).';
 
   var datasets=[];

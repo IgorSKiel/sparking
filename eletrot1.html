@@ -12,6 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="sparking.js"></script>
 <script src="sparking-formulas.js"></script>
+<style>.pts-tbl{width:fit-content;border-collapse:collapse;margin-top:14px;font-size:12px;border:1px solid #CDD3E0;border-radius:6px;overflow:hidden}.pts-tbl th{padding:5px 12px;background:#1B2E50;color:#fff;font-size:11px;font-weight:700;text-align:left;letter-spacing:.04em}.pts-tbl th:first-child{border-right:1px solid #3a4f6e}.pts-tbl td{padding:6px 12px;vertical-align:middle}.pts-tbl td:first-child{color:#65676B;background:#F8F9FC;border-right:1px solid #CDD3E0}.pts-tbl td:last-child{font-weight:700;color:#1B2E50;font-variant-numeric:tabular-nums;white-space:nowrap}.pts-tbl tr:not(:last-child) td{border-bottom:1px solid #CDD3E0}</style>
 </head>
 <body data-tool="eletrot1">
 <nav style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #CDD3E0;position:sticky;top:0;z-index:99;"><a href="pages/ferramentas.html" style="text-decoration:none;color:#1B2E50;font-size:13px;font-weight:700;">&#8592; Ferramentas</a><span style="background:#007575;color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;">Sparking</span></nav>
@@ -41,10 +42,6 @@
         <div class="card-lbl">Ajuste</div>
         <div class="field"><label>Resistência (Ω)</label><input id="ohm_R" type="number" value="100" min="0.1" oninput="calc('ohm')"></div>
         <div class="field"><label>Tensão máxima (V)</label><div class="hint">limite do eixo X</div><input id="ohm_Vmax" type="number" value="24" oninput="calc('ohm')"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="ohm_sl">—</div><div class="kpi-lbl">Inclinação 1/R (A/V)</div></div>
-          <div class="kpi"><div class="kpi-val" id="ohm_imax">—</div><div class="kpi-lbl">I em V<sub>max</sub></div></div>
-        </div>
       </div>
       <div id="sp-ohm-exp" class="sub-panel">
         <div class="exp-tbl-wrap">
@@ -62,6 +59,7 @@
     <div class="card chart-card">
       <div class="chart-title">Corrente × Tensão</div>
       <div class="chart-wrap"><canvas id="chart-ohm"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>Inclinação 1/R</td><td id="ohm_sl">&mdash;</td></tr><tr><td>I em V<sub>max</sub></td><td id="ohm_imax">&mdash;</td></tr><tr><td>P em V<sub>max</sub></td><td id="pt-ohm-pmax">&mdash;</td></tr></table>
     </div>
   </div>
 </div>
@@ -79,9 +77,6 @@
         <div class="field"><label>Resistência (Ω)</label><input id="pot_R" type="number" value="100" oninput="calc('pot')"></div>
         <div class="field"><label>Corrente máxima (A)</label><input id="pot_Imax" type="number" value="1" step="0.1" oninput="calc('pot')"></div>
         <div class="field"><label>Eixo X</label><select id="pot_modo" onchange="calc('pot')"><option value="pi">P × I</option><option value="pv">P × V</option></select></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="pot_pmax">—</div><div class="kpi-lbl">Potência no pico</div></div>
-        </div>
       </div>
       <div id="sp-pot-exp" class="sub-panel">
         <div class="exp-xsel">
@@ -106,6 +101,7 @@
     <div class="card chart-card">
       <div class="chart-title">Potência Dissipada</div>
       <div class="chart-wrap"><canvas id="chart-pot"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>Potência no pico</td><td id="pot_pmax">&mdash;</td></tr><tr><td>I em P<sub>max</sub>/2</td><td id="pt-pot-ihalf">&mdash;</td></tr><tr><td>P = P<sub>max</sub>/2</td><td id="pt-pot-phalf">&mdash;</td></tr></table>
     </div>
   </div>
 </div>
@@ -123,10 +119,6 @@
         <div class="field"><label>Tensão da fonte (V)</label><input id="div_Vs" type="number" value="12" oninput="calc('div')"></div>
         <div class="field"><label>R1 fixo (Ω)</label><input id="div_R1" type="number" value="1000" oninput="calc('div')"></div>
         <div class="field"><label>R2 máximo (Ω)</label><div class="hint">limite de varredura</div><input id="div_R2max" type="number" value="5000" oninput="calc('div')"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="div_half">—</div><div class="kpi-lbl">V em R2 = R1</div></div>
-          <div class="kpi"><div class="kpi-val" id="div_sat">—</div><div class="kpi-lbl">Saturação</div></div>
-        </div>
       </div>
       <div id="sp-div-exp" class="sub-panel">
         <div class="exp-tbl-wrap">
@@ -144,6 +136,7 @@
     <div class="card chart-card">
       <div class="chart-title">Vout × R2</div>
       <div class="chart-wrap"><canvas id="chart-div"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>V em R2 = R1</td><td id="div_half">&mdash;</td></tr><tr><td>Saturação</td><td id="div_sat">&mdash;</td></tr></table>
     </div>
   </div>
 </div>
@@ -161,9 +154,6 @@
         <div class="field"><label>V de Thévenin (V)</label><div class="hint">tensão em aberto</div><input id="mp_Vth" type="number" value="12" oninput="calc('mp')"></div>
         <div class="field"><label>R de Thévenin (Ω)</label><input id="mp_Rth" type="number" value="100" oninput="calc('mp')"></div>
         <div class="field"><label>R<sub>L</sub> máximo (Ω)</label><input id="mp_RLmax" type="number" value="500" oninput="calc('mp')"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="mp_pmax">—</div><div class="kpi-lbl">Potência máxima transferida</div></div>
-        </div>
       </div>
       <div id="sp-mp-exp" class="sub-panel">
         <div class="exp-tbl-wrap">
@@ -181,6 +171,7 @@
     <div class="card chart-card">
       <div class="chart-title">Potência na carga por resistência</div>
       <div class="chart-wrap"><canvas id="chart-mp"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>Potência máxima transferida</td><td id="mp_pmax">&mdash;</td></tr></table>
     </div>
   </div>
 </div>
@@ -221,6 +212,7 @@ function calcOhm(){
   }
   makeChart('ohm',ds,'Tensão (V)','Corrente (A)');
   setV('ohm_sl',(1/R).toFixed(4));setV('ohm_imax',(Vm/R).toFixed(3)+' A');
+  setV('pt-ohm-slope',(1/R).toFixed(4)+' A/V');setV('pt-ohm-imax',(Vm/R).toFixed(3)+' A');setV('pt-ohm-pmax',(Vm*Vm/R).toFixed(2)+' W');
 }
 
 function calcPot(){
@@ -253,6 +245,7 @@ function calcPot(){
   }
   makeChart('pot',ds,xL,'Potência (W)');
   setV('pot_pmax',(R*Im*Im).toFixed(2)+' W');
+  setV('pt-pot-pmax',(R*Im*Im).toFixed(2)+' W');setV('pt-pot-ihalf',(Im/Math.sqrt(2)).toFixed(3)+' A');setV('pt-pot-phalf',(R*Im*Im/2).toFixed(2)+' W');
 }
 
 function calcDiv(){
@@ -274,6 +267,7 @@ function calcDiv(){
   }
   makeChart('div',ds,'R2 (Ω)','Vout (V)');
   setV('div_half',(Vs/2).toFixed(2)+' V');setV('div_sat',Vs.toFixed(1)+' V');
+  setV('pt-div-half',(Vs/2).toFixed(2)+' V');setV('pt-div-sat',Vs.toFixed(1)+' V');
 }
 
 function calcMp(){
@@ -295,6 +289,7 @@ function calcMp(){
   }
   makeChart('mp',ds,'RL (Ω)','PL (W)');
   setV('mp_pmax',(Vth*Vth/(4*Rth)).toFixed(3)+' W');
+  setV('pt-mp-rl',Rth.toFixed(1)+' Ω');setV('pt-mp-pmax',(Vth*Vth/(4*Rth)).toFixed(3)+' W');
 }
 
 const CALC={ohm:calcOhm,pot:calcPot,div:calcDiv,mp:calcMp};

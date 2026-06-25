@@ -12,6 +12,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="sparking.js"></script>
 <script src="sparking-formulas.js"></script>
+<style>.pts-tbl{width:fit-content;border-collapse:collapse;margin-top:14px;font-size:12px;border:1px solid #CDD3E0;border-radius:6px;overflow:hidden}.pts-tbl th{padding:5px 12px;background:#1B2E50;color:#fff;font-size:11px;font-weight:700;text-align:left;letter-spacing:.04em}.pts-tbl th:first-child{border-right:1px solid #3a4f6e}.pts-tbl td{padding:6px 12px;vertical-align:middle}.pts-tbl td:first-child{color:#65676B;background:#F8F9FC;border-right:1px solid #CDD3E0}.pts-tbl td:last-child{font-weight:700;color:#1B2E50;font-variant-numeric:tabular-nums;white-space:nowrap}.pts-tbl tr:not(:last-child) td{border-bottom:1px solid #CDD3E0}</style>
 </head>
 <body data-tool="circuitos">
 <nav style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #CDD3E0;position:sticky;top:0;z-index:99;"><a href="pages/ferramentas.html" style="text-decoration:none;color:#1B2E50;font-size:13px;font-weight:700;">&#8592; Ferramentas</a><span style="background:#007575;color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;">Sparking</span></nav>
@@ -45,11 +46,6 @@
         <div class="field"><label>C (µF)</label><input id="rc_C" type="number" value="100" step="0.1" oninput="calc('rc')"></div>
         <div class="field"><label>V inicial (V)</label><input id="rc_V0" type="number" value="0" oninput="calc('rc')"></div>
         <div class="field"><label>V final (V)</label><input id="rc_Vf" type="number" value="12" oninput="calc('rc')"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="rc_tau">—</div><div class="kpi-lbl">τ = RC (ms)</div></div>
-          <div class="kpi"><div class="kpi-val" id="rc_t5tau">—</div><div class="kpi-lbl">5τ (ms)</div></div>
-          <div class="kpi"><div class="kpi-val" id="rc_v63">—</div><div class="kpi-lbl">V em τ</div></div>
-        </div>
       </div>
       <div id="sp-rc-exp" class="sub-panel">
         <div class="exp-col-hint">t (ms) · V medido (V)</div>
@@ -68,6 +64,7 @@
     <div class="card chart-card">
       <div class="chart-title">Tensão no Capacitor × Tempo</div>
       <div class="chart-wrap"><canvas id="chart-rc"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>τ = RC</td><td id="rc_tau">&mdash;</td></tr><tr><td>5τ (regime permanente)</td><td id="rc_t5tau">&mdash;</td></tr><tr><td>V em τ (63%)</td><td id="rc_v63">&mdash;</td></tr><tr><td>V em 3τ (≈ 95%)</td><td id="pt-rc-v3tau">&mdash;</td></tr></table>
     </div>
   </div>
 </div>
@@ -85,11 +82,6 @@
         <div class="field"><label>R (Ω)</label><input id="rl_R" type="number" value="100" oninput="calc('rl')"></div>
         <div class="field"><label>L (mH)</label><input id="rl_L" type="number" value="100" oninput="calc('rl')"></div>
         <div class="field"><label>V da fonte (V)</label><input id="rl_V" type="number" value="12" oninput="calc('rl')"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="rl_tau">—</div><div class="kpi-lbl">τ = L/R (µs)</div></div>
-          <div class="kpi"><div class="kpi-val" id="rl_Iss">—</div><div class="kpi-lbl">I<sub>ss</sub> (A)</div></div>
-          <div class="kpi"><div class="kpi-val" id="rl_t5">—</div><div class="kpi-lbl">5τ (µs)</div></div>
-        </div>
       </div>
       <div id="sp-rl-exp" class="sub-panel">
         <div class="exp-col-hint">t (µs) · I medido (A)</div>
@@ -108,6 +100,7 @@
     <div class="card chart-card">
       <div class="chart-title">Corrente no Indutor × Tempo</div>
       <div class="chart-wrap"><canvas id="chart-rl"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>τ = L/R</td><td id="rl_tau">&mdash;</td></tr><tr><td>I<sub>ss</sub> estacionária</td><td id="rl_Iss">&mdash;</td></tr><tr><td>5τ (regime permanente)</td><td id="rl_t5">&mdash;</td></tr><tr><td>I em τ (63% de I<sub>ss</sub>)</td><td id="pt-rl-i63">&mdash;</td></tr></table>
     </div>
   </div>
 </div>
@@ -127,12 +120,6 @@
         <div class="field"><label>C (µF)</label><input id="rlc_C" type="number" value="100" step="0.1" oninput="calc('rlc')"></div>
         <div class="field"><label>V inicial (V)</label><input id="rlc_V0" type="number" value="10" oninput="calc('rlc')"></div>
         <div class="field"><label>Comparar regimes</label><select id="rlc_comp" onchange="calc('rlc')"><option value="0">Não</option><option value="1">Sim</option></select></div>
-        <div class="kpi-row">
-          <div class="kpi"><div id="rlc_badge" class="badge">—</div><div class="kpi-lbl" style="margin-top:6px">Regime</div></div>
-          <div class="kpi"><div class="kpi-val" id="rlc_zeta">—</div><div class="kpi-lbl">ζ (zeta)</div></div>
-          <div class="kpi"><div class="kpi-val" id="rlc_Rcrit">—</div><div class="kpi-lbl">Rcrit (Ω)</div></div>
-          <div class="kpi"><div class="kpi-val" id="rlc_omega0">—</div><div class="kpi-lbl">ω₀ (rad/s)</div></div>
-        </div>
       </div>
       <div id="sp-rlc-exp" class="sub-panel">
         <div class="exp-col-hint">t (µs) · V medido (V)</div>
@@ -151,6 +138,7 @@
     <div class="card chart-card">
       <div class="chart-title">Tensão no Capacitor × Tempo</div>
       <div class="chart-wrap"><canvas id="chart-rlc"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>Regime</td><td><div id="rlc_badge" class="badge">&mdash;</div></td></tr><tr><td>ζ (fator amortecimento)</td><td id="rlc_zeta">&mdash;</td></tr><tr><td>R crítico</td><td id="rlc_Rcrit">&mdash;</td></tr><tr><td>ω₀ natural (rad/s)</td><td id="rlc_omega0">&mdash;</td></tr><tr><td>ω<sub>d</sub> amortecida (rad/s)</td><td id="pt-rlc-omegad">&mdash;</td></tr><tr><td>T<sub>d</sub> período oscilação</td><td id="pt-rlc-Td">&mdash;</td></tr></table>
     </div>
   </div>
 </div>
@@ -169,9 +157,6 @@
         <div class="field"><label>C (µF)</label><input id="filt_C" type="number" value="0.16" step="0.01" oninput="calc('filt')"></div>
         <div class="field"><label>Tipo</label><select id="filt_tipo" onchange="calc('filt')"><option value="pb">Passa-Baixa</option><option value="pa">Passa-Alta</option><option value="pb+pa">PB + PA</option></select></div>
         <div class="field"><label>Mostrar</label><select id="filt_esc" onchange="calc('filt')"><option value="mag">|H| linear</option><option value="db">Ganho (dB)</option><option value="fase">Fase (°)</option></select></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="filt_fc">—</div><div class="kpi-lbl">fc (Hz)</div></div>
-        </div>
       </div>
       <div id="sp-filt-exp" class="sub-panel">
         <div class="exp-col-hint">f (Hz) · Ganho medido</div>
@@ -190,6 +175,7 @@
     <div class="card chart-card">
       <div class="chart-title">Resposta em Frequência — escala log</div>
       <div class="chart-wrap"><canvas id="chart-filt"></canvas></div>
+      <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>f<sub>c</sub> de corte</td><td id="filt_fc">&mdash;</td></tr><tr><td>|H| em f<sub>c</sub></td><td>−3.0 dB (0.707)</td></tr><tr><td>Fase em f<sub>c</sub></td><td>−45°</td></tr></table>
     </div>
   </div>
 </div>
@@ -239,6 +225,7 @@ function calcRc(){
     showStats('rc',ep||null);
   }
   makeChart('rc',ds,'Tempo (ms)','Tensão (V)');setV('rc_tau',(tau*1000).toFixed(2));setV('rc_t5tau',(t5*1000).toFixed(1));setV('rc_v63',(Vf+(V0-Vf)*Math.exp(-1)).toFixed(2)+' V');
+  setV('pt-rc-tau',(tau*1000).toFixed(2)+' ms');setV('pt-rc-v63',(Vf+(V0-Vf)*Math.exp(-1)).toFixed(2)+' V');setV('pt-rc-v3tau',(Vf+(V0-Vf)*Math.exp(-3)).toFixed(2)+' V');
 }
 function calcRl(){
   const R=get('rl_R'),L=get('rl_L')/1000,V=get('rl_V');
@@ -252,6 +239,7 @@ function calcRl(){
     showStats('rl',ep||null);
   }
   makeChart('rl',ds,'Tempo (µs)','Corrente (A)');setV('rl_tau',(tau*1e6).toFixed(2));setV('rl_Iss',Iss.toFixed(3));setV('rl_t5',(t5*1e6).toFixed(1));
+  setV('pt-rl-tau',(tau*1e6).toFixed(2)+' µs');setV('pt-rl-i63',(Iss*(1-Math.exp(-1))).toFixed(3)+' A');setV('pt-rl-iss',Iss.toFixed(3)+' A');
 }
 
 function calcRlc(){
@@ -279,6 +267,8 @@ function calcRlc(){
     showStats('rlc',ep||null);
   }
   makeChart('rlc',ds,'Tempo (µs)','VC (V)');
+  var _od=omega0*Math.sqrt(Math.max(1-zeta*zeta,0));
+  setV('pt-rlc-zeta',zeta.toFixed(3));setV('pt-rlc-omega0',omega0.toFixed(1)+' rad/s');setV('pt-rlc-omegad',_od>0.01?_od.toFixed(1)+' rad/s':'—');setV('pt-rlc-Td',_od>0.01?(2*Math.PI/_od*1e6).toFixed(1)+' µs':'—');
 }
 
 function calcFilt(){
@@ -300,6 +290,7 @@ function calcFilt(){
     showStats('filt',ep||null);
   }
   makeChart('filt',ds,'Frequência (Hz)',yL,'logarithmic');setV('filt_fc',fc.toFixed(1));
+  setV('pt-filt-fc',fc.toFixed(1)+' Hz');
 }
 
 const CALC={rc:calcRc,rl:calcRl,rlc:calcRlc,filt:calcFilt};

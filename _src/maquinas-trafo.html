@@ -1,4 +1,4 @@
----
+﻿---
 layout: tool
 title: "Máquinas — Transformador"
 tool_id: trafo
@@ -32,11 +32,6 @@ render_with_liquid: false
         <div class="field"><label>Perdas ferro (W)</label><input id="eta_Pfe" type="number" value="400" step="10" oninput="calcEta()"></div>
         <div class="field"><label>Perdas cobre nominal (W)</label><input id="eta_Pcu" type="number" value="1200" step="10" oninput="calcEta()"></div>
         <div class="field"><label>FP da carga</label><input id="eta_FP" type="number" value="0.85" step="0.05" min="0.1" max="1" oninput="calcEta()"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="eta_xopt">—</div><div class="kpi-lbl">xopt (carga ótima)</div></div>
-          <div class="kpi"><div class="kpi-val" id="eta_max">—</div><div class="kpi-lbl">η<sub>máx</sub> (%)</div></div>
-          <div class="kpi"><div class="kpi-val" id="eta_fl">—</div><div class="kpi-lbl">η a plena carga (%)</div></div>
-        </div>
       </div>
       <div id="sp-eta-exp" class="sub-panel">
         <div class="exp-col-hint">x (0–1) · η medido (%)</div>
@@ -55,6 +50,7 @@ render_with_liquid: false
     <div class="card chart-card">
       <div class="chart-title">Rendimento × Fator de Carga</div>
       <div class="chart-wrap"><canvas id="chart-eta"></canvas></div>
+      <!-- pts-tbl:eta -->
     </div>
   </div>
 </div>
@@ -74,11 +70,6 @@ render_with_liquid: false
         <div class="field"><label>Xeq (Ω)</label><input id="vr_Xeq" type="number" value="2.0" step="0.1" oninput="calcVR()"></div>
         <div class="field"><label>Ifl — corrente plena carga (A)</label><input id="vr_Ifl" type="number" value="100" oninput="calcVR()"></div>
         <div class="field"><label>V2n — tensão nominal sec. (V)</label><input id="vr_V2n" type="number" value="220" oninput="calcVR()"></div>
-        <div class="kpi-row">
-          <div class="kpi"><div class="kpi-val" id="vr_lag">—</div><div class="kpi-lbl">VR FP=0,8 atrasado (%)</div></div>
-          <div class="kpi"><div class="kpi-val" id="vr_lead">—</div><div class="kpi-lbl">VR FP=0,8 adiantado (%)</div></div>
-          <div class="kpi"><div class="kpi-val" id="vr_zero">—</div><div class="kpi-lbl">FP que anula VR</div></div>
-        </div>
       </div>
       <div id="sp-vr-exp" class="sub-panel">
         <div class="exp-col-hint">FP (0–1, + atrasado, − adiant.) · VR medido (%)</div>
@@ -97,6 +88,7 @@ render_with_liquid: false
     <div class="card chart-card">
       <div class="chart-title">Regulação de Tensão × Fator de Potência</div>
       <div class="chart-wrap"><canvas id="chart-vr"></canvas></div>
+      <!-- pts-tbl:vr -->
     </div>
   </div>
 </div>
@@ -136,6 +128,7 @@ function calcEta(){
       pts.push({x:+x.toFixed(3),y:+eta.toFixed(3)});
     }
     sv('eta_xopt',xopt.toFixed(3));sv('eta_max',etaMax.toFixed(2));sv('eta_fl',etaFl.toFixed(2));
+    sv('pt-eta-xopt',xopt.toFixed(3));sv('pt-eta-max',etaMax.toFixed(2)+'%');sv('pt-eta-fl',etaFl.toFixed(2)+'%');
     document.getElementById('ins-eta').textContent='η máximo: '+etaMax.toFixed(2)+'% em xopt = '+xopt.toFixed(3)+'. A plena carga: '+etaFl.toFixed(2)+'%. FP = '+FP+' — mude o FP para ver a curva se deslocar.';
     datasets=[{label:'η (FP='+FP+')',data:pts,borderColor:'#007575',backgroundColor:'#00757512',borderWidth:2.5,pointRadius:0,tension:0.2,fill:true}];
     datasets.push({type:'scatter',label:'xopt',data:[{x:+xopt.toFixed(3),y:+etaMax.toFixed(3)}],borderColor:'#C8102E',backgroundColor:'#C8102E',pointRadius:8});
@@ -167,6 +160,7 @@ function calcVR(){
   var VR_lead_08=Ifl*(Req*0.8-Xeq*0.6)/V2n*100;
   var FP_zero=Req/Math.sqrt(Req*Req+Xeq*Xeq);
   sv('vr_lag',VR_lag_08.toFixed(2));sv('vr_lead',VR_lead_08.toFixed(2));sv('vr_zero',FP_zero.toFixed(3));
+  sv('pt-vr-lag',VR_lag_08.toFixed(2)+'%');sv('pt-vr-lead',VR_lead_08.toFixed(2)+'%');sv('pt-vr-zero',FP_zero.toFixed(3));
   document.getElementById('ins-vr').textContent='VR = 0 em FP = '+FP_zero.toFixed(3)+' (adiantado). Abaixo desse FP, V_2 aumenta com a carga — regulação negativa.';
 
   var datasets=[];

@@ -1,4 +1,4 @@
----
+﻿---
 layout: tool
 title: "Eletrônica — Retificador"
 tool_id: retificador
@@ -36,11 +36,6 @@ render_with_liquid: false
       <div class="field"><label>R<sub>L</sub> (Ω)</label><input id="RL" type="number" value="1000" oninput="atualizar()"></div>
       <div class="field"><label>C (µF)</label><input id="C" type="number" value="100" step="10" oninput="atualizar()"></div>
       <div class="field"><label>Tipo</label><select id="tipo" onchange="atualizar()"><option value="fw">Onda completa</option><option value="hw">Meia onda</option></select></div>
-      <div class="kpi-row">
-        <div class="kpi"><div class="kpi-val" id="kpi_vpk">—</div><div class="kpi-lbl">V<sub>pico</sub> saída (V)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_vr">—</div><div class="kpi-lbl">Ripple pico-pico (V)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_vdc">—</div><div class="kpi-lbl">Vdc médio (V)</div></div>
-      </div>
     </div>
     <div id="sp-exp" class="sub-panel">
       <div class="exp-col-hint">t (ms) · Vout medido (V)</div>
@@ -59,6 +54,7 @@ render_with_liquid: false
   <div class="card chart-card">
     <div class="chart-title">Vout × Tempo — com e sem capacitor</div>
     <div class="chart-wrap"><canvas id="chart-main"></canvas></div>
+    <!-- pts-tbl:main -->
   </div>
 </div>
 
@@ -122,6 +118,7 @@ function calcular(){
   var C_F=C_uF/1e6;
   var res=simular(Vm,f,RL,C_F,tipo);
   sv('kpi_vpk',res.Vpk.toFixed(2));sv('kpi_vr',res.Vr.toFixed(3));sv('kpi_vdc',res.Vdc.toFixed(2));
+  sv('pt-ret-vpk',res.Vpk.toFixed(2)+' V');sv('pt-ret-vdc',res.Vdc.toFixed(2)+' V');sv('pt-ret-vr',res.Vr.toFixed(3)+' V');sv('pt-ret-rf',res.Vpk>0?(res.Vr/res.Vpk*100).toFixed(1)+'%':'—');
   document.getElementById('insight-txt').textContent='Ripple pico-pico: '+res.Vr.toFixed(3)+' V ('+((res.Vr/res.Vpk*100).toFixed(1))+'% de Vpico). Vdc médio: '+res.Vdc.toFixed(2)+' V. Aumente C para reduzir o ripple.';
 
   var datasets=[];

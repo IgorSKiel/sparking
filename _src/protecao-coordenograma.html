@@ -1,4 +1,4 @@
----
+﻿---
 layout: tool
 title: "Proteção — Coordenograma"
 tool_id: protecao
@@ -38,11 +38,6 @@ render_with_liquid: false
       <div class="field"><label>TMS</label><input id="TMS" type="number" value="0.3" step="0.05" min="0.05" oninput="calcCoord()"></div>
       <div class="card-lbl" style="margin-top:6px">Relé 50 (instantâneo)</div>
       <div class="field"><label>Is₅₀ — pickup (A)</label><input id="Is50" type="number" value="300" step="10" oninput="calcCoord()"></div>
-      <div class="kpi-row">
-        <div class="kpi"><div class="kpi-val" id="kpi_Irated">—</div><div class="kpi-lbl">I nominal trafo (A)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_Icc">—</div><div class="kpi-lbl">I<sub>cc</sub> máx (A)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_Iinrush">—</div><div class="kpi-lbl">Inrush ≈ 8×In (A)</div></div>
-      </div>
     </div>
     <div id="sp-exp" class="sub-panel">
       <div class="exp-col-hint">I medido (A) · t de atuação (s)</div>
@@ -61,6 +56,7 @@ render_with_liquid: false
   <div class="card chart-card">
     <div class="chart-title">Coordenograma — tempo × corrente (log-log)</div>
     <div class="chart-wrap"><canvas id="chart-main"></canvas></div>
+    <!-- pts-tbl:main -->
   </div>
 </div>
 
@@ -101,6 +97,7 @@ function _calc(){
   var Icc=Irated/(zpct/100);
   var Iinrush=8*Irated;
   sv('kpi_Irated',Irated.toFixed(1));sv('kpi_Icc',Icc.toFixed(0));sv('kpi_Iinrush',Iinrush.toFixed(0));
+  sv('pt-prot-Irated',Irated.toFixed(1)+' A');sv('pt-prot-Icc',Icc.toFixed(0)+' A');sv('pt-prot-Iinrush',Iinrush.toFixed(0)+' A');
 
   var N=200;
   var Imin=Is51*1.05,Imax=Icc*1.1;

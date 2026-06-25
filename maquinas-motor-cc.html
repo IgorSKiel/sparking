@@ -10,6 +10,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="sparking.js"></script>
 <script src="sparking-formulas.js"></script>
+<style>.pts-tbl{width:fit-content;border-collapse:collapse;margin-top:14px;font-size:12px;border:1px solid #CDD3E0;border-radius:6px;overflow:hidden}.pts-tbl th{padding:5px 12px;background:#1B2E50;color:#fff;font-size:11px;font-weight:700;text-align:left;letter-spacing:.04em}.pts-tbl th:first-child{border-right:1px solid #3a4f6e}.pts-tbl td{padding:6px 12px;vertical-align:middle}.pts-tbl td:first-child{color:#65676B;background:#F8F9FC;border-right:1px solid #CDD3E0}.pts-tbl td:last-child{font-weight:700;color:#1B2E50;font-variant-numeric:tabular-nums;white-space:nowrap}.pts-tbl tr:not(:last-child) td{border-bottom:1px solid #CDD3E0}</style>
 </head>
 <body data-tool="motor-cc">
 <nav style="display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#fff;border-bottom:1px solid #CDD3E0;position:sticky;top:0;z-index:99;"><a href="pages/ferramentas.html" style="text-decoration:none;color:#1B2E50;font-size:13px;font-weight:700;">&#8592; Ferramentas</a><span style="background:#007575;color:#fff;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;">Sparking</span></nav>
@@ -43,11 +44,6 @@
       <div class="field"><label>K' — constante do motor (N·m/A²)</label><input id="Kp" type="number" value="1.5" step="0.1" min="0.1" oninput="atualizar()"></div>
       <div class="field"><label>Tmin do gráfico (N·m)</label><input id="Tmin" type="number" value="1" step="0.5" min="0.1" oninput="atualizar()"></div>
       <div class="field"><label>T<sub>max</sub> do gráfico (N·m)</label><input id="Tmax_inp" type="number" value="100" step="5" oninput="atualizar()"></div>
-      <div class="kpi-row">
-        <div class="kpi danger"><div class="kpi-val" id="kpi_nTmin">—</div><div class="kpi-lbl">n em Tmin (rpm)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_nTmax">—</div><div class="kpi-lbl">n em T<sub>max</sub> (rpm)</div></div>
-        <div class="kpi"><div class="kpi-val" id="kpi_Ia_rated">—</div><div class="kpi-lbl">I<sub>a</sub> em T<sub>max</sub> (A)</div></div>
-      </div>
     </div>
     <div id="sp-exp" class="sub-panel">
       <div class="exp-col-hint">T (N·m) · n medido (rpm)</div>
@@ -66,6 +62,7 @@
   <div class="card chart-card">
     <div class="chart-title">Velocidade × Torque — hipérbole do motor série</div>
     <div class="chart-wrap"><canvas id="chart-main"></canvas></div>
+    <table class="pts-tbl"><thead><tr><th>Grandeza</th><th>Valor</th></tr></thead><tr><td>n em Tmin — perigo sem carga (rpm)</td><td id="kpi_nTmin">&mdash;</td></tr><tr><td>n em T<sub>max</sub> (rpm)</td><td id="kpi_nTmax">&mdash;</td></tr><tr><td>I<sub>a</sub> em T<sub>max</sub> (A)</td><td id="kpi_Ia_rated">&mdash;</td></tr></table>
   </div>
 </div>
 
@@ -114,6 +111,7 @@ function calcular(){
   sv('kpi_nTmin',isFinite(nAtTmin)?nAtTmin.toFixed(0):'∞');
   sv('kpi_nTmax',nAtTmax>0?nAtTmax.toFixed(0):'0');
   sv('kpi_Ia_rated',Ia_at_Tmax.toFixed(1));
+  sv('pt-mcc-nmin',isFinite(nAtTmin)?nAtTmin.toFixed(0)+' rpm':'∞ rpm');sv('pt-mcc-nmax',nAtTmax>0?nAtTmax.toFixed(0)+' rpm':'0 rpm');sv('pt-mcc-Ia',Ia_at_Tmax.toFixed(1)+' A');
   document.getElementById('insight-txt').textContent='Em T = '+Tmin+' N·m: n = '+(isFinite(nAtTmin)?nAtTmin.toFixed(0):'∞')+' rpm. Remover a carga completamente causa aceleração sem controle — destruição mecânica real em motores série.';
 
   var datasets=[];
